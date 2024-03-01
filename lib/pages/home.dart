@@ -36,53 +36,60 @@ class _HomeState extends State<Home> {
           // Voucher
           _voucherSection(),
 
-          // Artikel Pilihan
+          // Artikel Pilihan1
+          _artikelPilihan(),
+
+          // Artikel Pilihan2
           _artikelPilihan(),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home,
-              size: 33,
-            ),
-            label: 'Beranda',
+      bottomNavigationBar: _bottomNavigationBar(),
+    );
+  }
+
+  BottomNavigationBar _bottomNavigationBar() {
+    return BottomNavigationBar(
+      items: const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+          icon: Icon(
+            Icons.home,
+            size: 25,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.reorder,
-              size: 33,
-            ),
-            label: 'Pesanan',
+          label: 'Beranda',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(
+            Icons.reorder,
+            size: 25,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.add_circle,
-              size: 33,
-            ),
-            label: 'Tambah',
+          label: 'Pesanan',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(
+            Icons.add_circle,
+            size: 25,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.groups,
-              size: 33,
-            ),
-            label: 'Social',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.person,
-              size: 33,
-            ),
-            label: 'Profil',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue.shade900,
-        unselectedItemColor: Colors.black,
-        onTap: _onItemTapped,
-      ),
+          label: 'Tambah',
+        ),
+        // BottomNavigationBarItem(
+        //   icon: Icon(
+        //     Icons.groups,
+        //     size: 25,
+        //   ),
+        //   label: 'Social',
+        // ),
+        // BottomNavigationBarItem(
+        //   icon: Icon(
+        //     Icons.person,
+        //     size: 25,
+        //   ),
+        //   label: 'Profil',
+        // ),
+      ],
+      currentIndex: _selectedIndex,
+      selectedItemColor: Colors.blue.shade900,
+      unselectedItemColor: Colors.black,
+      onTap: _onItemTapped,
     );
   }
 
@@ -98,17 +105,21 @@ class _HomeState extends State<Home> {
               children: [
                 Text(
                   "Artikel Pilihan",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'PTSans',
+                  ),
                 ),
                 Icon(
                   Icons.chevron_right,
-                  size: 20,
+                  size: 16,
                 ),
               ],
             ),
           ),
           Container(
-            height: 220,
+            height: 185,
             decoration: BoxDecoration(
               border: Border.all(color: Colors.red),
             ),
@@ -130,7 +141,9 @@ class _HomeState extends State<Home> {
                         borderRadius: BorderRadius.all(
                           Radius.circular(10),
                         ),
-                        child: Image.asset(articles[index].articleImage),
+                        child: Image.asset(
+                          articles[index].articleImage,
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -141,7 +154,8 @@ class _HomeState extends State<Home> {
                               articles[index].title,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                                fontSize: 12,
+                                fontFamily: 'PTSans',
                               ),
                             ),
                             Row(
@@ -150,13 +164,21 @@ class _HomeState extends State<Home> {
                                   Icons.calendar_month,
                                   size: 12,
                                 ),
-                                Text(articles[index].date),
+                                Text(
+                                  articles[index].date,
+                                  style: TextStyle(fontSize: 8),
+                                ),
                               ],
                             ),
                             SizedBox(
                               height: 15,
                             ),
-                            Text(articles[index].description),
+                            Text(
+                              articles[index].description,
+                              style: TextStyle(
+                                fontSize: 10,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -177,6 +199,8 @@ class _HomeState extends State<Home> {
     return Padding(
       padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
       child: Container(
+        width: 320,
+        height: 149,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -190,11 +214,15 @@ class _HomeState extends State<Home> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
+                      fontFamily: 'PTSans',
                     ),
                   ),
                   Text(
-                    'Total poin kamu dapat ditukarkan dengan voucher',
-                    style: TextStyle(fontSize: 14),
+                    'Total poin kamu dapat ditukarkan dengan voucher dibawah ini loh!',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontFamily: 'PTSans',
+                    ),
                   ),
                 ],
               ),
@@ -216,7 +244,8 @@ class _HomeState extends State<Home> {
                         text: TextSpan(
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 14.0,
+                            fontSize: 10.0,
+                            fontFamily: 'PTSans',
                           ),
                           children: <TextSpan>[
                             TextSpan(
@@ -241,7 +270,8 @@ class _HomeState extends State<Home> {
                         text: TextSpan(
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 14.0,
+                            fontSize: 10.0,
+                            fontFamily: 'PTSans',
                           ),
                           children: <TextSpan>[
                             TextSpan(
@@ -266,7 +296,8 @@ class _HomeState extends State<Home> {
                         text: TextSpan(
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 14.0,
+                            fontSize: 10.0,
+                            fontFamily: 'PTSans',
                           ),
                           children: <TextSpan>[
                             TextSpan(
@@ -291,7 +322,8 @@ class _HomeState extends State<Home> {
                         text: TextSpan(
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 14.0,
+                            fontSize: 10.0,
+                            fontFamily: 'PTSans',
                           ),
                           children: <TextSpan>[
                             TextSpan(
@@ -321,17 +353,20 @@ class _HomeState extends State<Home> {
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: Container(
+        width: 320,
+        height: 70,
         decoration: const BoxDecoration(
             color: Colors.amber,
             borderRadius: BorderRadius.all(Radius.circular(4))),
-        child: const Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(8.0),
               child: Text(
                 'Poin Kamu',
                 style: TextStyle(
+                  fontFamily: 'PTSans',
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -340,18 +375,42 @@ class _HomeState extends State<Home> {
             Row(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.only(left: 8.0),
                   child: Text(
                     'Total Poin Anda: ',
-                    style: TextStyle(fontSize: 14),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontFamily: 'PTSans',
+                    ),
                   ),
                 ),
                 Expanded(
                   child: Center(
-                    child: Text(
-                      '10000 Poin',
-                      style: TextStyle(fontSize: 14),
+                    child: RichText(
+                      text: TextSpan(
+                        style: TextStyle(color: Colors.black),
+                        children: const <TextSpan>[
+                          TextSpan(
+                            text: '10000',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontFamily: 'PTSans',
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' Poin',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontFamily: 'PTSans',
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                    // child: Text(
+                    //   '10000 Poin',
+                    //   style: TextStyle(fontSize: 14),
+                    // ),
                   ),
                 ),
               ],
@@ -365,33 +424,36 @@ class _HomeState extends State<Home> {
   AppBar appBar() {
     return AppBar(
       title: const Padding(
-        padding: EdgeInsets.only(top: 15),
+        padding: EdgeInsets.only(top: 15, bottom: 15),
         child: Row(
           children: [
             Padding(
               padding: EdgeInsets.only(right: 8.0),
-              child: CircleAvatar(),
+              child: CircleAvatar(
+                radius: 24,
+              ),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Hi, Rakesh Bramantyo',
                     style:
-                        TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                        TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
                 Text('Newcomer',
                     style: TextStyle(
-                        fontSize: 14.0, color: Color.fromRGBO(0, 0, 0, 0.6))),
+                        fontSize: 10.0, color: Color.fromRGBO(0, 0, 0, 0.6))),
               ],
             ),
           ],
         ),
       ),
+      toolbarHeight: 80.2,
       actions: <Widget>[
         IconButton(
             onPressed: () {},
             icon: const Icon(
               Icons.notifications,
-              size: 34,
+              size: 24,
             )),
       ],
     );
