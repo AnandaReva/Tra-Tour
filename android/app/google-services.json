@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "525346093175",
+    "project_id": "tra-tour",
+    "storage_bucket": "tra-tour.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:525346093175:android:e0136e9c61854d9f0dee72",
+        "android_client_info": {
+          "package_name": "com.example.tratour"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "525346093175-20diu0m0c0p4qb1mahvionmoqqi0s7j9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxDijkEkT9meAuvaAPUIcM9NLW0S46O7w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "525346093175-20diu0m0c0p4qb1mahvionmoqqi0s7j9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
