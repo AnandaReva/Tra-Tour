@@ -1,4 +1,3 @@
-// ignore: file_names
 import 'package:aplikasi_sampah/components/imageViewer.dart';
 import 'package:aplikasi_sampah/components/loginPage.dart';
 import 'package:aplikasi_sampah/components/profilePage.dart';
@@ -12,24 +11,23 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     GlobalVar globalVar =
         GlobalVar.instance; // Mendapatkan instance dari GlobalVar
-<<<<<<< HEAD
-    var username = 'Rakesh Braman'; //globalVar.userLogindata?[0]['username'];
-    var biography = globalVar.userLogindata?[0]['biography'];
-    var profilePhotoUrl;
-=======
-    var username = 'Rakesh Braman';//globalVar.userLogindata?[0]['username'];
-    var biography = globalVar.userLogindata?[0]['biography'];
-    var profilePhotoUrl = 'cth';
->>>>>>> 2bb67d4f0c9f7250b5c17d73d1a8710e413026af
-    // globalVar.userLogindata?[0]['profilePhoto'];
 
-    print('status login2222: ${globalVar.isLogin}');
-    print('Welcome222   ${globalVar.userLogindata}');
+    // Mendapatkan data pengguna
+    List<dynamic> userDataList = globalVar.userLoginData;
+
+    // Atur nilai default untuk username dan profile image
+    String username = '';
+    String profile_image = '';
+
+    // Periksa apakah userDataList tidak kosong sebelum mengakses indeksnya
+    if (userDataList.isNotEmpty) {
+      username = userDataList[0]['username'] ?? '';
+      profile_image = userDataList[0]['profile_image'] ?? '';
+    }
 
     return AppBar(
       backgroundColor: GlobalVar.mainColor,
-<<<<<<< HEAD
-      title: const Padding(
+      title: Padding(
         padding: EdgeInsets.only(top: 15, bottom: 15),
         child: Row(
           children: [
@@ -37,24 +35,28 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
               padding: EdgeInsets.only(right: 8.0),
               child: CircleAvatar(
                 radius: 24,
-                backgroundImage: NetworkImage(
-                  'https://firebasestorage.googleapis.com/v0/b/tra-tour.appspot.com/o/admin%2Fadmin_profile_picture.png?alt=media&token=2f101f86-e0d6-4cbb-aebe-faa4d37479d0',
-                ),
+                // Gunakan profile_image
+                backgroundImage: NetworkImage(profile_image),
               ),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Hi, Rakesh Bramantyo',
-                    style: TextStyle(
-                        fontSize: 14.0,
-                        color: GlobalVar.baseColor,
-                        fontWeight: FontWeight.bold)),
-                Text('Newcomer',
-                    style: TextStyle(
-                        fontSize: 10.0,
-                        color: GlobalVar.baseColor,
-                        fontWeight: FontWeight.bold)),
+                Text(
+                  // Gunakan username
+                  username,
+                  style: TextStyle(
+                      fontSize: 14.0,
+                      color: GlobalVar.baseColor,
+                      fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  'Newcomer',
+                  style: TextStyle(
+                      fontSize: 10.0,
+                      color: GlobalVar.baseColor,
+                      fontWeight: FontWeight.bold),
+                ),
               ],
             ),
           ],
@@ -63,64 +65,17 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
       toolbarHeight: 80.2,
       actions: <Widget>[
         IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              color: GlobalVar.baseColor,
-              Icons.notifications,
-              size: 24,
-            )),
-      ],
-    );
-  }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-}
-
-
-
-/* 
-
-
-AppBar(
-      backgroundColor: GlobalVar.mainColor,
-=======
->>>>>>> 2bb67d4f0c9f7250b5c17d73d1a8710e413026af
-      title:  Text(
-       username,
-        style: const TextStyle(
-          color: Colors.white,
-          fontFamily: 'Poppins-Bold',
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      actions: <Widget>[
-        InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      MyImageViewer(profilePhoto: profilePhotoUrl)),
-            );
-          },
-          child: CircleAvatar(
-            radius: 50,
-            backgroundImage: NetworkImage(
-              profilePhotoUrl,
-            ),
+          onPressed: () {},
+          icon: const Icon(
+            color: GlobalVar.baseColor,
+            Icons.notifications,
+            size: 24,
           ),
         ),
-      
       ],
-      iconTheme: const IconThemeData(color: Colors.white),
-<<<<<<< HEAD
-    ); */
-=======
     );
   }
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
->>>>>>> 2bb67d4f0c9f7250b5c17d73d1a8710e413026af

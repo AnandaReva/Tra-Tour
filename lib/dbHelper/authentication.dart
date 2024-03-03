@@ -1,4 +1,4 @@
-import 'package:aplikasi_sampah/dbHelper/mysql.dart';
+/* import 'package:aplikasi_sampah/dbHelper/mysql.dart';
 import 'package:aplikasi_sampah/globalVar.dart';
 import 'package:flutter/material.dart';
 import 'package:mysql1/mysql1.dart';
@@ -62,3 +62,4 @@ class LoginMysqlDatabase {
     }
   }
 }
+ */
