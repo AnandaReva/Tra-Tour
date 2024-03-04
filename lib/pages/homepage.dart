@@ -1,21 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:tratour_application/model/articles_model.dart';
 
-class Home extends StatefulWidget {
-  Home({super.key});
-
-  @override
-  State<Home> createState() => _HomeState();
-}
-
-class _HomeState extends State<Home> {
-  int _selectedIndex = 0;
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+class HomePage extends StatelessWidget {
+  HomePage({super.key});
 
   List<ArticlesModel> articles = [];
 
@@ -43,64 +30,17 @@ class _HomeState extends State<Home> {
           _artikelPilihan(),
         ],
       ),
-      bottomNavigationBar: _bottomNavigationBar(),
-    );
-  }
-
-  BottomNavigationBar _bottomNavigationBar() {
-    return BottomNavigationBar(
-      items: const <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
-          icon: Icon(
-            Icons.home,
-            size: 25,
-          ),
-          label: 'Beranda',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(
-            Icons.reorder,
-            size: 25,
-          ),
-          label: 'Pesanan',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(
-            Icons.add_circle,
-            size: 25,
-          ),
-          label: 'Tambah',
-        ),
-        // BottomNavigationBarItem(
-        //   icon: Icon(
-        //     Icons.groups,
-        //     size: 25,
-        //   ),
-        //   label: 'Social',
-        // ),
-        // BottomNavigationBarItem(
-        //   icon: Icon(
-        //     Icons.person,
-        //     size: 25,
-        //   ),
-        //   label: 'Profil',
-        // ),
-      ],
-      currentIndex: _selectedIndex,
-      selectedItemColor: Colors.blue.shade900,
-      unselectedItemColor: Colors.black,
-      onTap: _onItemTapped,
     );
   }
 
   Padding _artikelPilihan() {
     return Padding(
-      padding: const EdgeInsets.all(15.0),
+      padding: const EdgeInsets.all(20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
             child: Row(
               children: [
                 Text(
@@ -120,17 +60,14 @@ class _HomeState extends State<Home> {
           ),
           Container(
             height: 185,
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.red),
-            ),
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {
                 return Container(
                   width: 152,
                   decoration: BoxDecoration(
-                    color: Colors.grey,
-                    borderRadius: BorderRadius.only(
+                    color: Colors.grey.shade200,
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(15),
                       topRight: Radius.circular(15),
                     ),
@@ -138,7 +75,7 @@ class _HomeState extends State<Home> {
                   child: Column(
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.all(
+                        borderRadius: const BorderRadius.all(
                           Radius.circular(10),
                         ),
                         child: Image.asset(
@@ -152,7 +89,7 @@ class _HomeState extends State<Home> {
                           children: [
                             Text(
                               articles[index].title,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
                                 fontFamily: 'PTSans',
@@ -160,22 +97,22 @@ class _HomeState extends State<Home> {
                             ),
                             Row(
                               children: [
-                                Icon(
+                                const Icon(
                                   Icons.calendar_month,
                                   size: 12,
                                 ),
                                 Text(
                                   articles[index].date,
-                                  style: TextStyle(fontSize: 8),
+                                  style: const TextStyle(fontSize: 8),
                                 ),
                               ],
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 15,
                             ),
                             Text(
                               articles[index].description,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 10,
                               ),
                             ),
@@ -197,15 +134,20 @@ class _HomeState extends State<Home> {
 
   Padding _voucherSection() {
     return Padding(
-      padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         width: 320,
-        height: 149,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade200,
+          borderRadius: const BorderRadius.all(
+            Radius.circular(10),
+          ),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+            const Padding(
+              padding: EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -237,25 +179,12 @@ class _HomeState extends State<Home> {
                     children: [
                       IconButton(
                         onPressed: () {},
-                        icon: Icon(Icons.smartphone),
+                        icon: const Icon(Icons.smartphone),
                       ),
-                      RichText(
+                      const Text(
+                        "Pulsa\nPrabayar",
                         textAlign: TextAlign.center,
-                        text: TextSpan(
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 10.0,
-                            fontFamily: 'PTSans',
-                          ),
-                          children: <TextSpan>[
-                            TextSpan(
-                              text: 'Pulsa \n',
-                            ),
-                            TextSpan(
-                              text: 'Prabayar',
-                            ),
-                          ],
-                        ),
+                        style: TextStyle(fontSize: 10, fontFamily: 'PTSans'),
                       ),
                     ],
                   ),
@@ -265,23 +194,10 @@ class _HomeState extends State<Home> {
                         onPressed: () {},
                         icon: Icon(Icons.wifi),
                       ),
-                      RichText(
+                      const Text(
+                        "Paket\nData",
                         textAlign: TextAlign.center,
-                        text: TextSpan(
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 10.0,
-                            fontFamily: 'PTSans',
-                          ),
-                          children: <TextSpan>[
-                            TextSpan(
-                              text: 'Paket\n',
-                            ),
-                            TextSpan(
-                              text: 'Data',
-                            ),
-                          ],
-                        ),
+                        style: TextStyle(fontSize: 10, fontFamily: 'PTSans'),
                       ),
                     ],
                   ),
@@ -291,23 +207,10 @@ class _HomeState extends State<Home> {
                         onPressed: () {},
                         icon: Icon(Icons.bolt),
                       ),
-                      RichText(
+                      const Text(
+                        "Voucher\nListrik",
                         textAlign: TextAlign.center,
-                        text: TextSpan(
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 10.0,
-                            fontFamily: 'PTSans',
-                          ),
-                          children: <TextSpan>[
-                            TextSpan(
-                              text: 'Voucher \n',
-                            ),
-                            TextSpan(
-                              text: 'Listrik',
-                            ),
-                          ],
-                        ),
+                        style: TextStyle(fontSize: 10, fontFamily: 'PTSans'),
                       ),
                     ],
                   ),
@@ -315,25 +218,12 @@ class _HomeState extends State<Home> {
                     children: [
                       IconButton(
                         onPressed: () {},
-                        icon: Icon(Icons.arrow_right_alt),
+                        icon: const Icon(Icons.arrow_right_alt),
                       ),
-                      RichText(
+                      const Text(
+                        "Voucher\nLainnya",
                         textAlign: TextAlign.center,
-                        text: TextSpan(
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 10.0,
-                            fontFamily: 'PTSans',
-                          ),
-                          children: <TextSpan>[
-                            TextSpan(
-                              text: 'Voucher \n',
-                            ),
-                            TextSpan(
-                              text: 'Lainnya',
-                            ),
-                          ],
-                        ),
+                        style: TextStyle(fontSize: 10, fontFamily: 'PTSans'),
                       ),
                     ],
                   ),
@@ -342,26 +232,23 @@ class _HomeState extends State<Home> {
             ),
           ],
         ),
-        decoration: BoxDecoration(
-            color: Colors.amber,
-            borderRadius: BorderRadius.all(Radius.circular(4))),
       ),
     );
   }
 
   Padding _poinSection() {
     return Padding(
-      padding: const EdgeInsets.all(15.0),
+      padding: const EdgeInsets.all(20),
       child: Container(
         width: 320,
         height: 70,
-        decoration: const BoxDecoration(
-            color: Colors.amber,
-            borderRadius: BorderRadius.all(Radius.circular(4))),
+        decoration: BoxDecoration(
+            color: Colors.grey.shade200,
+            borderRadius: BorderRadius.all(Radius.circular(10))),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
+            const Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
                 'Poin Kamu',
@@ -374,7 +261,7 @@ class _HomeState extends State<Home> {
             ),
             Row(
               children: [
-                Padding(
+                const Padding(
                   padding: const EdgeInsets.only(left: 8.0),
                   child: Text(
                     'Total Poin Anda: ',
@@ -387,9 +274,9 @@ class _HomeState extends State<Home> {
                 Expanded(
                   child: Center(
                     child: RichText(
-                      text: TextSpan(
+                      text: const TextSpan(
                         style: TextStyle(color: Colors.black),
-                        children: const <TextSpan>[
+                        children: <TextSpan>[
                           TextSpan(
                             text: '10000',
                             style: TextStyle(
@@ -423,38 +310,35 @@ class _HomeState extends State<Home> {
 
   AppBar appBar() {
     return AppBar(
-      title: const Padding(
-        padding: EdgeInsets.only(top: 15, bottom: 15),
-        child: Row(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(right: 8.0),
-              child: CircleAvatar(
-                radius: 24,
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Hi, Rakesh Bramantyo',
-                    style:
-                        TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
-                Text('Newcomer',
-                    style: TextStyle(
-                        fontSize: 10.0, color: Color.fromRGBO(0, 0, 0, 0.6))),
-              ],
-            ),
-          ],
+      toolbarHeight: 80,
+      leadingWidth: 75,
+      leading: const Padding(
+        padding: EdgeInsets.only(left: 20),
+        child: CircleAvatar(
+          radius: 24, // Atur radius sesuai keinginan Anda
         ),
       ),
-      toolbarHeight: 80.2,
-      actions: <Widget>[
-        IconButton(
+      title: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Hi, Rakesh Bramantyo',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+          Text('Newcomer',
+              style:
+                  TextStyle(fontSize: 10, color: Color.fromRGBO(0, 0, 0, 0.6))),
+        ],
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 20),
+          child: IconButton(
             onPressed: () {},
             icon: const Icon(
               Icons.notifications,
               size: 24,
-            )),
+            ),
+          ),
+        ),
       ],
     );
   }
