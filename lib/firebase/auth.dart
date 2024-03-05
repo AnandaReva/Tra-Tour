@@ -52,6 +52,7 @@ class Auth {
 
       globalVar.isLogin = true;
     } catch (e) {
+      globalVar.isLoading = false; 
       print('Error creating user: $e');
       throw e;
     }

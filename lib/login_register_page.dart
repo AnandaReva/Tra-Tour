@@ -75,6 +75,7 @@ class LoginPageState extends State<LoginPage> {
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
+        globalVar.isLoading = false; 
       });
     } finally {
       setState(() {
@@ -194,6 +195,7 @@ class LoginPageState extends State<LoginPage> {
           );
         } on FirebaseAuthException catch (e) {
           setState(() {
+            globalVar.isLoading = false; 
             errorMessage = e.message;
             print('error sql:  $errorMessage');
           });
@@ -222,9 +224,9 @@ class LoginPageState extends State<LoginPage> {
 
               // Mendaftarkan user menggunakan Firebase Authentication
 
-              setState(() {
+             /*  setState(() {
                 globalVar.isLoading = true; // Menampilkan animasi loading
-              });
+              }); */
 
               await Auth().createUserWithEmailAndPassword(
                 _controllerEmail.text,
