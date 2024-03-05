@@ -1,4 +1,3 @@
-import 'package:aplikasi_sampah/components/footer.dart';
 import 'package:aplikasi_sampah/dbHelper/mysql.dart';
 import 'package:aplikasi_sampah/firebase/auth.dart';
 import 'package:aplikasi_sampah/globalVar.dart';
@@ -10,12 +9,15 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mysql1/mysql1.dart';
 import 'dart:math';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+
+bool loginForm = false; // Defaultnya dalam mode login
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key, required GlobalVar globalVar}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<LoginPage> createState() => LoginPageState();
 }
 
 String generateRandomString(int length) {
@@ -25,7 +27,7 @@ String generateRandomString(int length) {
       .join();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage> {
   GlobalVar globalVar = GlobalVar.instance;
 
   String? errorMessage = '';
@@ -39,16 +41,20 @@ class _LoginPageState extends State<LoginPage> {
   final initial_profile_image = null;
   String createAndUpdateAt = '';
   String referral_code = '';
-
+ // bool globalVar.isLoading = false;
 
   final Auth _auth = Auth(); // Inisialisasi instance Auth
 
   Future<void> signInWithEmailAndPassword() async {
     try {
+      setState(() {
+        globalVar.isLoading = true; // Menampilkan animasi loading
+      });
+
       Auth auth = Auth(); // Buat objek dari kelas Auth
 
       // Panggil metode findUserDataFromDB dari objek auth yang sama
-      await findUserDataFromDB(_controllerEmail.text, _controllerPassword.text);
+      await findUserDataFromDB(_controllerEmail.text);
 
       await auth.signInWithEmailAndPassword(
         email: _controllerEmail.text,
@@ -70,20 +76,25 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         errorMessage = e.message;
       });
+    } finally {
+      setState(() {
+        globalVar.isLoading = false; // Menyembunyikan animasi loading setelah selesai
+      });
     }
   }
 
   Future<void> createUserWithEmailAndPassword() async {
-    /*  DateTime now = DateTime.now();
-    createAndUpdateAt = DateFormat('yyyy-MM-dd HH:mm:ss').format(now); */
-
     referral_code = generateRandomString(6); // abis didapat terus cek db
+    print('cek create Akun 1');
 
     await checkReferralCodeDB(referral_code);
 
+    /*   DateTime now = DateTime.now();
+    createAndUpdateAt = DateFormat('yyyy-MM-dd HH:mm:ss').format(now); 
+
     //pindah ke pegecekan referral
 
-    /*    try {
+      try {
       Auth auth = Auth(); // Buat objek dari kelas Auth
       // Menambahkan data user ke database MySQL
 
@@ -129,6 +140,8 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await Mysql.connect();
 
+      print('cek create akun 2');
+
       // Menggunakan kueri SQL untuk memeriksa keunikan referral code
       Results referralCodeResult = await Mysql.connection
           .query('SELECT * FROM user WHERE referral_code = ?', [referral_code]);
@@ -140,8 +153,19 @@ class _LoginPageState extends State<LoginPage> {
         // Lanjutkan proses menyimpan data user
 
         try {
-          Auth auth = Auth(); // Buat objek dari kelas Auth
+
+           setState(() {
+                globalVar.isLoading = true; // Menampilkan animasi loading
+              });
+
+
           // Menambahkan data user ke database MySQL
+
+          // Mendaftarkan user menggunakan Firebase Authentication
+          await Auth().createUserWithEmailAndPassword(
+            _controllerEmail.text,
+            _controllerPassword.text,
+          );  Auth auth = Auth(); // Buat objek dari kelas Auth
 
           await auth.addUserToDatabase(
             _controllerUsername.text,
@@ -150,17 +174,14 @@ class _LoginPageState extends State<LoginPage> {
             _controllerPhone.text,
             initial_user_point,
             initial_user_type,
-            initial_profile_image,  
+            initial_profile_image,
             referral_code,
             createAndUpdateAt,
-          
           );
 
-          // Mendaftarkan user menggunakan Firebase Authentication
-          await Auth().createUserWithEmailAndPassword(
-            _controllerEmail.text,
-            _controllerPassword.text,
-          );
+            setState(() {
+                globalVar.isLoading = false; // Menampilkan animasi loading
+              });
 
           globalVar.isLogin = true;
           Navigator.push(
@@ -176,7 +197,7 @@ class _LoginPageState extends State<LoginPage> {
             errorMessage = e.message;
             print('error sql:  $errorMessage');
           });
-        }
+        } 
       } else {
         print('Referal code telah digunakan: $referral_code');
 
@@ -199,6 +220,16 @@ class _LoginPageState extends State<LoginPage> {
               Auth auth = Auth(); // Buat objek dari kelas Auth
               // Menambahkan data user ke database MySQL
 
+              // Mendaftarkan user menggunakan Firebase Authentication
+
+              setState(() {
+                globalVar.isLoading = true; // Menampilkan animasi loading
+              });
+
+              await Auth().createUserWithEmailAndPassword(
+                _controllerEmail.text,
+                _controllerPassword.text,
+              );
               await auth.addUserToDatabase(
                 _controllerUsername.text,
                 _controllerPassword.text,
@@ -209,13 +240,6 @@ class _LoginPageState extends State<LoginPage> {
                 initial_profile_image,
                 referral_code,
                 createAndUpdateAt,
-                
-              );
-
-              // Mendaftarkan user menggunakan Firebase Authentication
-              await Auth().createUserWithEmailAndPassword(
-                _controllerEmail.text,
-                _controllerPassword.text,
               );
 
               globalVar.isLogin = true;
@@ -232,7 +256,7 @@ class _LoginPageState extends State<LoginPage> {
                 errorMessage = e.message;
                 print('error sql:  $errorMessage');
               });
-            }
+            } finally {}
           }
         }
       }
@@ -303,12 +327,12 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _submitButton() {
-    print('isLogin:  $globalVar.isLogin');
+    print('sub button: ${globalVar.isLogin}');
     return ElevatedButton(
-      onPressed: globalVar.isLogin
+      onPressed: loginForm
           ? signInWithEmailAndPassword
           : createUserWithEmailAndPassword,
-      child: Text(globalVar.isLogin ? 'Masuk' : 'Buat Akun'),
+      child: Text(loginForm ? 'Masuk' : 'Buat Akun'),
     );
   }
 
@@ -316,10 +340,10 @@ class _LoginPageState extends State<LoginPage> {
     return TextButton(
       onPressed: () {
         setState(() {
-          globalVar.isLogin = !globalVar.isLogin;
+          loginForm = !loginForm; // Toggle antara mode login dan registrasi
         });
       },
-      child: Text(globalVar.isLogin ? 'Buat Akun' : 'Sudah punya Akun? Masuk'),
+      child: Text(loginForm ? 'Buat Akun' : 'Sudah punya Akun? Masuk '),
     );
   }
 
@@ -342,56 +366,62 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(backgroundColor: GlobalVar.mainColor, title: _title()),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Center(
-                child: Text(
-                  !globalVar.isLogin ? 'Buat Akun' : 'Masuk',
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
+      body: globalVar.isLoading
+          ? Center(
+              child: Center(
+                  child: LoadingAnimationWidget.staggeredDotsWave(
+                      color: Colors.orange, size: 75)))
+          : SingleChildScrollView(
+              child: Container(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Center(
+                      child: Text(
+                        !loginForm ? 'Buat Akun' : 'Masuk',
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    _entryField('email', _controllerEmail),
+                    const SizedBox(height: 20),
+                    _entryField('password', _controllerPassword),
+                    const SizedBox(height: 20),
+                    // Tampilkan input username dan nomor telepon hanya ketika tidak dalam mode login
+                    if (!loginForm) ...[
+                      _entryField('username', _controllerUsername),
+                      const SizedBox(height: 20),
+                      _entryFieldPhone('Nomor telepon', _controllerPhone),
+                      const SizedBox(height: 20),
+                    ],
+                    _errorMessage(), // Tambahkan widget _errorMessage() di sini
+                    const SizedBox(height: 20),
+                    _submitButton(),
+                    const SizedBox(height: 20),
+                    _loginRegisterButton(),
+                    const SizedBox(height: 20),
+                    _googleAuth(),
+                  ],
                 ),
               ),
-              _entryField('email', _controllerEmail),
-              const SizedBox(height: 20),
-              _entryField('password', _controllerPassword),
-              const SizedBox(height: 20),
-              // Tampilkan input username dan nomor telepon hanya ketika tidak dalam mode login
-              if (!globalVar.isLogin) ...[
-                _entryField('username', _controllerUsername),
-                const SizedBox(height: 20),
-                _entryFieldPhone('Nomor telepon', _controllerPhone),
-                const SizedBox(height: 20),
-              ],
-              _errorMessage(),
-              const SizedBox(height: 20),
-              _submitButton(),
-              const SizedBox(height: 20),
-              _loginRegisterButton(),
-              const SizedBox(height: 20),
-              _googleAuth(),
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: const MyBottomNavigationBar(),
+            ),
     );
   }
 
-  Future<void> findUserDataFromDB(String email, String password) async {
+  Future<void> findUserDataFromDB(
+    String email,
+  ) async {
     try {
       await Mysql.connect();
-      Results results = await Mysql.connection.query(
-          'SELECT * FROM user WHERE email = ? AND password = ?',
-          [email, password]);
+      Results results = await Mysql.connection
+          .query('SELECT * FROM user WHERE email = ? ', [email]);
       globalVar.userLoginData = results.toList();
 
       if (globalVar.userLoginData.isNotEmpty) {

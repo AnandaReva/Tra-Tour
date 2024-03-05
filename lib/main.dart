@@ -4,6 +4,7 @@ import 'dart:io';
 //import 'package:aplikasi_sampah/components/drawer.dart';
 import 'package:aplikasi_sampah/firebase/auth.dart';
 import 'package:aplikasi_sampah/globalVar.dart';
+import 'package:aplikasi_sampah/login_register_page.dart';
 import 'package:aplikasi_sampah/model/articles_model.dart';
 
 import 'package:aplikasi_sampah/widget_tree.dart';
@@ -14,7 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:aplikasi_sampah/components/appBar.dart';
 import 'package:aplikasi_sampah/components/ProfilePage.dart';
 
-//import 'package:aplikasi_sampah/profile.dart';
+//import 'package:aplikasi_sampah/profile.dart';6
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   GlobalVar globalVar = GlobalVar.instance;
@@ -27,6 +28,10 @@ Future<void> main() async {
               messagingSenderId: '525346093175',
               projectId: 'tra-tour'))
       : await Firebase.initializeApp();
+
+  print('isLoginkkk: ${globalVar.isLogin}');
+
+  
 
   runApp(MyApp(globalVar: globalVar));
 }
@@ -77,6 +82,21 @@ class _HomeState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        
+        String userEmail =
+            user.email ?? ""; // Mengambil email pengguna, jika ada
+        print("User email firebase: $userEmail");
+
+        LoginPageState loginPageState = LoginPageState();
+
+        // Panggil metode findUserDataFromDB dari objek LoginPageState
+        loginPageState.findUserDataFromDB(userEmail);
+      }
+    });
 
     navigatorKeys = List<GlobalKey<NavigatorState>>.generate(
       allDestinations.length,
@@ -212,7 +232,7 @@ class RootPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(),
+      appBar: destination.index != 4 ? MyAppBar() : null,
       backgroundColor: destination.color[50],
       body: _buildPage(context), // Build the appropriate page
     );
@@ -224,7 +244,6 @@ class BerandaPage extends StatelessWidget {
   Widget build(BuildContext context) {
     _getInfo();
     return Scaffold(
-     
       body: ListView(
         children: [
           // Poin kamu
@@ -458,7 +477,8 @@ Padding _voucherSection() {
         children: [
           const Padding(
             padding: EdgeInsets.all(8.0),
-            child: Column(
+            child: 
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -599,6 +619,16 @@ Padding _voucherSection() {
 }
 
 Padding _poinSection() {
+  GlobalVar globalVar = GlobalVar.instance;
+
+  List<dynamic> userDataList = globalVar.userLoginData;
+
+  // Get user data from the list
+
+  String user_pointLogin = userDataList.isNotEmpty
+      ? userDataList[0]['user_point'].toString() ?? 'ERROR CONNECTING TO DB'
+      : '';
+
   return Padding(
     padding: const EdgeInsets.all(15.0),
     child: Container(
@@ -637,11 +667,11 @@ Padding _poinSection() {
                 child: Center(
                   child: RichText(
                     text: TextSpan(
-                      style: TextStyle(color: Colors.black),
-                      children: const <TextSpan>[
+                      style: const TextStyle(color: Colors.black),
+                      children: <TextSpan>[
                         TextSpan(
-                          text: '10000',
-                          style: TextStyle(
+                          text: user_pointLogin,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontFamily: 'PTSans',
                           ),
@@ -696,8 +726,3 @@ class NavigationBar extends StatelessWidget {
     );
   }
 }
-
-
-
-
-

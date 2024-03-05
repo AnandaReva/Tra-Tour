@@ -1,10 +1,14 @@
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
+
 class GlobalVar {
   // Buat instance static dari GlobalVar
   static final GlobalVar _instance = GlobalVar._internal();
 
-  static const mainColor = Color.fromRGBO(64, 130, 109, 1.0);
+  static var mainColor = Colors.grey.shade300;
+
+
   static const baseColor = Color.fromRGBO(240, 240, 240, 1.0);
 
   
@@ -17,6 +21,8 @@ class GlobalVar {
   
   var _userLoginPostsData;
   bool _isLogin = false;
+
+  bool _isLoading = false;
 
 
   int _selectedIndex;
@@ -37,6 +43,7 @@ class GlobalVar {
 
   dynamic get userLoginPostsData => _userLoginPostsData;
   bool get isLogin => _isLogin;
+  bool get isLoading => _isLoading;
 
   set userLoginData(List value) {
     _userLoginData = value;
@@ -49,6 +56,11 @@ class GlobalVar {
   set isLogin(bool value) {
     _isLogin = value;
   }
+
+  set isLoading(bool value) {
+    _isLoading = value;
+  }
+
 
   // Private constructor untuk Singleton
   GlobalVar._internal() : _selectedIndex = 0;

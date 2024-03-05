@@ -1,9 +1,8 @@
 import 'package:aplikasi_sampah/components/imageViewer.dart';
 import 'package:aplikasi_sampah/firebase/auth.dart';
 import 'package:flutter/material.dart';
-import 'package:aplikasi_sampah/components/appBar.dart';
+
 import 'package:aplikasi_sampah/globalVar.dart';
-import 'package:aplikasi_sampah/main.dart';
 
 class ProfilePage extends StatelessWidget {
   ProfilePage({Key? key}) : super(key: key);
@@ -21,13 +20,15 @@ class ProfilePage extends StatelessWidget {
         userDataList.isNotEmpty ? userDataList[0]['email'] ?? '' : '';
     String profile_imageLogin =
         userDataList.isNotEmpty ? userDataList[0]['profile_image'] ?? '' : '';
-   String user_pointLogin =
-    userDataList.isNotEmpty ? userDataList[0]['user_point'].toString() ?? '' : '';
-     String referral_codeLogin =
+    String user_pointLogin =
+        userDataList.isNotEmpty ? userDataList[0]['user_point'].toString() : '';
+    String referral_codeLogin =
         userDataList.isNotEmpty ? userDataList[0]['referral_code'] ?? '' : '';
-    
+
+    print(' referral_codeLogin  $userDataList');
 
     final Auth _signOut = Auth();
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Center(
@@ -66,7 +67,10 @@ class ProfilePage extends StatelessWidget {
                           width: 20,
                         ),
                         // Name
-                        Column(
+
+                     
+
+                          Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -195,7 +199,7 @@ class ProfilePage extends StatelessWidget {
                                 ),
                                 Center(
                                   child: Text(
-                                  referral_codeLogin,
+                                    referral_codeLogin,
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -240,7 +244,7 @@ class ProfilePage extends StatelessWidget {
                       onTap: () {},
                       child: Container(
                         height: 45,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: Colors.grey,
                           borderRadius: BorderRadius.all(
                             Radius.circular(12),

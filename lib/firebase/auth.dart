@@ -42,9 +42,13 @@ class Auth {
         password: password,
       );
 
+      
+
       /*   // Panggil method untuk menyimpan data user ke MySQL
        // sudah dipanggil di login_register_page.dart
         await addUserToDatabase(username, email,password , no_hp, kecamatan, kelurahan, kota ); */
+
+
 
       globalVar.isLogin = true;
     } catch (e) {
@@ -53,13 +57,24 @@ class Auth {
     }
   }
 
-  Future<void> signOut(BuildContext context) async {
-    await _firebaseAuth.signOut();
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPage(globalVar: globalVar)),
-    );
-  }
+ Future<void> signOut(BuildContext context) async {
+  await _firebaseAuth.signOut();
+
+  
+  globalVar.userLoginData = [];
+  globalVar.isLogin = false;
+
+ 
+  List<dynamic> userDataList = globalVar.userLoginData;
+  print('SignoutData: $userDataList');
+
+  // Navigate to LoginPage
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => LoginPage(globalVar: globalVar)),
+  );
+}
+
 
   Future<void> signInWithGoogle(BuildContext context) async {
     try {
@@ -296,16 +311,13 @@ class Auth {
           referral_code,
           createAndUpdateAt,
           createAndUpdateAt // Menambahkan nilai createAndUpdateAt kedua
-
-
         ],
 
         // berhasil masukkan data user baru ke user Login
       );
 
-      for (var row in results) {
-        print('Akun Baru dimasukkan: $row');
-      }
+      globalVar.userLoginData = results.toList();
+      print('data login: $globalVar.userLoginData');
     } catch (e) {
       print('Error Insert Data MYSQL: $e');
     } finally {

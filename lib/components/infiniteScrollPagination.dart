@@ -88,7 +88,7 @@ class _PostListViewState extends State<PostListView> {
       _fetchPage(pageKey);
     });
     super.initState();
-    NewPostsMongoDatabase(globalVar: GlobalVar.instance).connect();
+   // NewPostsMongoDatabase(globalVar: GlobalVar.instance).connect();
   }
 
   Future<void> _fetchPage(int pageKey) async {
@@ -113,9 +113,11 @@ class _PostListViewState extends State<PostListView> {
     }
   }
 
-  Future<List<PostSummary>> getNewPosts(int pageKey, int pageSize) async {
-    final data = await NewPostsMongoDatabase(globalVar: GlobalVar.instance)
-        .getNewPosts(pageKey, pageSize);
+  Future<List<PostSummary>> getNewPosts(int pageKey, int pageSize) async {/*  */
+/*     final data = await NewPostsMongoDatabase(globalVar: GlobalVar.instance)
+        .getNewPosts(pageKey, pageSize); */
+
+        final data = await NewPostsMongoDatabase(globalVar: GlobalVar.instance);
     return data;
   }
 
