@@ -27,7 +27,6 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     return AppBar(
       backgroundColor: GlobalVar.mainColor,
-      title: const Padding(
       title: Padding(
         padding: EdgeInsets.only(top: 15, bottom: 15),
         child: Row(

@@ -1,8 +1,10 @@
+import 'package:aplikasi_sampah/components/editprofilepage.dart';
 import 'package:aplikasi_sampah/components/imageViewer.dart';
 import 'package:aplikasi_sampah/firebase/auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:aplikasi_sampah/globalVar.dart';
+import 'package:flutter/widgets.dart';
 
 class ProfilePage extends StatelessWidget {
   ProfilePage({Key? key}) : super(key: key);
@@ -30,6 +32,25 @@ class ProfilePage extends StatelessWidget {
     final Auth _signOut = Auth();
 
     return Scaffold(
+      appBar: AppBar(
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 20),
+          child: IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              size: 22,
+            ),
+          ),
+        ),
+        title: const Text(
+          "Profil",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -68,21 +89,23 @@ class ProfilePage extends StatelessWidget {
                         ),
                         // Name
 
-                     
-
-                          Column(
+                        Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              usernameLogin,
+                              "Jean Mardenbrough",
+                              // usernameLogin,
                               style: const TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold),
                             ),
-                            Text(
-                              emailLogin,
-                              style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w400),
+                            Expanded(
+                              child: Text(
+                                "imJean@gmail.com",
+                                // emailLogin,
+                                style: const TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.w400),
+                              ),
                             ),
                           ],
                         ),
@@ -96,11 +119,17 @@ class ProfilePage extends StatelessWidget {
                           color: Colors.grey.shade300),
                       child: IconButton(
                         padding: EdgeInsets.zero,
-                        constraints: BoxConstraints(),
-                        onPressed: () {},
-                        icon: Icon(
+                        constraints: const BoxConstraints(),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EditProfilePage(),
+                              ));
+                        },
+                        icon: const Icon(
                           Icons.edit,
-                          size: 14,
+                          size: 15,
                         ),
                       ),
                     ),
