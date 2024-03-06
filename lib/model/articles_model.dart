@@ -17,7 +17,7 @@ class ArticlesModel {
       ArticlesModel(
         title: "Judul1",
         date: "17 Agustus 1945",
-        description: "Rakesh anj",
+        description: "desc",
         articleImage: 'assets/images/kucingg.jpeg',
       ),
     );
@@ -25,7 +25,7 @@ class ArticlesModel {
       ArticlesModel(
         title: "Judul2",
         date: "17 Agustus 1945",
-        description: "Rakesh anj",
+        description: "desc",
         articleImage: 'assets/images/kucingg.jpeg',
       ),
     );
@@ -33,7 +33,7 @@ class ArticlesModel {
       ArticlesModel(
         title: "Judul3",
         date: "17 Agustus 1945",
-        description: "Rakesh anj",
+        description: "desc",
         articleImage: 'assets/images/kucingg.jpeg',
       ),
     );
@@ -41,7 +41,7 @@ class ArticlesModel {
       ArticlesModel(
         title: "Judul4",
         date: "17 Agustus 1945",
-        description: "Rakesh anj",
+        description: "desc",
         articleImage: 'assets/images/kucingg.jpeg',
       ),
     );
@@ -49,7 +49,7 @@ class ArticlesModel {
       ArticlesModel(
         title: "Judul5",
         date: "17 Agustus 1945",
-        description: "Rakesh anj",
+        description: "desc",
         articleImage: 'assets/images/kucingg.jpeg',
       ),
     );
