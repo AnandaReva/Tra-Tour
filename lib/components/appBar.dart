@@ -12,15 +12,9 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     GlobalVar globalVar =
         GlobalVar.instance; // Mendapatkan instance dari GlobalVar
-<<<<<<< HEAD
     var username = 'Rakesh Braman'; //globalVar.userLogindata?[0]['username'];
     var biography = globalVar.userLogindata?[0]['biography'];
     var profilePhotoUrl;
-=======
-    var username = 'Rakesh Braman';//globalVar.userLogindata?[0]['username'];
-    var biography = globalVar.userLogindata?[0]['biography'];
-    var profilePhotoUrl = 'cth';
->>>>>>> 2bb67d4f0c9f7250b5c17d73d1a8710e413026af
     // globalVar.userLogindata?[0]['profilePhoto'];
 
     print('status login2222: ${globalVar.isLogin}');
@@ -28,7 +22,6 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     return AppBar(
       backgroundColor: GlobalVar.mainColor,
-<<<<<<< HEAD
       title: const Padding(
         padding: EdgeInsets.only(top: 15, bottom: 15),
         child: Row(
@@ -84,8 +77,6 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
 
 AppBar(
       backgroundColor: GlobalVar.mainColor,
-=======
->>>>>>> 2bb67d4f0c9f7250b5c17d73d1a8710e413026af
       title:  Text(
        username,
         style: const TextStyle(
@@ -114,13 +105,4 @@ AppBar(
       
       ],
       iconTheme: const IconThemeData(color: Colors.white),
-<<<<<<< HEAD
     ); */
-=======
-    );
-  }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-}
->>>>>>> 2bb67d4f0c9f7250b5c17d73d1a8710e413026af
