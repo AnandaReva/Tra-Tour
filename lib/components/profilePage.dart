@@ -1,3 +1,4 @@
+import 'package:aplikasi_sampah/components/editprofilepage.dart';
 import 'package:aplikasi_sampah/components/imageViewer.dart';
 import 'package:aplikasi_sampah/firebase/auth.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,7 @@ class ProfilePage extends StatelessWidget {
     String _userPoint = userData['user_point']?.toString() ?? '';
     String _profileImage = userData['profile_image'] ?? '';
     String _referralCode = userData['referral_code'] ?? '';
-    String _joinSince = userData['created_at'] ?? '';
+   // String _joinSince = userData['created_at'] ?? '';
 
     final Auth _signOut = Auth();
 
@@ -88,7 +89,14 @@ class ProfilePage extends StatelessWidget {
                       child: IconButton(
                         padding: EdgeInsets.zero,
                         constraints: BoxConstraints(),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    EditProfilePage()), // Ganti EditPage() dengan nama halaman edit Anda
+                          );
+                        },
                         icon: Icon(
                           Icons.edit,
                           size: 14,

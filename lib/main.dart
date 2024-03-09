@@ -15,8 +15,9 @@ import 'package:flutter/material.dart';
 import 'package:aplikasi_sampah/components/appBar.dart';
 import 'package:aplikasi_sampah/components/ProfilePage.dart';
 
+
 //import 'package:aplikasi_sampah/profile.dart';6
-Future<void> main() async {
+/* Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   GlobalVar globalVar = GlobalVar.instance;
 
@@ -32,11 +33,43 @@ Future<void> main() async {
   print('isLoginkkk: ${globalVar.isLogin}');
 
   runApp(MyApp(globalVar: globalVar));
+} */
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  GlobalVar globalVar = GlobalVar.instance;
+
+  Platform.isAndroid
+      ? await Firebase.initializeApp(
+          options: const FirebaseOptions(
+              apiKey: 'AIzaSyBxDijkEkT9meAuvaAPUIcM9NLW0S46O7w',
+              appId: '1:525346093175:android:e0136e9c61854d9f0dee72',
+              messagingSenderId: '525346093175',
+              projectId: 'tra-tour'))
+      : await Firebase.initializeApp();
+
+  // Load user data before building the app
+  User? user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    String userEmail = user.email ?? "";
+    print("User email firebase: $userEmail");
+
+    // Load user data
+    await LoginPageState().findUserDataFromDB(userEmail);
+    print('debug m1: ${globalVar.userLoginData}');
+  }
+
+  // Build the app passing user data to RootPage
+  runApp(MyApp(globalVar: globalVar, userData: globalVar.userLoginData));
 }
+
+
 
 class MyApp extends StatelessWidget {
   final GlobalVar globalVar;
-  const MyApp({Key? key, required this.globalVar}) : super(key: key);
+  final Map<String, dynamic>? userData; // Define userData parameter
+
+  const MyApp({Key? key, required this.globalVar, required this.userData}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -74,26 +107,11 @@ class _HomeState extends State<HomePage> with TickerProviderStateMixin {
     Destination(4, 'Profile', Icons.person, Colors.grey),
     // Add more destinations as needed
   ];
-
   _HomeState({required this.globalVar});
 
   @override
   void initState() {
     super.initState();
-
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        String userEmail =
-            user.email ?? ""; // Mengambil email pengguna, jika ada
-        print("User email firebase: $userEmail");
-
-        LoginPageState loginPageState = LoginPageState();
-
-        // Panggil metode findUserDataFromDB dari objek LoginPageState
-        loginPageState.findUserDataFromDB(userEmail);
-      }
-    });
 
     navigatorKeys = List<GlobalKey<NavigatorState>>.generate(
       allDestinations.length,
@@ -203,16 +221,24 @@ class Destination {
   final MaterialColor color;
 }
 
-class RootPage extends StatelessWidget {
-  const RootPage({Key? key, required this.destination});
-
+class RootPage extends StatefulWidget {
   final Destination destination;
+  final Map<String, dynamic>? userData; // Define userData parameter
+
+  const RootPage({Key? key, required this.destination, required this.userData}) : super(key: key);
+
+  @override
+  _RootPageState createState() => _RootPageState();
+}
+
+class _RootPageState extends State<RootPage> {
+  DateTime? currentBackPressTime;
 
   Widget _buildPage(BuildContext context) {
     // Return the appropriate widget based on the destination
-    switch (destination.index) {
+    switch (widget.destination.index) {
       case 0:
-        return BerandaPage();
+        return BerandaPage(userData: widget.userData);
       case 1:
         return PesananPage();
       case 2:
@@ -222,21 +248,57 @@ class RootPage extends StatelessWidget {
       case 4:
         return ProfilePage();
       default:
-        return SizedBox(); // Return an empty widget for unknown destinations
+        return const SizedBox(); // Return an empty widget for unknown destinations
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: destination.index != 4 ? MyAppBar() : null,
-      backgroundColor: destination.color[50],
-      body: _buildPage(context), // Build the appropriate page
+    return WillPopScope(
+      onWillPop: () => _onWillPop(context),
+      child: Scaffold(
+        appBar: widget.destination.index != 4 ? MyAppBar() : null,
+        backgroundColor: widget.destination.color[50],
+        body: _buildPage(context), // Build the appropriate page
+      ),
     );
   }
-}
+
+  Future<bool> _onWillPop(BuildContext context) async {
+    DateTime now = DateTime.now();
+    if (currentBackPressTime == null ||
+        now.difference(currentBackPressTime!) > Duration(seconds: 2)) {
+      currentBackPressTime = now;
+      // Menampilkan dialog konfirmasi
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Konfirmasi'),
+            content: Text('Apakah Anda ingin keluar dari aplikasi?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text('Tidak'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text('Ya'),
+              ),
+            ],
+          );
+        },
+      );
+      return false;
+    }
+    return true;
+  }
+  }
 
 class BerandaPage extends StatelessWidget {
+  final Map<String, dynamic>? userData; // Define userData parameter
+  BerandaPage({Key? key, this.userData}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     _getInfo();
@@ -262,6 +324,10 @@ class BerandaPage extends StatelessWidget {
 }
 
 class PesananPage extends StatelessWidget {
+  final Map<String, dynamic>? userData; // Define userData parameter
+
+  PesananPage({Key? key, this.userData}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -271,6 +337,9 @@ class PesananPage extends StatelessWidget {
 }
 
 class SosialPage extends StatelessWidget {
+  final Map<String, dynamic>? userData; // Define userData parameter
+
+  SosialPage({Key? key, this.userData}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -280,6 +349,9 @@ class SosialPage extends StatelessWidget {
 }
 
 class TambahPage extends StatelessWidget {
+  final Map<String, dynamic>? userData; // Define userData parameter
+
+  TambahPage({Key? key, this.userData}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -313,7 +385,7 @@ class _DestinationViewState extends State<DestinationView> {
           builder: (BuildContext context) {
             switch (settings.name) {
               case '/':
-                return RootPage(destination: widget.destination);
+                return RootPage(destination: widget.destination, userData: {},);
               /* case '/list':
                 return ListPage(destination: widget.destination);
               case '/text':
@@ -466,7 +538,7 @@ Padding _voucherSection() {
     child: Container(
       width: 320,
       height: 149,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
           color: Colors.amber,
           borderRadius: BorderRadius.all(Radius.circular(4))),
       child: Column(
@@ -535,7 +607,7 @@ Padding _voucherSection() {
                     ),
                     RichText(
                       textAlign: TextAlign.center,
-                      text: TextSpan(
+                      text: const TextSpan(
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 10.0,
@@ -617,8 +689,7 @@ Padding _voucherSection() {
 Padding _poinSection() {
   GlobalVar globalVar = GlobalVar.instance;
 
-
-print('debug m: ${globalVar.userLoginData}');
+  print('debug m: ${globalVar.userLoginData}');
   Map<String, dynamic> userData = globalVar.userLoginData ?? {};
   print('debug m Tipe data userData: ${userData.runtimeType}');
 
