@@ -31,8 +31,6 @@ Future<void> main() async {
 
   print('isLoginkkk: ${globalVar.isLogin}');
 
-  
-
   runApp(MyApp(globalVar: globalVar));
 }
 
@@ -86,7 +84,6 @@ class _HomeState extends State<HomePage> with TickerProviderStateMixin {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        
         String userEmail =
             user.email ?? ""; // Mengambil email pengguna, jika ada
         print("User email firebase: $userEmail");
@@ -477,8 +474,7 @@ Padding _voucherSection() {
         children: [
           const Padding(
             padding: EdgeInsets.all(8.0),
-            child: 
-            Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -621,13 +617,14 @@ Padding _voucherSection() {
 Padding _poinSection() {
   GlobalVar globalVar = GlobalVar.instance;
 
-  List<dynamic> userDataList = globalVar.userLoginData;
 
-  // Get user data from the list
+print('debug m: ${globalVar.userLoginData}');
+  Map<String, dynamic> userData = globalVar.userLoginData ?? {};
+  print('debug m Tipe data userData: ${userData.runtimeType}');
 
-  String user_pointLogin = userDataList.isNotEmpty
-      ? userDataList[0]['user_point'].toString() ?? 'ERROR CONNECTING TO DB'
-      : '';
+//  print('userdata: $userData');
+
+  String _userPoint = userData['user_point']?.toString() ?? '';
 
   return Padding(
     padding: const EdgeInsets.all(15.0),
@@ -670,7 +667,7 @@ Padding _poinSection() {
                       style: const TextStyle(color: Colors.black),
                       children: <TextSpan>[
                         TextSpan(
-                          text: user_pointLogin,
+                          text: _userPoint,
                           style: const TextStyle(
                             fontSize: 14,
                             fontFamily: 'PTSans',

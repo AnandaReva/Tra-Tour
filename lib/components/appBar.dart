@@ -1,6 +1,3 @@
-import 'package:aplikasi_sampah/components/imageViewer.dart';
-import 'package:aplikasi_sampah/components/loginPage.dart';
-import 'package:aplikasi_sampah/components/profilePage.dart';
 import 'package:aplikasi_sampah/globalVar.dart';
 import 'package:flutter/material.dart';
 
@@ -12,18 +9,10 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
     GlobalVar globalVar =
         GlobalVar.instance; // Mendapatkan instance dari GlobalVar
 
-    // Mendapatkan data pengguna
-    List<dynamic> userDataList = globalVar.userLoginData;
+    Map<String, dynamic> userData = globalVar.userLoginData ?? {};
 
-    // Atur nilai default untuk username dan profile image
-    String username = '';
-    String profile_image = '';
-
-    // Periksa apakah userDataList tidak kosong sebelum mengakses indeksnya
-    if (userDataList.isNotEmpty) {
-      username = userDataList[0]['username'] ?? '';
-      profile_image = userDataList[0]['profile_image'] ?? '';
-    }
+    String username = userData['username'] ?? '';
+   String? profileImage = userData['profile_image'];
 
     return AppBar(
       backgroundColor: GlobalVar.mainColor,
@@ -36,7 +25,10 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
               child: CircleAvatar(
                 radius: 24,
                 // Gunakan profile_image
-                backgroundImage: NetworkImage(profile_image),
+                backgroundImage: profileImage != null
+                    ? NetworkImage(profileImage)
+                    : AssetImage('assets/default_profile_image.png')
+                        as ImageProvider,
               ),
             ),
             Column(
@@ -45,7 +37,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                 Text(
                   // Gunakan username
                   username,
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 14.0,
                       color: GlobalVar.baseColor,
                       fontWeight: FontWeight.bold),

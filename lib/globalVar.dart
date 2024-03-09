@@ -8,22 +8,15 @@ class GlobalVar {
 
   static var mainColor = Colors.grey.shade300;
 
-
   static const baseColor = Color.fromRGBO(240, 240, 240, 1.0);
 
-  
-
-
-
 // from login
- List _userLoginData = [];
+  dynamic _userLoginData;
 
-  
   var _userLoginPostsData;
   bool _isLogin = false;
 
   bool _isLoading = false;
-
 
   int _selectedIndex;
 
@@ -35,17 +28,14 @@ class GlobalVar {
     _selectedIndex = value;
   }
 
-
-
-
   ////////////////////
-  List get userLoginData => _userLoginData;
+  dynamic get userLoginData => _userLoginData;
 
   dynamic get userLoginPostsData => _userLoginPostsData;
   bool get isLogin => _isLogin;
   bool get isLoading => _isLoading;
 
-  set userLoginData(List value) {
+  set userLoginData(dynamic value) {
     _userLoginData = value;
   }
 
@@ -60,7 +50,6 @@ class GlobalVar {
   set isLoading(bool value) {
     _isLoading = value;
   }
-
 
   // Private constructor untuk Singleton
   GlobalVar._internal() : _selectedIndex = 0;

@@ -1,4 +1,4 @@
-//import 'package:aplikasi_sampah/dbHelper/mysql.dart';
+import 'package:aplikasi_sampah/dbHelper/mysql.dart';
 import 'package:aplikasi_sampah/firebase/auth.dart';
 import 'package:aplikasi_sampah/globalVar.dart';
 import 'package:aplikasi_sampah/main.dart';
@@ -6,8 +6,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-//import 'package:intl/intl.dart';
-//import 'package:mysql1/mysql1.dart';
+import 'package:intl/intl.dart';
+import 'package:mysql1/mysql1.dart';
 import 'dart:math';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:http/http.dart' as http;
@@ -40,101 +40,10 @@ class LoginPageState extends State<LoginPage> {
   final TextEditingController _controllerPhone = TextEditingController();
   final String initial_user_point = '0';
   final String initial_user_type = '1';
-  final String initial_profile_image = 'null';
+  final initial_profile_image = null;
+  String createAndUpdateAt = '';
   String referral_code = '';
   // bool globalVar.isLoading = false;
-  Future<void> createUserWithEmailAndPassword() async {
-    referral_code = generateRandomString(6); // abis didapat terus cek db
-    print('cek create Akun 1');
-
-    await checkReferralCode(referral_code);
-  }
-
-  Future<void> checkReferralCode(referral_code) async {
-    String url =
-        'https://tratour.000webhostapp.com/checkReferralCode.php?referral_code=$referral_code';
-
-    try {
-      setState(() {
-        globalVar.isLoading =
-            true; // Menyembunyikan animasi loading setelah selesai
-      });
-      final response = await http.get(Uri.parse(url));
-
-      if (response.statusCode == 200) {
-        // Berhasil mendapatkan respon dari server
-        Map<String, dynamic> data = json.decode(response.body);
-        print('Response Referral Code: $data');
-
-        // success false maka data tidak ada / uniqe
-        if (data['success'] == true) {
-          // Lakukan sesuatu dengan data yang diperoleh dari server
-          print('Referral code telah digunakan: $referral_code');
-
-          // Jika referral code telah digunakan, maka suruh registrasi ulang
-
-          setState(() {
-            globalVar.isLoading = false;
-          });
-        } else {
-          // Data null, berikan pesan atau lakukan tindakan lain
-          print('Referal code unik: $referral_code');
-          try {
-            setState(() {
-              globalVar.isLoading = true; // Menampilkan animasi loading
-            });
-
-            // Menambahkan data user ke database MySQL
-
-            // Mendaftarkan user menggunakan Firebase Authentication
-            await Auth().createUserWithEmailAndPassword(
-              _controllerEmail.text,
-              _controllerPassword.text,
-            );
-            Auth auth = Auth(); // Buat objek dari kelas Auth
-
-            await auth.addUserToDatabase(
-              _controllerUsername.text,
-              _controllerPassword.text,
-              _controllerEmail.text,
-              _controllerPhone.text, // Pass phone as string
-              initial_user_point,
-              initial_user_type,
-              initial_profile_image,
-              referral_code,
-            );
-
-            setState(() {
-              globalVar.isLoading = false; // Menampilkan animasi loading
-            });
-
-            globalVar.isLogin = true;
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HomePage(globalVar: globalVar),
-              ),
-              (route) => false,
-            );
-          } on FirebaseAuthException catch (e) {
-            setState(() {
-              globalVar.isLoading = false;
-              errorMessage = e.message;
-              print('Firebase:  $errorMessage');
-            });
-          }
-        }
-      } else {
-        // Gagal mendapatkan respon dari server
-        globalVar.isLoading = false;
-        print('Failed to load data: ${response.statusCode}');
-      }
-    } catch (e) {
-      // Terjadi kesalahan saat melakukan permintaan HTTP
-      globalVar.isLoading = false;
-      print('Error Find data: $e');
-    }
-  }
 
   final Auth _auth = Auth(); // Inisialisasi instance Auth
 
@@ -156,12 +65,13 @@ class LoginPageState extends State<LoginPage> {
 
       globalVar.isLogin = true;
       if (mounted) {
-        Navigator.pushAndRemoveUntil(
+        Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => HomePage(globalVar: globalVar),
+            builder: (context) => HomePage(
+              globalVar: globalVar,
+            ),
           ),
-          (route) => false,
         );
       }
     } on FirebaseAuthException catch (e) {
@@ -170,14 +80,66 @@ class LoginPageState extends State<LoginPage> {
         globalVar.isLoading = false;
       });
     } finally {
-      globalVar.isLoading =
-          false; // Menyembunyikan animasi loading setelah selesai
+      setState(() {
+        globalVar.isLoading =
+            false; // Menyembunyikan animasi loading setelah selesai
+      });
     }
   }
 
-  /*  Future<void> checkReferralCodeDB(referral_code) async {
-    //  DateTime now = DateTime.now();
-    // createAndUpdateAt = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+  Future<void> createUserWithEmailAndPassword() async {
+    referral_code = generateRandomString(6); // abis didapat terus cek db
+    print('cek create Akun 1');
+
+    await checkReferralCodeDB(referral_code);
+
+    /*   DateTime now = DateTime.now();
+    createAndUpdateAt = DateFormat('yyyy-MM-dd HH:mm:ss').format(now); 
+
+    //pindah ke pegecekan referral
+
+      try {
+      Auth auth = Auth(); // Buat objek dari kelas Auth
+      // Menambahkan data user ke database MySQL
+
+      await auth.addUserToDatabase(
+        _controllerUsername.text,
+        _controllerPassword.text,
+        _controllerEmail.text,
+        _controllerPhone.text,
+        initial_user_point,
+        initial_user_type,
+        initial_profile_image,
+        createAndUpdateAt,
+        randomString,
+      );
+
+      // Mendaftarkan user menggunakan Firebase Authentication
+      await Auth().createUserWithEmailAndPassword(
+        _controllerEmail.text,
+        _controllerPassword.text,
+      );
+
+      globalVar.isLogin = true;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomePage(
+            globalVar: globalVar,
+          ),
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        errorMessage = e.message;
+        print('error sql:  $errorMessage');
+      });
+    } */
+  }
+
+  Future<void> checkReferralCodeDB(referral_code) async {
+  //  DateTime now = DateTime.now();
+   // createAndUpdateAt = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
 
     try {
       await Mysql.connect();
@@ -305,7 +267,7 @@ class LoginPageState extends State<LoginPage> {
     } catch (e) {
       print('Error Get User Data: $e');
     }
-  } */
+  }
 
   Future<void> signInWithGoogle() async {
     try {
@@ -474,13 +436,9 @@ class LoginPageState extends State<LoginPage> {
     } catch (e) {
       print('Error Get User Data: $e');
     } */
-    String url = 'https://tratour.000webhostapp.com/findUser.php?email=$email';
+    String url = 'https://tratour.000webhostapp.com/cobaLogin.php?email=$email';
 
     try {
-      /*  setState(() {
-        globalVar.isLoading = true;
-      }); */
-
       // Melakukan HTTP GET request
       final response = await http.get(Uri.parse(url));
 
@@ -497,13 +455,13 @@ class LoginPageState extends State<LoginPage> {
       } else {
         // Gagal mendapatkan respon dari server
         print('Failed to load data: ${response.statusCode}');
-        /*  setState(() {
+        setState(() {
           globalVar.isLoading = false;
-        }); */
+        });
       }
     } catch (e) {
       // Terjadi kesalahan saat melakukan permintaan HTTP
-      print('Error Find: $e');
+      print('Error: $e');
     }
   }
 }

@@ -11,21 +11,14 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     GlobalVar globalVar = GlobalVar.instance;
 
-    List<dynamic> userDataList = globalVar.userLoginData;
+    Map<String, dynamic> userData = globalVar.userLoginData ?? {};
 
-    // Get user data from the list
-    String usernameLogin =
-        userDataList.isNotEmpty ? userDataList[0]['username'] ?? '' : '';
-    String emailLogin =
-        userDataList.isNotEmpty ? userDataList[0]['email'] ?? '' : '';
-    String profile_imageLogin =
-        userDataList.isNotEmpty ? userDataList[0]['profile_image'] ?? '' : '';
-    String user_pointLogin =
-        userDataList.isNotEmpty ? userDataList[0]['user_point'].toString() : '';
-    String referral_codeLogin =
-        userDataList.isNotEmpty ? userDataList[0]['referral_code'] ?? '' : '';
-
-    print(' referral_codeLogin  $userDataList');
+    String _username = userData['username'] ?? '';
+    String _email = userData['email'] ?? '';
+    String _userPoint = userData['user_point']?.toString() ?? '';
+    String _profileImage = userData['profile_image'] ?? '';
+    String _referralCode = userData['referral_code'] ?? '';
+    String _joinSince = userData['created_at'] ?? '';
 
     final Auth _signOut = Auth();
 
@@ -51,7 +44,7 @@ class ProfilePage extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => MyImageViewer(
-                                  profilePhoto: profile_imageLogin,
+                                  profilePhoto: _profileImage,
                                 ),
                               ),
                             );
@@ -59,7 +52,7 @@ class ProfilePage extends StatelessWidget {
                           child: CircleAvatar(
                             radius: 42,
                             backgroundImage: NetworkImage(
-                              profile_imageLogin,
+                              _profileImage,
                             ),
                           ),
                         ),
@@ -68,19 +61,17 @@ class ProfilePage extends StatelessWidget {
                         ),
                         // Name
 
-                     
-
-                          Column(
+                        Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              usernameLogin,
+                              _username,
                               style: const TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              emailLogin,
+                              _email,
                               style: const TextStyle(
                                   fontSize: 14, fontWeight: FontWeight.w400),
                             ),
@@ -155,7 +146,7 @@ class ProfilePage extends StatelessWidget {
                                 ),
                                 Center(
                                   child: Text(
-                                    user_pointLogin,
+                                    _userPoint,
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -199,7 +190,7 @@ class ProfilePage extends StatelessWidget {
                                 ),
                                 Center(
                                   child: Text(
-                                    referral_codeLogin,
+                                    _referralCode,
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,

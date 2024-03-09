@@ -1,4 +1,4 @@
-import 'package:aplikasi_sampah/dbHelper/mysql.dart';
+//import 'package:aplikasi_sampah/dbHelper/mysql.dart';
 import 'package:aplikasi_sampah/globalVar.dart';
 import 'package:aplikasi_sampah/login_register_page.dart';
 import 'package:aplikasi_sampah/main.dart';
@@ -6,11 +6,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import 'package:http/http.dart' as http;
+//import 'package:intl/intl.dart';
+import 'dart:convert';
 //import 'package:mysql1/mysql1.dart';
 
-import 'dart:math';
-
-import 'package:mysql1/mysql1.dart';
+//import 'package:mysql1/mysql1.dart';
 
 class Auth {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -42,40 +44,30 @@ class Auth {
         password: password,
       );
 
-      
-
-      /*   // Panggil method untuk menyimpan data user ke MySQL
-       // sudah dipanggil di login_register_page.dart
-        await addUserToDatabase(username, email,password , no_hp, kecamatan, kelurahan, kota ); */
-
-
-
       globalVar.isLogin = true;
     } catch (e) {
-      globalVar.isLoading = false; 
+      globalVar.isLoading = false;
       print('Error creating user: $e');
       throw e;
     }
   }
 
- Future<void> signOut(BuildContext context) async {
-  await _firebaseAuth.signOut();
+  Future<void> signOut(BuildContext context) async {
+    await _firebaseAuth.signOut();
 
-  
-  globalVar.userLoginData = [];
-  globalVar.isLogin = false;
+    globalVar.userLoginData = [];
+    globalVar.isLogin = false;
 
- 
-  List<dynamic> userDataList = globalVar.userLoginData;
-  print('SignoutData: $userDataList');
+    // List<dynamic> userDataList = globalVar.userLoginData;
+    //  print('SignoutData: $userDataList');
 
-  // Navigate to LoginPage
-  Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(builder: (context) => LoginPage(globalVar: globalVar)),
-  );
-}
-
+    // Navigate to LoginPage
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage(globalVar: globalVar)),
+      (route) => false, // Predicate: hapus semua halaman di atasnya
+    );
+  }
 
   Future<void> signInWithGoogle(BuildContext context) async {
     try {
@@ -275,61 +267,59 @@ class Auth {
     );
   }
 
-  // Metode untuk menambahkan data user ke database MySQL
-  Future<void> addUserToDatabase(
-      String username,
-      String password,
-      String email,
-      String phone,
-      String user_point,
-      String user_type,
-      profile_image,
-      referral_code,
-      createAndUpdateAt) async {
-    try {
-      await Mysql.connect();
-      var results = await Mysql.connection.query(
-        'INSERT INTO user (username, email, no_hp, password, user_point ,user_type, profile_image, referral_code, created_at, updated_at) '
-        'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) '
-        'ON DUPLICATE KEY UPDATE '
-        'username = VALUES(username), '
-        'no_hp = VALUES(no_hp), '
-        'password = VALUES(password), '
-        'user_point = VALUES(user_point), '
-        'user_type = VALUES(user_type), '
-        'profile_image = VALUES(profile_image), '
-        'referral_code = VALUES(referral_code), '
-        'created_at = VALUES(created_at), '
-        'updated_at = VALUES(updated_at);',
-        [
-          username,
-          email,
-          phone,
-          password,
-          user_point,
-          user_type,
-          profile_image,
-          referral_code,
-          createAndUpdateAt,
-          createAndUpdateAt // Menambahkan nilai createAndUpdateAt kedua
-        ],
+Future<void> addUserToDatabase(
+  String username,
+  String password,
+  String email,
+  String phone,
+  String initial_user_point,
+  String initial_user_type,
+  String initial_profile_image,
+  String referral_code,
+) async {
+  try {
+    String url = 'https://tratour.000webhostapp.com/createUser.php';
 
-        // berhasil masukkan data user baru ke user Login
-      );
+    Map<String, dynamic> newUserData = {
+      'username': username,
+      'email': email,
+      'phone': phone,
+      'password': password,
+      'user_point': initial_user_point,
+      'user_type': initial_user_type,
+      'profile_image': initial_profile_image,
+      'referral_code': referral_code,
+    };
 
-      globalVar.userLoginData = results.toList();
-      print('data login: $globalVar.userLoginData');
-    } catch (e) {
-      print('Error Insert Data MYSQL: $e');
-    } finally {
-      await Mysql.close();
+    String body = json.encode(newUserData);
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      print('New user added successfully.');
+
+      // Memperbarui userLoginData setelah menambahkan pengguna baru
+      GlobalVar globalVar = GlobalVar.instance;
+      Map<String, dynamic> data = json.decode(response.body);
+      globalVar.userLoginData = data['data'];
+
+      // Cetak tipe data respons
+      print('Response Type: ${response.body.runtimeType}');
+    } else {
+      print('Failed to create user: ${response.statusCode}');
+      // Lakukan sesuatu jika gagal menambahkan pengguna
     }
+  } catch (e) {
+    print('Error adding user: $e');
+    // Lakukan sesuatu jika terjadi kesalahan
   }
-}
-
-
-
-
+}}
 
 /*  Future<void> signInWithGoogle(BuildContext context) async {
     try {
