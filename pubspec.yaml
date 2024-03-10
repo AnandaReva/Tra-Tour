@@ -53,7 +53,7 @@ dependencies:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/kucingg.jpeg"
+  image_path: "assets/images/logo.png"
   min_sdk_android: 21 # android min sdk min:16, default 21
   web:
     generate: true
@@ -62,11 +62,11 @@ flutter_launcher_icons:
     theme_color: "#hexcode"
   windows:
     generate: true
-    image_path: "assets/images/kucingg.jpeg"
+    image_path: "assets/images/logo.png"
     icon_size: 48 # min:48, max:256, default: 48
   macos:
     generate: true
-    image_path: "assets/images/kucingg.jpeg"
+    image_path: "assets/images/logo.png"
 
 
 dev_dependencies:
@@ -95,6 +95,7 @@ flutter:
     - assets/images/kucingg.jpeg
     - assets/images/icon.png
     - assets/images/default_profile_image.png
+    - assets/images/logo.png
     
   
 

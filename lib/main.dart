@@ -431,6 +431,10 @@ Widget build(BuildContext context) {
 }
  */
 Padding _artikelPilihan() {
+
+ 
+
+
   return Padding(
     padding: const EdgeInsets.all(15.0),
     child: Column(
@@ -458,7 +462,7 @@ Padding _artikelPilihan() {
         Container(
           height: 185,
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.red),
+            border: Border.all(color: GlobalVar.mainColor,),
           ),
           child: ListView.separated(
             scrollDirection: Axis.horizontal,

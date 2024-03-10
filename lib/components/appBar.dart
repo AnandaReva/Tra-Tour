@@ -12,7 +12,23 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
     Map<String, dynamic> userData = globalVar.userLoginData ?? {};
 
     String username = userData['username'] ?? '';
-   String? profileImage = userData['profile_image'];
+    String user_type = userData['user_type'] ?? '';
+    String getUserRole(String user_type) {
+      switch (user_type) {
+        case "1":
+          return "Pengepul";
+        case "2":
+          return "Petugas pengangkut";
+        case "3":
+          return "Pemakai";
+        default:
+          return "Role tidak diketahui";
+      }
+    }
+    String role = getUserRole(user_type);
+    print("Role: $role");
+
+    String? profileImage = userData['profile_image'];
 
     return AppBar(
       backgroundColor: GlobalVar.mainColor,
@@ -43,7 +59,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                       fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  'Newcomer',
+                  role,
                   style: TextStyle(
                       fontSize: 10.0,
                       color: GlobalVar.baseColor,

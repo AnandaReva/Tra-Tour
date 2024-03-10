@@ -267,59 +267,64 @@ class Auth {
     );
   }
 
-Future<void> addUserToDatabase(
-  String username,
-  String password,
-  String email,
-  String phone,
-  String initial_user_point,
-  String initial_user_type,
-  String initial_profile_image,
-  String referral_code,
-) async {
-  try {
-    String url = 'https://tratour.000webhostapp.com/createUser.php';
+  Future<void> addUserToDatabase(
+    String username,
+    String password,
+    String email,
+    String phone,
+    String role,
+    String initial_user_point,
+    String initial_profile_image,
+    String referral_code,
+  ) async {
+    try {
+      String url = 'https://tratour.000webhostapp.com/createUser.php';
 
-    Map<String, dynamic> newUserData = {
-      'username': username,
-      'email': email,
-      'phone': phone,
-      'password': password,
-      'user_point': initial_user_point,
-      'user_type': initial_user_type,
-      'profile_image': initial_profile_image,
-      'referral_code': referral_code,
-    };
+      Map<String, dynamic> newUserData = {
+        'username': username,
+        'email': email,
+        'phone': phone,
+        'password': password,
+        'user_type': role,
+        'user_point': initial_user_point,
+        'profile_image': initial_profile_image,
+        'referral_code': referral_code,
+      };
 
-    String body = json.encode(newUserData);
+      String body = json.encode(newUserData);
 
-    final response = await http.post(
-      Uri.parse(url),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-      },
-      body: body,
-    );
+      print('debug 5: $newUserData ');
 
-    if (response.statusCode == 200) {
-      print('New user added successfully.');
+      final response = await http.post(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      );
 
-      // Memperbarui userLoginData setelah menambahkan pengguna baru
-      GlobalVar globalVar = GlobalVar.instance;
-      Map<String, dynamic> data = json.decode(response.body);
-      globalVar.userLoginData = data['data'];
+      if (response.statusCode == 200) {
+        print('New user added successfully.');
 
-      // Cetak tipe data respons
-      print('Response Type: ${response.body.runtimeType}');
-    } else {
-      print('Failed to create user: ${response.statusCode}');
-      // Lakukan sesuatu jika gagal menambahkan pengguna
+        // Memperbarui userLoginData setelah menambahkan pengguna baru
+        GlobalVar globalVar = GlobalVar.instance;
+
+        globalVar.userLoginData = newUserData;
+
+        print('debig m3: $globalVar.userLoginData');
+
+        // Cetak tipe data respons
+        print('Response Type: ${response.body.runtimeType}');
+      } else {
+        print('Failed to create user: ${response.statusCode}');
+        // Lakukan sesuatu jika gagal menambahkan pengguna
+      }
+    } catch (e) {
+      print('Error adding user: $e');
+      // Lakukan sesuatu jika terjadi kesalahan
     }
-  } catch (e) {
-    print('Error adding user: $e');
-    // Lakukan sesuatu jika terjadi kesalahan
   }
-}}
+}
 
 /*  Future<void> signInWithGoogle(BuildContext context) async {
     try {

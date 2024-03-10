@@ -1,4 +1,5 @@
 //import 'package:aplikasi_sampah/dbHelper/mysql.dart';
+import 'package:aplikasi_sampah/components/profilePage.dart';
 import 'package:aplikasi_sampah/firebase/auth.dart';
 import 'package:aplikasi_sampah/globalVar.dart';
 import 'package:aplikasi_sampah/main.dart';
@@ -38,8 +39,8 @@ class LoginPageState extends State<LoginPage> {
   final TextEditingController _controllerPassword = TextEditingController();
   final TextEditingController _controllerUsername = TextEditingController();
   final TextEditingController _controllerPhone = TextEditingController();
+  final TextEditingController _controllerRole = TextEditingController();
   final String initial_user_point = '0';
-  final String initial_user_type = '1';
   final String initial_profile_image = 'null';
   String referral_code = '';
   // bool globalVar.isLoading = false;
@@ -47,7 +48,43 @@ class LoginPageState extends State<LoginPage> {
     referral_code = generateRandomString(6); // abis didapat terus cek db
     print('cek create Akun 1');
 
-    await checkReferralCode(referral_code);
+    if (_controllerEmail.text.isEmpty ||
+        _controllerPassword.text.isEmpty ||
+        _controllerUsername.text.isEmpty ||
+        _controllerPhone.text.isEmpty ||
+        _controllerRole.text.isEmpty) {
+      setState(() {
+        errorMessage = 'Kolom data tidak boleh kosong';
+      });
+      return;
+    }
+
+    // Menampilkan dialog konfirmasi sebelum membuat akun
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Perhatian !!!"),
+          content: const Text("Anda Tidak dapat Mengganti peran setelah mendaftar "),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Batal"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                // Jika konfirmasi diterima, lanjutkan dengan membuat akun
+                checkReferralCode(referral_code);
+              },
+              child: const Text("Ya"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> checkReferralCode(referral_code) async {
@@ -98,8 +135,8 @@ class LoginPageState extends State<LoginPage> {
               _controllerPassword.text,
               _controllerEmail.text,
               _controllerPhone.text, // Pass phone as string
+              _controllerRole.text,
               initial_user_point,
-              initial_user_type,
               initial_profile_image,
               referral_code,
             );
@@ -108,19 +145,21 @@ class LoginPageState extends State<LoginPage> {
               globalVar.isLoading = false; // Menampilkan animasi loading
             });
 
-            globalVar.isLogin = true;
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HomePage(globalVar: globalVar),
-              ),
-              (route) => false,
-            );
+            if (mounted) {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomePage(globalVar: globalVar),
+                ),
+                (route) => false,
+              );
+            }
           } on FirebaseAuthException catch (e) {
             setState(() {
+              errorMessage =
+                  'Gagal mendaftarkan akun, mohon coba lagi \n $e.message ';
+              print('Firebase:  $e.message');
               globalVar.isLoading = false;
-              errorMessage = e.message;
-              print('Firebase:  $errorMessage');
             });
           }
         }
@@ -166,7 +205,13 @@ class LoginPageState extends State<LoginPage> {
       }
     } on FirebaseAuthException catch (e) {
       setState(() {
-        errorMessage = e.message;
+        // Periksa kode kesalahan FirebaseAuthException
+        if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+          errorMessage = 'Username atau password salah';
+        } else {
+          errorMessage = 'Terjadi kesalahan saat masuk: ${e.message}';
+        }
+        print('error sql: ${e.message}');
         globalVar.isLoading = false;
       });
     } finally {
@@ -174,138 +219,6 @@ class LoginPageState extends State<LoginPage> {
           false; // Menyembunyikan animasi loading setelah selesai
     }
   }
-
-  /*  Future<void> checkReferralCodeDB(referral_code) async {
-    //  DateTime now = DateTime.now();
-    // createAndUpdateAt = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
-
-    try {
-      await Mysql.connect();
-
-      print('cek create akun 2');
-
-      // Menggunakan kueri SQL untuk memeriksa keunikan referral code
-      Results referralCodeResult = await Mysql.connection
-          .query('SELECT * FROM user WHERE referral_code = ?', [referral_code]);
-
-      // Memeriksa apakah hasil kueri kosong untuk menentukan keunikan referral code
-      if (referralCodeResult.isEmpty) {
-        print('Referal code unik: $referral_code');
-
-        // Lanjutkan proses menyimpan data user
-
-        try {
-          setState(() {
-            globalVar.isLoading = true; // Menampilkan animasi loading
-          });
-
-          // Menambahkan data user ke database MySQL
-
-          // Mendaftarkan user menggunakan Firebase Authentication
-          await Auth().createUserWithEmailAndPassword(
-            _controllerEmail.text,
-            _controllerPassword.text,
-          );
-          Auth auth = Auth(); // Buat objek dari kelas Auth
-
-          await auth.addUserToDatabase(
-            _controllerUsername.text,
-            _controllerPassword.text,
-            _controllerEmail.text,
-            _controllerPhone.text,
-            initial_user_point,
-            initial_user_type,
-            initial_profile_image,
-            referral_code,
-            createAndUpdateAt,
-          );
-
-          setState(() {
-            globalVar.isLoading = false; // Menampilkan animasi loading
-          });
-
-          globalVar.isLogin = true;
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => HomePage(
-                globalVar: globalVar,
-              ),
-            ),
-          );
-        } on FirebaseAuthException catch (e) {
-          setState(() {
-            globalVar.isLoading = false;
-            errorMessage = e.message;
-            print('error sql:  $errorMessage');
-          });
-        }
-      } else {
-        print('Referal code telah digunakan: $referral_code');
-
-        // Jika referral code telah digunakan, maka generate kode acak baru
-        referral_code = generateRandomString(6);
-
-        // Selama referral code masih belum unik, teruskan untuk menghasilkan kode acak baru
-        while (referralCodeResult.isNotEmpty) {
-          referral_code = generateRandomString(6);
-
-          // Periksa kembali keunikan referral code yang baru
-          referralCodeResult = await Mysql.connection.query(
-              'SELECT * FROM user WHERE referral_code = ?', [referral_code]);
-
-          if (referralCodeResult.isEmpty) {
-            print('Referal code baru sudah unik: $referral_code');
-
-            // Lanjutkan proses menyimpan data user
-            try {
-              Auth auth = Auth(); // Buat objek dari kelas Auth
-              // Menambahkan data user ke database MySQL
-
-              // Mendaftarkan user menggunakan Firebase Authentication
-
-              /*  setState(() {
-                globalVar.isLoading = true; // Menampilkan animasi loading
-              }); */
-
-              await Auth().createUserWithEmailAndPassword(
-                _controllerEmail.text,
-                _controllerPassword.text,
-              );
-              await auth.addUserToDatabase(
-                _controllerUsername.text,
-                _controllerPassword.text,
-                _controllerEmail.text,
-                _controllerPhone.text,
-                initial_user_point,
-                initial_user_type,
-                initial_profile_image,
-                referral_code,
-                createAndUpdateAt,
-              );
-
-              globalVar.isLogin = true;
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => HomePage(
-                    globalVar: globalVar,
-                  ),
-                ),
-              );
-            } on FirebaseAuthException catch (e) {
-              setState(() {
-                errorMessage = e.message;
-                print('error sql:  $errorMessage');
-              });
-            } finally {}
-          }
-        }
-      }
-    } catch (e) {
-      print('Error Get User Data: $e');
-    }
-  } */
 
   Future<void> signInWithGoogle() async {
     try {
@@ -339,6 +252,8 @@ class LoginPageState extends State<LoginPage> {
     );
   }
 
+
+
   Widget _entryFieldPhone(
     String title,
     TextEditingController controller,
@@ -347,12 +262,46 @@ class LoginPageState extends State<LoginPage> {
       controller: controller,
       keyboardType: TextInputType.phone,
       inputFormatters: [
-        FilteringTextInputFormatter.digitsOnly,
-        LengthLimitingTextInputFormatter(12),
+        // Only allow digits and optional "+" symbol
+        FilteringTextInputFormatter.allow(RegExp(r'^[+\d]*$')),
+        // Limit to 13 characters (including optional "+")
+        LengthLimitingTextInputFormatter(13),
       ],
-      decoration: const InputDecoration(
-        labelText: 'Phone Number',
-        hintText: 'Enter your phone number',
+      decoration: InputDecoration(
+        labelText: title,
+        hintText: 'Masukkan nomor telepon',
+      ),
+    );
+  }
+
+  Widget _entryRole(
+    String title,
+    TextEditingController controller,
+  ) {
+    return DropdownButtonFormField<String>(
+      value: controller.text.isEmpty ? '1' : controller.text,
+      onChanged: (String? newValue) {
+        setState(() {
+          controller.text = newValue ?? '';
+        });
+      },
+      items: const [
+        DropdownMenuItem<String>(
+          value: '1',
+          child: Text('Pengepul'),
+        ),
+        DropdownMenuItem<String>(
+          value: '2',
+          child: Text('Petugas pengangkut'),
+        ),
+        DropdownMenuItem<String>(
+          value: '3',
+          child: Text('Pemakai'),
+        ),
+      ],
+      decoration: InputDecoration(
+        labelText: title,
+        hintText: 'Pilih peran',
       ),
     );
   }
@@ -442,6 +391,7 @@ class LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 20),
                       _entryFieldPhone('Nomor telepon', _controllerPhone),
                       const SizedBox(height: 20),
+                      _entryRole('Pilih Peran', _controllerRole),
                     ],
                     _errorMessage(), // Tambahkan widget _errorMessage() di sini
                     const SizedBox(height: 20),

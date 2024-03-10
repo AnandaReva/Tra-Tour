@@ -6,7 +6,7 @@ class GlobalVar {
   // Buat instance static dari GlobalVar
   static final GlobalVar _instance = GlobalVar._internal();
 
-  static var mainColor = Colors.grey.shade300;
+  static const mainColor = Color.fromRGBO(29, 121, 72, 1.0);
 
   static const baseColor = Color.fromRGBO(240, 240, 240, 1.0);
 
