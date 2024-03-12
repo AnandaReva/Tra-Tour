@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:tratour_application/model/articles_model.dart';
 
 class HomePage extends StatelessWidget {
@@ -46,25 +47,31 @@ class HomePage extends StatelessWidget {
                 Text(
                   "Artikel Pilihan",
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'PTSans',
                   ),
                 ),
                 Icon(
                   Icons.chevron_right,
-                  size: 16,
+                  size: 20,
                 ),
               ],
             ),
           ),
-          Container(
-            height: 185,
+          SizedBox(
+            height: 225,
             child: ListView.separated(
+              separatorBuilder: (context, index) => SizedBox(width: 25),
+              padding: const EdgeInsets.only(
+                left: 25,
+                right: 25,
+              ),
+              itemCount: articles.length,
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {
                 return Container(
-                  width: 152,
+                  width: 200,
                   decoration: BoxDecoration(
                     color: Colors.grey.shade200,
                     borderRadius: const BorderRadius.only(
@@ -91,7 +98,7 @@ class HomePage extends StatelessWidget {
                               articles[index].title,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 12,
+                                fontSize: 14,
                                 fontFamily: 'PTSans',
                               ),
                             ),
@@ -99,11 +106,11 @@ class HomePage extends StatelessWidget {
                               children: [
                                 const Icon(
                                   Icons.calendar_month,
-                                  size: 12,
+                                  size: 14,
                                 ),
                                 Text(
                                   articles[index].date,
-                                  style: const TextStyle(fontSize: 8),
+                                  style: const TextStyle(fontSize: 10),
                                 ),
                               ],
                             ),
@@ -123,8 +130,6 @@ class HomePage extends StatelessWidget {
                   ),
                 );
               },
-              separatorBuilder: (context, index) => SizedBox(width: 25),
-              itemCount: articles.length,
             ),
           ),
         ],
@@ -136,7 +141,6 @@ class HomePage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
-        width: 320,
         decoration: BoxDecoration(
           color: Colors.grey.shade200,
           borderRadius: const BorderRadius.all(
@@ -154,7 +158,7 @@ class HomePage extends StatelessWidget {
                   Text(
                     'Voucher',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'PTSans',
                     ),
@@ -162,7 +166,7 @@ class HomePage extends StatelessWidget {
                   Text(
                     'Total poin kamu dapat ditukarkan dengan voucher dibawah ini loh!',
                     style: TextStyle(
-                      fontSize: 10,
+                      fontSize: 14,
                       fontFamily: 'PTSans',
                     ),
                   ),
@@ -184,7 +188,7 @@ class HomePage extends StatelessWidget {
                       const Text(
                         "Pulsa\nPrabayar",
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 10, fontFamily: 'PTSans'),
+                        style: TextStyle(fontSize: 12, fontFamily: 'PTSans'),
                       ),
                     ],
                   ),
@@ -197,7 +201,7 @@ class HomePage extends StatelessWidget {
                       const Text(
                         "Paket\nData",
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 10, fontFamily: 'PTSans'),
+                        style: TextStyle(fontSize: 12, fontFamily: 'PTSans'),
                       ),
                     ],
                   ),
@@ -210,7 +214,7 @@ class HomePage extends StatelessWidget {
                       const Text(
                         "Voucher\nListrik",
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 10, fontFamily: 'PTSans'),
+                        style: TextStyle(fontSize: 12, fontFamily: 'PTSans'),
                       ),
                     ],
                   ),
@@ -223,7 +227,7 @@ class HomePage extends StatelessWidget {
                       const Text(
                         "Voucher\nLainnya",
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 10, fontFamily: 'PTSans'),
+                        style: TextStyle(fontSize: 12, fontFamily: 'PTSans'),
                       ),
                     ],
                   ),
@@ -240,11 +244,12 @@ class HomePage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Container(
-        width: 320,
-        height: 70,
         decoration: BoxDecoration(
-            color: Colors.grey.shade200,
-            borderRadius: BorderRadius.all(Radius.circular(10))),
+          color: Colors.grey.shade200,
+          borderRadius: const BorderRadius.all(
+            Radius.circular(10),
+          ),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -254,7 +259,7 @@ class HomePage extends StatelessWidget {
                 'Poin Kamu',
                 style: TextStyle(
                   fontFamily: 'PTSans',
-                  fontSize: 16,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -262,7 +267,7 @@ class HomePage extends StatelessWidget {
             Row(
               children: [
                 const Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
+                  padding: EdgeInsets.all(8.0),
                   child: Text(
                     'Total Poin Anda: ',
                     style: TextStyle(
@@ -321,11 +326,11 @@ class HomePage extends StatelessWidget {
       title: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Hi, Rakesh Bramantyo',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+          Text('Hi, Krishnaa',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           Text('Newcomer',
               style:
-                  TextStyle(fontSize: 10, color: Color.fromRGBO(0, 0, 0, 0.6))),
+                  TextStyle(fontSize: 12, color: Color.fromRGBO(0, 0, 0, 0.6))),
         ],
       ),
       actions: [
@@ -335,7 +340,7 @@ class HomePage extends StatelessWidget {
             onPressed: () {},
             icon: const Icon(
               Icons.notifications,
-              size: 24,
+              size: 28,
             ),
           ),
         ),

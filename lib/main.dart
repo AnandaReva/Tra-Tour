@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tratour_application/pages/homepage.dart';
+import 'package:tratour_application/pages/pesananpage.dart';
+import 'package:tratour_application/pages/profilepage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,24 +34,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final screens = [
     HomePage(),
+    PesananPage(),
     const Center(
       child: Text(
-        'Pesanan',
+        'Tambah',
         style: TextStyle(fontSize: 72),
       ),
     ),
     const Center(
       child: Text(
-        'Sosial',
+        'Tambah',
         style: TextStyle(fontSize: 72),
       ),
     ),
-    const Center(
-      child: Text(
-        'Profil',
-        style: TextStyle(fontSize: 72),
-      ),
-    ),
+    ProfilePage(),
   ];
 
   @override
@@ -83,6 +81,11 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.article_outlined),
               selectedIcon: Icon(Icons.article),
               label: "Pesanan",
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.add_circle_outline),
+              selectedIcon: Icon(Icons.add_circle),
+              label: "Tambah",
             ),
             NavigationDestination(
               icon: Icon(Icons.group_outlined),
