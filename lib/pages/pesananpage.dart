@@ -1,4 +1,6 @@
+// ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
+import 'package:tratour_application/pages/detail_pesanan.dart';
 
 class PesananPage extends StatefulWidget {
   const PesananPage({Key? key}) : super(key: key);
@@ -70,7 +72,13 @@ class _PesananPage extends State<PesananPage> {
                       ],
                     ),
                     TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const DetailPesanan()),
+                          );
+                        },
                         child: Text(
                           'Rincian Pesanan >',
                           style: TextStyle(
