@@ -61,10 +61,18 @@ class ProfilePage extends StatelessWidget {
             child: Container(
               height: 50,
               decoration: BoxDecoration(
-                color: Colors.grey.shade200,
+                color: Colors.white,
                 borderRadius: const BorderRadius.all(
                   Radius.circular(12),
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.180),
+                    spreadRadius: 2,
+                    blurRadius: 1,
+                    offset: Offset(0, 0),
+                  ), //BoxShadow
+                ],
               ),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -97,10 +105,18 @@ class ProfilePage extends StatelessWidget {
             child: Container(
               height: 50,
               decoration: BoxDecoration(
-                color: Colors.grey.shade200,
+                color: Colors.white,
                 borderRadius: const BorderRadius.all(
                   Radius.circular(12),
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.180),
+                    spreadRadius: 2,
+                    blurRadius: 1,
+                    offset: Offset(0, 0),
+                  ), //BoxShadow
+                ],
               ),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -133,10 +149,18 @@ class ProfilePage extends StatelessWidget {
             child: Container(
               height: 50,
               decoration: BoxDecoration(
-                color: Colors.grey.shade200,
+                color: Colors.white,
                 borderRadius: const BorderRadius.all(
                   Radius.circular(12),
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.180),
+                    spreadRadius: 2,
+                    blurRadius: 1,
+                    offset: Offset(0, 0),
+                  ), //BoxShadow
+                ],
               ),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -169,10 +193,18 @@ class ProfilePage extends StatelessWidget {
             child: Container(
               height: 50,
               decoration: BoxDecoration(
-                color: Colors.grey.shade200,
+                color: Colors.white,
                 borderRadius: const BorderRadius.all(
                   Radius.circular(12),
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.180),
+                    spreadRadius: 2,
+                    blurRadius: 1,
+                    offset: Offset(0, 0),
+                  ), //BoxShadow
+                ],
               ),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -230,10 +262,18 @@ class ProfilePage extends StatelessWidget {
             child: Container(
               height: 50,
               decoration: BoxDecoration(
-                color: Colors.grey.shade200,
+                color: Colors.white,
                 borderRadius: const BorderRadius.all(
                   Radius.circular(12),
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.180),
+                    spreadRadius: 2,
+                    blurRadius: 1,
+                    offset: Offset(0, 0),
+                  ), //BoxShadow
+                ],
               ),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
