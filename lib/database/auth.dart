@@ -1,7 +1,6 @@
-//import 'package:aplikasi_sampah/dbHelper/mysql.dart';
-import 'package:aplikasi_sampah/globalVar.dart';
-import 'package:aplikasi_sampah/login_register_page.dart';
-import 'package:aplikasi_sampah/main.dart';
+//import 'package:tratour/dbHelper/mysql.dart';
+import 'package:tratour/globalVar.dart';
+import 'package:tratour/pages/login_register_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -103,12 +102,12 @@ class Auth {
 
         // Redirect to home page or perform any necessary actions after successful sign-in
         globalVar.isLogin = true;
-        Navigator.push(
+       /*  Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => HomePage(globalVar: globalVar),
           ),
-        );
+        ); */
       } else {
         // Handle case when user cancels the sign-in process
         print("Sign-in process cancelled");
@@ -275,6 +274,8 @@ class Auth {
     String role,
     String initial_user_point,
     String initial_profile_image,
+    String initial_address,
+    String initial_postal_code,
     String referral_code,
   ) async {
     try {
@@ -288,6 +289,8 @@ class Auth {
         'user_type': role,
         'user_point': initial_user_point,
         'profile_image': initial_profile_image,
+        'address': initial_address,
+        'postal_code': initial_postal_code,
         'referral_code': referral_code,
       };
 
@@ -311,7 +314,11 @@ class Auth {
 
         globalVar.userLoginData = newUserData;
 
+        print('debig m31: $newUserData');
+
         print('debig m3: $globalVar.userLoginData');
+
+        
 
         // Cetak tipe data respons
         print('Response Type: ${response.body.runtimeType}');
@@ -326,48 +333,3 @@ class Auth {
   }
 }
 
-/*  Future<void> signInWithGoogle(BuildContext context) async {
-    try {
-      final GoogleSignIn googleSignIn = GoogleSignIn();
-        print('cek auth 1');
-      final GoogleSignInAccount? googleSignInAccount =
-          await googleSignIn.signIn();
-
-            print('cek auth 2');
-
-      if (googleSignInAccount != null) {
-        final GoogleSignInAuthentication googleSignInAuthentication =
-            await googleSignInAccount.authentication;
-        final AuthCredential credential = GoogleAuthProvider.credential(
-          accessToken: googleSignInAuthentication.accessToken,
-          idToken: googleSignInAuthentication.idToken,
-        );
-
-        print('cek auth 4');
-        await _firebaseAuth.signInWithCredential(credential);
-
-
-        // Redirect to home page or perform any necessary actions after successful sign-in
-        globalVar.isLogin = true;
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => HomePage(
-                    globalVar: globalVar,
-                  )),
-        );
-      } else {
-        // Handle case when user cancels the sign-in process
-        print("Sign-in process cancelled");
-      }
-    } catch (e) {
-      // Handle any errors that occur during sign-in process
-      print("Error during sign-in with Google: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content:
-              Text('Failed to sign in with Google. Please try again later.'),
-        ),
-      );
-    }
-  } */

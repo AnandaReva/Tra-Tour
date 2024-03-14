@@ -1,0 +1,209 @@
+// ignore_for_file: prefer_const_constructors
+
+import 'package:flutter/material.dart';
+import 'package:tratour/globalVar.dart';
+import 'package:tratour/database/updateUser.dart';
+
+class EditProfilePage extends StatelessWidget {
+  EditProfilePage({Key? key}) : super(key: key);
+
+  final UpdateUser _updateUser = UpdateUser();
+  final TextEditingController _usernameUpdateController =
+      TextEditingController();
+  final TextEditingController _phoneUpdateController = TextEditingController();
+  final TextEditingController _addressUpdateController =
+      TextEditingController();
+  final TextEditingController _postalUpdateCodeController =
+      TextEditingController();
+  final TextEditingController _profileImageUpdateCodeController =
+      TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    GlobalVar globalVar = GlobalVar.instance;
+
+    Map<String, dynamic> userData = globalVar.userLoginData ?? {};
+    _usernameUpdateController.text = userData['username'] ?? '';
+    _phoneUpdateController.text = userData['phone'] ?? '';
+    _addressUpdateController.text = userData['address'] ?? '';
+    _postalUpdateCodeController.text = userData['postal_code'] ?? '';
+    _profileImageUpdateCodeController.text = userData['profile_image'] ?? '';
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: GlobalVar.mainColor,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 20),
+          child: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              size: 22,
+            ),
+          ),
+        ),
+        title: const Text(
+          "Edit Profil",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: GlobalVar.baseColor
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                padding: EdgeInsets.all(20),
+                child: Text(
+                  "Lengkapi data anda untuk \n melakukan pemesanan",
+                  textAlign:
+                      TextAlign.center, // Teks akan ditampilkan di tengah
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            Center(
+              child: Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 42,
+                    backgroundImage: NetworkImage(userData['profile_image'] ??
+                        'https://firebasestorage.googleapis.com/v0/b/tra-tour.appspot.com/o/default_profile_image.png?alt=media&token=83bb623d-473f-4c5e-93c3-ecc3fc5f915b'),
+                  ),
+                  Positioned(
+                    bottom: -5,
+                    right: -10,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Tambahkan aksi yang ingin dilakukan ketika tombol ditekan
+                        // Contoh: Membuka kamera
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        backgroundColor:
+                            Colors.transparent, // Hilangkan padding tombol
+                        shape:
+                            CircleBorder(), // Hilangkan warna latar belakang tombol
+                        shadowColor:
+                            Colors.transparent, // Hilangkan bayangan tombol
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Icon(
+                          Icons.camera_alt_rounded,
+                          color: Colors.white, // Warna ikon
+                          size: 24,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Form(
+              child: Padding(
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: _usernameUpdateController,
+                      // ignore: prefer_const_constructors
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(10),
+                        border: OutlineInputBorder(),
+                        labelText: 'Nama Pengguna',
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    TextFormField(
+                      controller: _phoneUpdateController,
+                      // ignore: prefer_const_constructors
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(10),
+                        border: OutlineInputBorder(),
+                        labelText: 'Nomor Telepon',
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    TextFormField(
+                      controller: _addressUpdateController,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(10),
+                        border: OutlineInputBorder(),
+                        labelText: 'Alamat',
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    TextFormField(
+                      controller: _postalUpdateCodeController,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(10),
+                        border: OutlineInputBorder(),
+                        labelText: 'Kode Pos',
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        _confirmEdit(context); // Panggil metode _confirmEdit
+                      },
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor:
+                            GlobalVar.mainColor, // Warna teks tombol
+                      ),
+                      child: Text('Simpan Perubahan'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _confirmEdit(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Konfirmasi Perubahan Profil'),
+          content: Text('Apakah Anda yakin ingin mengubah profil anda?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+              },
+              child: Text('Batal'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Panggil metode updateUserToDatabase dengan parameter yang diperlukan
+                _updateUser.updateUserToDatabase(
+                  _usernameUpdateController.text,
+                  _phoneUpdateController.text,
+                  _addressUpdateController.text,
+                  _postalUpdateCodeController.text,
+                  _profileImageUpdateCodeController.text,
+                );
+                Navigator.of(context).pop(); // Close dialog
+              },
+              child: Text('Ubah'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}

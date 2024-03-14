@@ -5,15 +5,13 @@ import 'package:flutter/material.dart';
 class GlobalVar {
   // Buat instance static dari GlobalVar
   static final GlobalVar _instance = GlobalVar._internal();
-
   static const mainColor = Color.fromRGBO(29, 121, 72, 1.0);
-
-  static const baseColor = Color.fromRGBO(240, 240, 240, 1.0);
+  static const secondaryColor = Color.fromRGBO(251, 188, 5, 1.0);
+  static const baseColor = Color.fromRGBO(217, 217, 217, 1.0);
 
 // from login
   dynamic _userLoginData;
 
-  var _userLoginPostsData;
   bool _isLogin = false;
 
   bool _isLoading = false;
@@ -31,16 +29,11 @@ class GlobalVar {
   ////////////////////
   dynamic get userLoginData => _userLoginData;
 
-  dynamic get userLoginPostsData => _userLoginPostsData;
   bool get isLogin => _isLogin;
   bool get isLoading => _isLoading;
 
   set userLoginData(dynamic value) {
     _userLoginData = value;
-  }
-
-  set userLoginPostsData(dynamic value) {
-    _userLoginPostsData = value;
   }
 
   set isLogin(bool value) {

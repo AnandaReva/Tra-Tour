@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import 'package:aplikasi_sampah/components/footer.dart';
-//import 'package:aplikasi_sampah/dbhelper/mongodb.dart';
 
-import 'package:aplikasi_sampah/globalVar.dart';
+//import 'package:tratour/dbhelper/mongodb.dart';
+
+import 'package:tratour/globalVar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -168,7 +168,6 @@ class _CreatePostPageState extends State<CreatePostPage> {
           ],
         ),
       ),
-      bottomNavigationBar: const MyBottomNavigationBar(),
     );
   }
 

@@ -46,6 +46,8 @@ if (
     $user_type = intval($input['user_type']); // Mengonversi ke integer
     $referral_code = $input['referral_code'];
     $profile_image = $input['profile_image']; // Anda dapat menyesuaikan ini jika perlu
+    $address = $input['address'];
+    $postal_code = $input['postal_code'];
     //
     $created_at = date("Y-m-d H:i:s");
     $updated_at = date("Y-m-d H:i:s");
@@ -53,8 +55,8 @@ if (
     // Query untuk melakukan insert data
     //$sql = "INSERT INTO user (username, email, phone, password, user_point, user_type, referral_code, profile_image)
    // VALUES ('$username', '$email', $phone, '$password', $user_point, $user_type, '$referral_code', '$profile_image';
-    $sql = "INSERT INTO user (username, email, phone, password, user_point, user_type, referral_code, profile_image, created_at, updated_at)
-    VALUES ('$username', '$email', $phone, '$password', $user_point, $user_type, '$referral_code', NULL , '$created_at', '$updated_at')";
+    $sql = "INSERT INTO user (username, email, phone, password, user_point, user_type, referral_code, profile_image, address, postal_code , created_at, updated_at)
+    VALUES ('$username', '$email', $phone, '$password', $user_point, $user_type, '$referral_code', NULL , NULL , NULL , '$created_at', '$updated_at')";
     if ($conn->query($sql) === TRUE) {
         echo "Data baru berhasil ditambahkan";
     } else {

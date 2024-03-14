@@ -1,9 +1,12 @@
-import 'package:aplikasi_sampah/components/editprofilepage.dart';
-import 'package:aplikasi_sampah/components/imageViewer.dart';
-import 'package:aplikasi_sampah/firebase/auth.dart';
-import 'package:flutter/material.dart';
+// ignore_for_file: prefer_const_constructors
 
-import 'package:aplikasi_sampah/globalVar.dart';
+import 'package:tratour/components/imageViewer.dart';
+import 'package:tratour/database/auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import 'package:tratour/globalVar.dart';
+import 'package:tratour/pages/editprofilepage.dart';
 
 class ProfilePage extends StatelessWidget {
   ProfilePage({Key? key}) : super(key: key);
@@ -13,13 +16,6 @@ class ProfilePage extends StatelessWidget {
     GlobalVar globalVar = GlobalVar.instance;
 
     Map<String, dynamic> userData = globalVar.userLoginData ?? {};
-
-    String _username = userData['username'] ?? '';
-    String _email = userData['email'] ?? '';
-    String _userPoint = userData['user_point']?.toString() ?? '';
-    String _profileImage = userData['profile_image'] ?? '';
-    String _referralCode = userData['referral_code'] ?? '';
-   // String _joinSince = userData['created_at'] ?? '';
 
     final Auth _signOut = Auth();
 
@@ -45,7 +41,8 @@ class ProfilePage extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => MyImageViewer(
-                                  profilePhoto: _profileImage,
+                                  profilePhoto: userData['profile_image'] ??
+                                      'https://firebasestorage.googleapis.com/v0/b/tra-tour.appspot.com/o/default_profile_image.png?alt=media&token=83bb623d-473f-4c5e-93c3-ecc3fc5f915b',
                                 ),
                               ),
                             );
@@ -53,7 +50,8 @@ class ProfilePage extends StatelessWidget {
                           child: CircleAvatar(
                             radius: 42,
                             backgroundImage: NetworkImage(
-                              _profileImage,
+                              userData['profile_image'] ??
+                                  'https://firebasestorage.googleapis.com/v0/b/tra-tour.appspot.com/o/default_profile_image.png?alt=media&token=83bb623d-473f-4c5e-93c3-ecc3fc5f915b',
                             ),
                           ),
                         ),
@@ -67,12 +65,14 @@ class ProfilePage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              _username,
+                              userData['username'] ?? '',
                               style: const TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              _email,
+                              
+
+                              userData['email'] ?? '',
                               style: const TextStyle(
                                   fontSize: 14, fontWeight: FontWeight.w400),
                             ),
@@ -85,7 +85,7 @@ class ProfilePage extends StatelessWidget {
                       width: 28,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(50),
-                          color: Colors.grey.shade300),
+                          color: GlobalVar.baseColor),
                       child: IconButton(
                         padding: EdgeInsets.zero,
                         constraints: BoxConstraints(),
@@ -93,8 +93,7 @@ class ProfilePage extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    EditProfilePage()), // Ganti EditPage() dengan nama halaman edit Anda
+                                builder: (context) => EditProfilePage()),
                           );
                         },
                         icon: Icon(
@@ -124,7 +123,7 @@ class ProfilePage extends StatelessWidget {
                           child: Container(
                             height: 155,
                             decoration: BoxDecoration(
-                              color: Colors.grey.shade400,
+                              color: GlobalVar.baseColor,
                               borderRadius: const BorderRadius.all(
                                 Radius.circular(15),
                               ),
@@ -139,7 +138,7 @@ class ProfilePage extends StatelessWidget {
                                     width: 25,
                                     height: 25,
                                     decoration: BoxDecoration(
-                                      color: Colors.amber,
+                                      color: GlobalVar.secondaryColor,
                                       shape: BoxShape.circle,
                                     ),
                                     child: Center(
@@ -154,7 +153,8 @@ class ProfilePage extends StatelessWidget {
                                 ),
                                 Center(
                                   child: Text(
-                                    _userPoint,
+                                    userData['user_point'] ??
+                                        'Terjadi kesalahan',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -181,7 +181,7 @@ class ProfilePage extends StatelessWidget {
                           child: Container(
                             height: 155,
                             decoration: BoxDecoration(
-                              color: Colors.grey.shade400,
+                              color: GlobalVar.baseColor,
                               borderRadius: BorderRadius.all(
                                 Radius.circular(15),
                               ),
@@ -196,12 +196,25 @@ class ProfilePage extends StatelessWidget {
                                     child: Icon(Icons.confirmation_number),
                                   ),
                                 ),
-                                Center(
-                                  child: Text(
-                                    _referralCode,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
+                                GestureDetector(
+                                  onTap: () async {
+                                    await Clipboard.setData(ClipboardData(
+                                        text: userData['referral_code'] ?? ''));
+                                    // copied successfully
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            'Referral code copied to clipboard'),
+                                      ),
+                                    );
+                                  },
+                                  child: Center(
+                                    child: Text(
+                                      userData['referral_code'] ?? '',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -244,14 +257,14 @@ class ProfilePage extends StatelessWidget {
                       child: Container(
                         height: 45,
                         decoration: const BoxDecoration(
-                          color: Colors.grey,
+                          color: GlobalVar.baseColor,
                           borderRadius: BorderRadius.all(
                             Radius.circular(12),
                           ),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
+                          children: const [
                             Row(
                               children: [
                                 Padding(
@@ -282,14 +295,14 @@ class ProfilePage extends StatelessWidget {
                       child: Container(
                         height: 45,
                         decoration: BoxDecoration(
-                          color: Colors.grey,
+                          color: GlobalVar.baseColor,
                           borderRadius: BorderRadius.all(
                             Radius.circular(12),
                           ),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
+                          children: const [
                             Row(
                               children: [
                                 Padding(
@@ -320,14 +333,14 @@ class ProfilePage extends StatelessWidget {
                       child: Container(
                         height: 45,
                         decoration: BoxDecoration(
-                          color: Colors.grey,
+                          color: GlobalVar.baseColor,
                           borderRadius: BorderRadius.all(
                             Radius.circular(12),
                           ),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
+                          children: const [
                             Row(
                               children: [
                                 Padding(
@@ -358,14 +371,14 @@ class ProfilePage extends StatelessWidget {
                       child: Container(
                         height: 45,
                         decoration: BoxDecoration(
-                          color: Colors.grey,
+                          color: GlobalVar.baseColor,
                           borderRadius: BorderRadius.all(
                             Radius.circular(12),
                           ),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
+                          children: const [
                             Row(
                               children: [
                                 Padding(
@@ -422,14 +435,14 @@ class ProfilePage extends StatelessWidget {
                       child: Container(
                         height: 45,
                         decoration: BoxDecoration(
-                          color: Colors.grey,
+                          color: GlobalVar.baseColor,
                           borderRadius: BorderRadius.all(
                             Radius.circular(12),
                           ),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
+                          children: const [
                             Row(
                               children: [
                                 Padding(
@@ -462,7 +475,7 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  final Auth _signOut = Auth(); // Create an instance of the Auth class
+  final Auth _signOut = Auth();
   Widget _signoutButton(BuildContext context) {
     return ElevatedButton(
       onPressed: () {

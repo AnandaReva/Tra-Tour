@@ -1,4 +1,4 @@
-import 'package:aplikasi_sampah/globalVar.dart';
+import 'package:tratour/globalVar.dart';
 import 'package:flutter/material.dart';
 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -11,25 +11,24 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     Map<String, dynamic> userData = globalVar.userLoginData ?? {};
 
-    String username = userData['username'] ?? '';
     String user_type = userData['user_type'] ?? '';
     String getUserRole(String user_type) {
       switch (user_type) {
         case "1":
-          return "Pengepul";
+          return "Pemakai";
         case "2":
           return "Petugas pengangkut";
         case "3":
-          return "Pemakai";
+          return "Pengepul";
         default:
           return "Role tidak diketahui";
       }
     }
+
     String role = getUserRole(user_type);
     print("Role: $role");
 
-    String? profileImage = userData['profile_image'];
-
+   
     return AppBar(
       backgroundColor: GlobalVar.mainColor,
       title: Padding(
@@ -41,10 +40,8 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
               child: CircleAvatar(
                 radius: 24,
                 // Gunakan profile_image
-                backgroundImage: profileImage != null
-                    ? NetworkImage(profileImage)
-                    : AssetImage('assets/default_profile_image.png')
-                        as ImageProvider,
+                backgroundImage: NetworkImage(userData['profile_image'] ??
+        'https://firebasestorage.googleapis.com/v0/b/tra-tour.appspot.com/o/default_profile_image.png?alt=media&token=83bb623d-473f-4c5e-93c3-ecc3fc5f915b'),
               ),
             ),
             Column(
@@ -52,7 +49,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
               children: [
                 Text(
                   // Gunakan username
-                  username,
+                  userData['username'] ?? '',
                   style: const TextStyle(
                       fontSize: 14.0,
                       color: GlobalVar.baseColor,

@@ -11,7 +11,7 @@ class MyImageViewer extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-            profilePhoto), // Jika profilePhoto adalah URL gambar, Anda mungkin ingin menampilkannya sebagai teks
+            'Foto profil anda'), 
       ),
       body: Center(
         child: PhotoView(

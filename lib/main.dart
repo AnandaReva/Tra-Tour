@@ -1,39 +1,24 @@
 //import 'dart:convert';
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:io';
 
-//import 'package:aplikasi_sampah/components/drawer.dart';
-import 'package:aplikasi_sampah/firebase/auth.dart';
-import 'package:aplikasi_sampah/globalVar.dart';
-import 'package:aplikasi_sampah/login_register_page.dart';
-import 'package:aplikasi_sampah/model/articles_model.dart';
+//import 'package:tratour/components/drawer.dart';
+import 'package:tratour/database/auth.dart';
+import 'package:tratour/globalVar.dart';
+import 'package:tratour/pages/login_register_page.dart';
+import 'package:tratour/model/articles_model.dart';
+import 'package:tratour/pages/orderPage.dart';
+import 'package:tratour/pages/socialPage.dart';
+import 'package:tratour/pages/sortTrash.dart';
 
-import 'package:aplikasi_sampah/widget_tree.dart';
+import 'package:tratour/widget_tree.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 //import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:aplikasi_sampah/components/appBar.dart';
-import 'package:aplikasi_sampah/components/ProfilePage.dart';
-
-
-//import 'package:aplikasi_sampah/profile.dart';6
-/* Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  GlobalVar globalVar = GlobalVar.instance;
-
-  Platform.isAndroid
-      ? await Firebase.initializeApp(
-          options: const FirebaseOptions(
-              apiKey: 'AIzaSyBxDijkEkT9meAuvaAPUIcM9NLW0S46O7w',
-              appId: '1:525346093175:android:e0136e9c61854d9f0dee72',
-              messagingSenderId: '525346093175',
-              projectId: 'tra-tour'))
-      : await Firebase.initializeApp();
-
-  print('isLoginkkk: ${globalVar.isLogin}');
-
-  runApp(MyApp(globalVar: globalVar));
-} */
+import 'package:tratour/components/appBar.dart';
+import 'package:tratour/Pages/ProfilePage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,7 +36,7 @@ Future<void> main() async {
   // Load user data before building the app
   User? user = FirebaseAuth.instance.currentUser;
   if (user != null) {
-    String userEmail = user.email ?? "";
+    String userEmail = user.email ?? "Terjadi Kesalahan saat mengambil data";
     print("User email firebase: $userEmail");
 
     // Load user data
@@ -63,13 +48,12 @@ Future<void> main() async {
   runApp(MyApp(globalVar: globalVar, userData: globalVar.userLoginData));
 }
 
-
-
 class MyApp extends StatelessWidget {
   final GlobalVar globalVar;
   final Map<String, dynamic>? userData; // Define userData parameter
 
-  const MyApp({Key? key, required this.globalVar, required this.userData}) : super(key: key);
+  const MyApp({Key? key, required this.globalVar, required this.userData})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -102,9 +86,9 @@ class _HomeState extends State<HomePage> with TickerProviderStateMixin {
   final List<Destination> allDestinations = [
     Destination(0, 'Beranda', Icons.home, Colors.blue),
     Destination(1, 'Pesanan', Icons.reorder, Colors.green),
-    Destination(2, 'Tambah', Icons.add_circle, Colors.red),
+    Destination(2, 'Pilah Sampah', Icons.add_circle, Colors.red),
     Destination(3, 'Sosial', Icons.groups, Colors.purple),
-    Destination(4, 'Profile', Icons.person, Colors.grey),
+    Destination(4, 'Profile', Icons.person, Colors.brown),
     // Add more destinations as needed
   ];
   _HomeState({required this.globalVar});
@@ -225,7 +209,8 @@ class RootPage extends StatefulWidget {
   final Destination destination;
   final Map<String, dynamic>? userData; // Define userData parameter
 
-  const RootPage({Key? key, required this.destination, required this.userData}) : super(key: key);
+  const RootPage({Key? key, required this.destination, required this.userData})
+      : super(key: key);
 
   @override
   _RootPageState createState() => _RootPageState();
@@ -240,11 +225,11 @@ class _RootPageState extends State<RootPage> {
       case 0:
         return BerandaPage(userData: widget.userData);
       case 1:
-        return PesananPage();
+        return OrderPage();
       case 2:
-        return TambahPage();
+        return SortTrash();
       case 3:
-        return SosialPage();
+        return SocialPage();
       case 4:
         return ProfilePage();
       default:
@@ -293,7 +278,7 @@ class _RootPageState extends State<RootPage> {
     }
     return true;
   }
-  }
+}
 
 class BerandaPage extends StatelessWidget {
   final Map<String, dynamic>? userData; // Define userData parameter
@@ -323,43 +308,6 @@ class BerandaPage extends StatelessWidget {
   }
 }
 
-class PesananPage extends StatelessWidget {
-  final Map<String, dynamic>? userData; // Define userData parameter
-
-  PesananPage({Key? key, this.userData}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Text('Ini adalah halaman Pesanan'),
-    );
-  }
-}
-
-class SosialPage extends StatelessWidget {
-  final Map<String, dynamic>? userData; // Define userData parameter
-
-  SosialPage({Key? key, this.userData}) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Text('Ini adalah halaman Siasal'),
-    );
-  }
-}
-
-class TambahPage extends StatelessWidget {
-  final Map<String, dynamic>? userData; // Define userData parameter
-
-  TambahPage({Key? key, this.userData}) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Text('Ini adalah halaman Tambah'),
-    );
-  }
-}
-
 class DestinationView extends StatefulWidget {
   const DestinationView({
     super.key,
@@ -385,7 +333,10 @@ class _DestinationViewState extends State<DestinationView> {
           builder: (BuildContext context) {
             switch (settings.name) {
               case '/':
-                return RootPage(destination: widget.destination, userData: {},);
+                return RootPage(
+                  destination: widget.destination,
+                  userData: {},
+                );
               /* case '/list':
                 return ListPage(destination: widget.destination);
               case '/text':
@@ -431,10 +382,6 @@ Widget build(BuildContext context) {
 }
  */
 Padding _artikelPilihan() {
-
- 
-
-
   return Padding(
     padding: const EdgeInsets.all(15.0),
     child: Column(
@@ -462,7 +409,9 @@ Padding _artikelPilihan() {
         Container(
           height: 185,
           decoration: BoxDecoration(
-            border: Border.all(color: GlobalVar.mainColor,),
+            border: Border.all(
+              color: GlobalVar.mainColor,
+            ),
           ),
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
@@ -543,7 +492,7 @@ Padding _voucherSection() {
       width: 320,
       height: 149,
       decoration: const BoxDecoration(
-          color: Colors.amber,
+          color: GlobalVar.baseColor,
           borderRadius: BorderRadius.all(Radius.circular(4))),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -697,17 +646,13 @@ Padding _poinSection() {
   Map<String, dynamic> userData = globalVar.userLoginData ?? {};
   print('debug m Tipe data userData: ${userData.runtimeType}');
 
-//  print('userdata: $userData');
-
-  String _userPoint = userData['user_point']?.toString() ?? '';
-
   return Padding(
     padding: const EdgeInsets.all(15.0),
     child: Container(
       width: 320,
       height: 70,
       decoration: const BoxDecoration(
-          color: Colors.amber,
+          color: GlobalVar.baseColor,
           borderRadius: BorderRadius.all(Radius.circular(4))),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -742,7 +687,7 @@ Padding _poinSection() {
                       style: const TextStyle(color: Colors.black),
                       children: <TextSpan>[
                         TextSpan(
-                          text: _userPoint,
+                          text: userData['user_point']?.toString() ?? '',
                           style: const TextStyle(
                             fontSize: 14,
                             fontFamily: 'PTSans',
