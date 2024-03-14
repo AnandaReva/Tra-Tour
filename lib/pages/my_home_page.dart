@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tratour_application/pages/homepage.dart';
 import 'package:tratour_application/pages/pesananpage.dart';
+import 'package:tratour_application/pages/pilah_sampah.dart';
 import 'package:tratour_application/pages/profilepage.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -16,12 +17,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final screens = [
     HomePage(),
     const PesananPage(),
-    const Center(
-      child: Text(
-        'Tambah',
-        style: TextStyle(fontSize: 72),
-      ),
-    ),
+    const PilahSampah(),
     const Center(
       child: Text(
         'Tambah',
