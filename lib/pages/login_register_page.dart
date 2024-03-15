@@ -24,12 +24,15 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => LoginPageState();
 }
 
+
+
 String generateRandomString(int length) {
-  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; // Huruf kapital ditambahkan di awal
   final random = Random();
   return List.generate(length, (index) => chars[random.nextInt(chars.length)])
       .join();
 }
+
 
 class LoginPageState extends State<LoginPage> {
   GlobalVar globalVar = GlobalVar.instance;
@@ -153,7 +156,7 @@ class LoginPageState extends State<LoginPage> {
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => HomePage(globalVar: globalVar),
+                  builder: (context) => MainPage(globalVar: globalVar),
                 ),
                 (route) => false,
               );
@@ -223,7 +226,7 @@ class LoginPageState extends State<LoginPage> {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-            builder: (context) => HomePage(globalVar: globalVar),
+            builder: (context) => MainPage(globalVar: globalVar),
           ),
           (route) => false,
         );
@@ -386,20 +389,7 @@ class LoginPageState extends State<LoginPage> {
           ),
         ),
       ),
-    ); /* TextField(
-      controller: controller,
-      keyboardType: TextInputType.phone,
-      inputFormatters: [
-        // Only allow digits and optional "+" symbol
-        FilteringTextInputFormatter.allow(RegExp(r'^[+\d]*$')),
-        // Limit to 13 characters (including optional "+")
-        LengthLimitingTextInputFormatter(13),
-      ],
-      decoration: InputDecoration(
-        labelText: title,
-        hintText: 'Masukkan nomor telepon',
-      ),
-    ); */
+    ); 
   }
 
   Widget _entryRole(
@@ -459,32 +449,7 @@ class LoginPageState extends State<LoginPage> {
       ),
     );
 
-    /* DropdownButtonFormField<String>(
-      value: controller.text.isEmpty ? '1' : controller.text,
-      onChanged: (String? newValue) {
-        setState(() {
-          controller.text = newValue ?? '';
-        });
-      },
-      items: const [
-        DropdownMenuItem<String>(
-          value: '1',
-          child: Text('Pemakai'),
-        ),
-        DropdownMenuItem<String>(
-          value: '2',
-          child: Text('Petugas pengangkut'),
-        ),
-        DropdownMenuItem<String>(
-          value: '3',
-          child: Text('Pengepul'),
-        ),
-      ],
-      decoration: InputDecoration(
-        labelText: title,
-        hintText: 'Pilih peran',
-      ),
-    ); */
+   
   }
 
   Widget _errorMessage() {

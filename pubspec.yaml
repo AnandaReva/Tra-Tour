@@ -33,7 +33,6 @@ dependencies:
   mysql1: ^0.20.0
   cupertino_icons: ^1.0.2
   font_awesome_flutter: ^9.1.0
-  infinite_scroll_pagination: ^4.0.0
   firebase_core: ^2.25.5
   firebase_auth: ^4.17.6
   google_sign_in: ^5.2.1
@@ -46,6 +45,7 @@ dependencies:
   flutter_launcher_icons: "^0.13.1"
   http: ^1.2.0
   another_stepper: ^1.2.2
+  gallery_picker: ^0.4.7
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -53,20 +53,20 @@ dependencies:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/logo.png"
+  image_path: "assets/images/appIcon.png"
   min_sdk_android: 21 # android min sdk min:16, default 21
   web:
     generate: true
-    image_path: "assets/images/logo.png"
+    image_path: "assets/images/appIcon.png"
     background_color: "#hexcode"
     theme_color: "#hexcode"
   windows:
     generate: true
-    image_path: "assets/images/logo.png"
+    image_path: "assets/images/appIcon.png"
     icon_size: 48 # min:48, max:256, default: 48
   macos:
     generate: true
-    image_path: "assets/images/logo.png"
+    image_path: "assets/images/appIcon.png"
 
 dev_dependencies:
   flutter_test:

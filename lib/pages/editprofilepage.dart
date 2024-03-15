@@ -1,13 +1,24 @@
-// ignore_for_file: prefer_const_constructors
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:gallery_picker/gallery_picker.dart';
 import 'package:tratour/globalVar.dart';
 import 'package:tratour/database/updateUser.dart';
+import 'package:tratour/main.dart';
+import 'package:tratour/pages/profilePage.dart';
 
-class EditProfilePage extends StatelessWidget {
-  EditProfilePage({Key? key}) : super(key: key);
+class EditProfilePage extends StatefulWidget {
+  const EditProfilePage({Key? key}) : super(key: key);
 
+  @override
+  _EditProfilePageState createState() => _EditProfilePageState();
+}
+
+class _EditProfilePageState extends State<EditProfilePage> {
   final UpdateUser _updateUser = UpdateUser();
+  GlobalVar globalVar = GlobalVar.instance;
+
   final TextEditingController _usernameUpdateController =
       TextEditingController();
   final TextEditingController _phoneUpdateController = TextEditingController();
@@ -15,8 +26,9 @@ class EditProfilePage extends StatelessWidget {
       TextEditingController();
   final TextEditingController _postalUpdateCodeController =
       TextEditingController();
-  final TextEditingController _profileImageUpdateCodeController =
-      TextEditingController();
+  final String profileImageUpdateUrl = '';
+
+  File? _selectedImage;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +39,6 @@ class EditProfilePage extends StatelessWidget {
     _phoneUpdateController.text = userData['phone'] ?? '';
     _addressUpdateController.text = userData['address'] ?? '';
     _postalUpdateCodeController.text = userData['postal_code'] ?? '';
-    _profileImageUpdateCodeController.text = userData['profile_image'] ?? '';
 
     return Scaffold(
       appBar: AppBar(
@@ -36,7 +47,14 @@ class EditProfilePage extends StatelessWidget {
           padding: const EdgeInsets.only(left: 20),
           child: IconButton(
             onPressed: () {
-              Navigator.pop(context);
+               if (mounted) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProfilePage(),
+                      ),
+                    );
+                  }
             },
             icon: const Icon(
               Icons.arrow_back_ios,
@@ -47,10 +65,9 @@ class EditProfilePage extends StatelessWidget {
         title: const Text(
           "Edit Profil",
           style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: GlobalVar.baseColor
-          ),
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: GlobalVar.baseColor),
         ),
       ),
       body: SingleChildScrollView(
@@ -62,8 +79,7 @@ class EditProfilePage extends StatelessWidget {
                 padding: EdgeInsets.all(20),
                 child: Text(
                   "Lengkapi data anda untuk \n melakukan pemesanan",
-                  textAlign:
-                      TextAlign.center, // Teks akan ditampilkan di tengah
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -76,31 +92,33 @@ class EditProfilePage extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 42,
-                    backgroundImage: NetworkImage(userData['profile_image'] ??
-                        'https://firebasestorage.googleapis.com/v0/b/tra-tour.appspot.com/o/default_profile_image.png?alt=media&token=83bb623d-473f-4c5e-93c3-ecc3fc5f915b'),
+                    backgroundImage: _selectedImage != null
+                        ? FileImage(_selectedImage!) as ImageProvider<
+                            Object> // Explicitly cast FileImage to ImageProvider<Object>
+                        : NetworkImage(userData['profile_image'] ??
+                            'https://firebasestorage.googleapis.com/v0/b/tra-tour.appspot.com/o/default_profile_image.png?alt=media&token=83bb623d-473f-4c5e-93c3-ecc3fc5f915b'),
                   ),
                   Positioned(
                     bottom: -5,
                     right: -10,
                     child: ElevatedButton(
-                      onPressed: () {
-                        // Tambahkan aksi yang ingin dilakukan ketika tombol ditekan
-                        // Contoh: Membuka kamera
+                      onPressed: () async {
+                        _selectedImage = await getImageFromGallery(context);
+                        print('selectedImage $_selectedImage');
+                        setState(
+                            () {}); // Menyegarkan tampilan untuk menampilkan gambar yang baru dipilih
                       },
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.zero,
-                        backgroundColor:
-                            Colors.transparent, // Hilangkan padding tombol
-                        shape:
-                            CircleBorder(), // Hilangkan warna latar belakang tombol
-                        shadowColor:
-                            Colors.transparent, // Hilangkan bayangan tombol
+                        backgroundColor: Colors.transparent,
+                        shape: CircleBorder(),
+                        shadowColor: Colors.transparent,
                       ),
-                      child: Padding(
+                      child: const Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Icon(
                           Icons.camera_alt_rounded,
-                          color: Colors.white, // Warna ikon
+                          color: Colors.white,
                           size: 24,
                         ),
                       ),
@@ -115,9 +133,15 @@ class EditProfilePage extends StatelessWidget {
                 child: Column(
                   children: [
                     TextFormField(
+                      keyboardType: TextInputType.name,
+                      inputFormatters: [
+                        // Corrected regex to allow only letters and spaces:
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'^[a-zA-Z\s]*$')),
+                        LengthLimitingTextInputFormatter(40),
+                      ],
                       controller: _usernameUpdateController,
-                      // ignore: prefer_const_constructors
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         contentPadding: EdgeInsets.all(10),
                         border: OutlineInputBorder(),
                         labelText: 'Nama Pengguna',
@@ -125,18 +149,24 @@ class EditProfilePage extends StatelessWidget {
                     ),
                     SizedBox(height: 20),
                     TextFormField(
+                      keyboardType:
+                          TextInputType.phone, // Set keyboard type to phone
+                      inputFormatters: [
+                        FilteringTextInputFormatter
+                            .digitsOnly, // Hanya izinkan digit
+                        LengthLimitingTextInputFormatter(13), // Batasan panjang
+                      ],
                       controller: _phoneUpdateController,
-                      // ignore: prefer_const_constructors
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         contentPadding: EdgeInsets.all(10),
                         border: OutlineInputBorder(),
-                        labelText: 'Nomor Telepon',
+                        labelText: 'Nomor Telepon (Cth: 081234567890) ',
                       ),
                     ),
                     SizedBox(height: 20),
                     TextFormField(
                       controller: _addressUpdateController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         contentPadding: EdgeInsets.all(10),
                         border: OutlineInputBorder(),
                         labelText: 'Alamat',
@@ -144,8 +174,15 @@ class EditProfilePage extends StatelessWidget {
                     ),
                     SizedBox(height: 20),
                     TextFormField(
+                      keyboardType:
+                          TextInputType.phone, // Set keyboard type to phone
+                      inputFormatters: [
+                        FilteringTextInputFormatter
+                            .digitsOnly, // Hanya izinkan digit
+                        LengthLimitingTextInputFormatter(5), // Batasan panjang
+                      ],
                       controller: _postalUpdateCodeController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         contentPadding: EdgeInsets.all(10),
                         border: OutlineInputBorder(),
                         labelText: 'Kode Pos',
@@ -154,12 +191,11 @@ class EditProfilePage extends StatelessWidget {
                     SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: () {
-                        _confirmEdit(context); // Panggil metode _confirmEdit
+                        _confirmEdit(context);
                       },
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        backgroundColor:
-                            GlobalVar.mainColor, // Warna teks tombol
+                        backgroundColor: GlobalVar.mainColor,
                       ),
                       child: Text('Simpan Perubahan'),
                     ),
@@ -174,36 +210,94 @@ class EditProfilePage extends StatelessWidget {
   }
 
   void _confirmEdit(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Konfirmasi Perubahan Profil'),
-          content: Text('Apakah Anda yakin ingin mengubah profil anda?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close dialog
-              },
-              child: Text('Batal'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // Panggil metode updateUserToDatabase dengan parameter yang diperlukan
-                _updateUser.updateUserToDatabase(
-                  _usernameUpdateController.text,
-                  _phoneUpdateController.text,
-                  _addressUpdateController.text,
-                  _postalUpdateCodeController.text,
-                  _profileImageUpdateCodeController.text,
-                );
-                Navigator.of(context).pop(); // Close dialog
-              },
-              child: Text('Ubah'),
-            ),
-          ],
-        );
-      },
-    );
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Konfirmasi Perubahan Profil'),
+        content: Text('Apakah Anda yakin ingin mengubah data profil anda?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('Batal'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              // Memanggil updateUserToDatabase dari objek UpdateUser
+              Navigator.of(context).pop();
+
+              try {
+                if (mounted) {
+                  await _updateUser.updateUserToDatabase(
+                    globalVar.userLoginData['email'],
+                    _usernameUpdateController.text,
+                    _phoneUpdateController.text,
+                    _addressUpdateController.text,
+                    _postalUpdateCodeController.text,
+                    profileImageUpdateUrl,
+                  );
+
+                  // Tambahkan pemanggilan _updateUserData untuk menampilkan snackbar
+                  _updateUserData(context);
+
+                  // Dispose current page and navigate to home
+                  if (mounted) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MainPage(globalVar: globalVar),
+                      ),
+                    );
+                  }
+                }
+              } catch (e) {
+                print('Error updating user: $e');
+              }
+            },
+            child: Text('Ubah'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+
+  void _updateUserData(BuildContext context) async {
+    // Cek apakah gambar sudah dipilih
+    if (_selectedImage != null) {
+      bool success =
+          await _updateUser.uploadImageFirebaseStorage(_selectedImage!);
+      if (success) {
+        // Tampilkan snackbar berhasil
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Profil berhasil diperbarui'),
+          duration: Duration(seconds: 2),
+        ));
+        print('Upload image successfully');
+      } else {
+        // Tampilkan snackbar gagal
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Gagal memperbarui profil'),
+          duration: Duration(seconds: 2),
+        ));
+        print('Failed to upload image');
+      }
+    } else {
+      print('No image selected');
+    }
+  }
+
+  Future<File?> getImageFromGallery(BuildContext context) async {
+    try {
+      List<MediaFile>? singleMedia =
+          await GalleryPicker.pickMedia(context: context, singleMedia: true);
+      return singleMedia?.first.getFile();
+    } catch (e) {
+      print('Error Image Picker: $e');
+    }
+    return null;
   }
 }

@@ -38,7 +38,7 @@ class _WidgetTreeState extends State<WidgetTree> {
           globalVar.isLogin = true;
 
 
-          return HomePage(globalVar: globalVar);
+          return MainPage(globalVar: globalVar);
         } else {
           return LoginPage(
             globalVar: globalVar,
