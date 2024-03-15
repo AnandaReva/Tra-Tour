@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:tratour_application/pages/homepage.dart';
+import 'package:tratour_application/pages/penukaran_berhasil.dart';
 import 'package:tratour_application/pages/pesananpage.dart';
 import 'package:tratour_application/pages/pilah_sampah.dart';
 import 'package:tratour_application/pages/profilepage.dart';
+import 'package:tratour_application/pages/voucher_page.dart';
+import 'package:tratour_application/pages/voucher_pulsa.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -18,12 +21,7 @@ class _MyHomePageState extends State<MyHomePage> {
     HomePage(),
     const PesananPage(),
     const PilahSampah(),
-    const Center(
-      child: Text(
-        'Tambah',
-        style: TextStyle(fontSize: 72),
-      ),
-    ),
+    const VoucherPage(),
     ProfilePage(),
   ];
 
