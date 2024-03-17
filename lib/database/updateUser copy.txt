@@ -12,8 +12,8 @@ class UpdateUser {
 
   Future<bool> uploadImageFirebaseStorage(File file) async {
     try {
-      String? email = globalVar.userLoginData['email'].toString();
-      String? path = "users/$email/assets/images/profile_images";
+      String? id = globalVar.userLoginData['id'].toString();
+      String? path = "$id/assets/images/profileImage";
       final fileName = file.path.split("/").last;
       final timeStamp = DateTime.now().microsecondsSinceEpoch;
       final storageRef =
@@ -25,10 +25,7 @@ class UpdateUser {
 
       print('path: $profileImageUpdateUrl');
 
-      //setelah upload hapus yang lama
-      if (globalVar.userLoginData['profile_image'] != null) {
-        await deletePastImageFromFirebaseStorage();
-      }
+     
 
       return true;
     } catch (e) {
@@ -37,31 +34,14 @@ class UpdateUser {
     }
   }
 
-  Future<bool> deletePastImageFromFirebaseStorage() async {
-    try {
-      String? currentProfileUrl =
-          globalVar.userLoginData['profile_image'].toString();
-      // Get reference to the image file
-      Reference ref = FirebaseStorage.instance.refFromURL(currentProfileUrl);
-
-      // Delete the file
-      await ref.delete();
-
-      print('Image deleted successfully');
-      return true;
-    } catch (e) {
-      print('Error deleting image from Firebase Storage: $e');
-      return false;
-    }
-  }
-
   Future<void> updateUserToDatabase(
-      String userEmail,
-      String username_update,
-      String phone_update,
-      String address_update,
-      String postal_code_update,
-      String? profileImageUpdateUrl) async {
+    String userEmail,
+    String username_update,
+    String phone_update,
+    String address_update,
+    String postal_code_update,
+    String? profileImageUpdateUrl,
+  ) async {
     try {
       String url = 'https://tratour.000webhostapp.com/cobaUpdateUser.php';
 
@@ -73,18 +53,15 @@ class UpdateUser {
         'postal_code': postal_code_update,
       };
 
-      print('check 1 udpdate: $updatedUserdata');
-      print('check 1A udpdate: ${globalVar.userLoginData['username']}');
-      print('check 1B: $profileImageUpdateUrl');
-
-      if (profileImageUpdateUrl != null) {
+      if (profileImageUpdateUrl != "" ) {
         updatedUserdata['profile_image'] = profileImageUpdateUrl;
-        print('check 2 udpdate: $updatedUserdata');
       }
+
+      print('check 1 udpdate: $updatedUserdata');
 
       String body = json.encode(updatedUserdata);
 
-      print('check 3 udpdate: $body');
+      print('check 2 udpdate: $body');
 
       final response = await http.post(
         Uri.parse(url),
@@ -105,15 +82,14 @@ class UpdateUser {
         globalVar.userLoginData['address'] = updatedUserdata['address'];
         globalVar.userLoginData['postal_code'] = updatedUserdata['postal_code'];
 
-        if (profileImageUpdateUrl != null) {
-          print('profileImageUpdateUrl tidak null: $profileImageUpdateUrl');
+        if (profileImageUpdateUrl != null || profileImageUpdateUrl != "") {
+            print('profileImageUpdateUrl tidak null: $profileImageUpdateUrl');
           globalVar.userLoginData['profile_image'] =
               updatedUserdata['profile_image'];
-
-          print('check 4A: $globalVar.userLoginData');
         }
+        
 
-        print('check 4: $globalVar.userLoginData');
+        print('debug m3: $globalVar.userLoginData');
         print('Response Type: ${response.body.runtimeType}');
 
         // Print the response body which contains the echoed message from PHP
@@ -127,4 +103,47 @@ class UpdateUser {
       // Provide a user-friendly error message or try to recover
     }
   }
+
+  /* Future<void> updateUserToDatabase(
+    String username_update,
+    String phone_update,
+    String address_update,
+    String postal_code_update,
+    String profileImageUpdateUrl,
+  ) async {
+    try {
+      String url = 'https://tratour.000webhostapp.com/updateUser.php';
+
+      Map<String, dynamic> updatedUserdata = {
+        'username': username_update,
+        'phone': phone_update,
+        'address': address_update,
+        'profile_image': profileImageUpdateUrl,
+      };
+
+      String body = json.encode(updatedUserdata);
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        print('User Updated successfully.');
+
+        // Update userLoginData setelah berhasil mengupdate pengguna
+        globalVar.userLoginData = updatedUserdata;
+
+        print('debug m3: $globalVar.userLoginData');
+        print('Response Type: ${response.body.runtimeType}');
+      } else {
+        print('Failed to update user: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error updating user: $e');
+    }
+  } */
 }

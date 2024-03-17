@@ -31,8 +31,7 @@ Future<void> main() async {
               appId: '1:525346093175:android:e0136e9c61854d9f0dee72',
               messagingSenderId: '525346093175',
               projectId: 'tra-tour',
-              storageBucket: "tra-tour.appspot.com"
-              ))
+              storageBucket: "tra-tour.appspot.com"))
       : await Firebase.initializeApp();
 
   // Load user data before building the app
@@ -220,12 +219,37 @@ class RootPage extends StatefulWidget {
 
 class _RootPageState extends State<RootPage> {
   DateTime? currentBackPressTime;
+  Map<String, dynamic>? userData; // Mendefinisikan userData
+
+  @override
+  void initState() {
+    super.initState();
+    // Memanggil initState akan memastikan bahwa data pengguna diperbarui saat halaman diinisialisasi
+    _updateUserData();
+  }
+
+  // Method untuk memperbarui data pengguna dan memicu pembaruan widget
+  void _updateUserData() {
+    setState(() {
+      // Memperbarui data pengguna dengan data baru
+      userData = widget.userData;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: widget.destination.index != 4 ? MyAppBar() : null,
+      backgroundColor: widget.destination.color[50],
+      body: _buildPage(context), // Build the appropriate page
+    );
+  }
 
   Widget _buildPage(BuildContext context) {
     // Return the appropriate widget based on the destination
     switch (widget.destination.index) {
       case 0:
-        return BerandaPage(userData: widget.userData);
+        return HomePage(userData: userData);
       case 1:
         return OrderPage();
       case 2:
@@ -237,48 +261,6 @@ class _RootPageState extends State<RootPage> {
       default:
         return const SizedBox(); // Return an empty widget for unknown destinations
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () => _onWillPop(context),
-      child: Scaffold(
-        appBar: widget.destination.index != 4 ? MyAppBar() : null,
-        backgroundColor: widget.destination.color[50],
-        body: _buildPage(context), // Build the appropriate page
-      ),
-    );
-  }
-
-  Future<bool> _onWillPop(BuildContext context) async {
-    DateTime now = DateTime.now();
-    if (currentBackPressTime == null ||
-        now.difference(currentBackPressTime!) > Duration(seconds: 2)) {
-      currentBackPressTime = now;
-      // Menampilkan dialog konfirmasi
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Konfirmasi'),
-            content: Text('Apakah Anda ingin keluar dari aplikasi?'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text('Tidak'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text('Ya'),
-              ),
-            ],
-          );
-        },
-      );
-      return false;
-    }
-    return true;
   }
 }
 

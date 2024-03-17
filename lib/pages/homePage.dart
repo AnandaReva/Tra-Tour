@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:tratour/globalVar.dart';
 import 'package:tratour/model/articles_model.dart';
 
-class BerandaPage extends StatelessWidget {
+class HomePage extends StatelessWidget {
   final Map<String, dynamic>? userData; // Define userData parameter
-  const BerandaPage({Key? key, this.userData}) : super(key: key);
+  const HomePage({Key? key, this.userData}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

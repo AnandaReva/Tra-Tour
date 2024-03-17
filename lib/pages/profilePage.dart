@@ -70,8 +70,6 @@ class ProfilePage extends StatelessWidget {
                                   fontSize: 20, fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              
-
                               userData['email'] ?? '',
                               style: const TextStyle(
                                   fontSize: 14, fontWeight: FontWeight.w400),
@@ -93,7 +91,9 @@ class ProfilePage extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => EditProfilePage()),
+                              builder: (context) => EditProfilePage(),
+                            ),
+                    
                           );
                         },
                         icon: Icon(
