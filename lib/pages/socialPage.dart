@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tratour/components/appBar.dart';
 
 class SocialPage extends StatefulWidget {
   const SocialPage({Key? key}) : super(key: key);
@@ -11,6 +12,7 @@ class _SocialPageState extends State<SocialPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: MyAppBar(), // Tambahkan appbar di sini
       body: Builder(
         builder: (BuildContext context) {
           return Center(

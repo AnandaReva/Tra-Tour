@@ -4,13 +4,14 @@
 import 'dart:io';
 
 //import 'package:tratour/components/drawer.dart';
-import 'package:tratour/database/auth.dart';
+import 'package:provider/provider.dart';
+
 import 'package:tratour/globalVar.dart';
 import 'package:tratour/pages/homePage.dart';
 import 'package:tratour/pages/login_register_page.dart';
 import 'package:tratour/pages/orderPage.dart';
 import 'package:tratour/pages/socialPage.dart';
-import 'package:tratour/pages/sortTrash.dart';
+import 'package:tratour/pages/sortTrashPage.dart';
 
 import 'package:tratour/widget_tree.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -46,57 +47,54 @@ Future<void> main() async {
   }
 
   // Build the app passing user data to RootPage
-  runApp(MyApp(globalVar: globalVar, userData: globalVar.userLoginData));
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => GlobalVar.instance),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  final GlobalVar globalVar;
-  final Map<String, dynamic>? userData; // Define userData parameter
-
-  const MyApp({Key? key, required this.globalVar, required this.userData})
-      : super(key: key);
-
   @override
   Widget build(BuildContext context) {
+    final GlobalVar globalVar = Provider.of<GlobalVar>(context);
     return MaterialApp(
       title: 'Tra-tour',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: WidgetTree(),
+      home: WidgetTree(globalVar: globalVar),
     );
   }
 }
 
 class MainPage extends StatefulWidget {
-  final GlobalVar globalVar;
-  MainPage({Key? key, required this.globalVar}) : super(key: key);
-
-  final User? user = Auth().currentUser;
-
   @override
-  State<MainPage> createState() => _MainState(globalVar: globalVar);
+  State<MainPage> createState() => _MainState();
 }
 
 class _MainState extends State<MainPage> with TickerProviderStateMixin {
-  final GlobalVar globalVar;
+  late final GlobalVar globalVar;
   late final List<GlobalKey<NavigatorState>> navigatorKeys;
   late final List<AnimationController> destinationFaders;
   late final List<Widget> destinationViews;
-
   final List<Destination> allDestinations = [
-    Destination(0, 'Beranda', Icons.home, Colors.blue),
-    Destination(1, 'Pesanan', Icons.reorder, Colors.green),
-    Destination(2, 'Pilah Sampah', Icons.add_circle, Colors.red),
-    Destination(3, 'Sosial', Icons.groups, Colors.purple),
-    Destination(4, 'Profile', Icons.person, Colors.brown),
+    Destination(0, 'Beranda', Icons.home, Colors.grey),
+    Destination(1, 'Pesanan', Icons.reorder, Colors.grey),
+    Destination(2, 'Pilah Sampah', Icons.add_circle, Colors.grey),
+    Destination(3, 'Sosial', Icons.groups, Colors.grey),
+    Destination(4, 'Profile', Icons.person, Colors.grey),
     // Add more destinations as needed
   ];
-  _MainState({required this.globalVar});
 
   @override
   void initState() {
     super.initState();
+    globalVar = Provider.of<GlobalVar>(context, listen: false);
 
     navigatorKeys = List<GlobalKey<NavigatorState>>.generate(
       allDestinations.length,
@@ -109,41 +107,14 @@ class _MainState extends State<MainPage> with TickerProviderStateMixin {
     ).toList();
     destinationFaders[globalVar.selectedIndex].value = 1.0;
 
-    final CurveTween tween = CurveTween(curve: Curves.fastOutSlowIn);
-    destinationViews = allDestinations.map<Widget>(
-      (Destination destination) {
-        return FadeTransition(
-          opacity: destinationFaders[destination.index].drive(tween),
-          child: DestinationView(
-            destination: destination,
-            navigatorKey: navigatorKeys[destination.index],
-          ),
-        );
-      },
-    ).toList();
-  }
-
-  AnimationController buildFaderController() {
-    final AnimationController controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-    controller.addStatusListener(
-      (AnimationStatus status) {
-        if (status == AnimationStatus.dismissed) {
-          setState(() {}); // Rebuild unselected destinations offstage.
-        }
-      },
-    );
-    return controller;
-  }
-
-  @override
-  void dispose() {
-    for (final AnimationController controller in destinationFaders) {
-      controller.dispose();
-    }
-    super.dispose();
+    // Inisialisasi destinationViews dengan tampilan dari setiap destinasi
+    destinationViews = [
+      HomePage(userData: globalVar.userLoginData),
+      OrderPage(),
+      SortTrashPage(),
+      SocialPage(),
+      ProfilePage(),
+    ];
   }
 
   @override
@@ -196,6 +167,21 @@ class _MainState extends State<MainPage> with TickerProviderStateMixin {
       ),
     );
   }
+
+  AnimationController buildFaderController() {
+    final AnimationController controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    controller.addStatusListener(
+      (AnimationStatus status) {
+        if (status == AnimationStatus.dismissed) {
+          setState(() {}); // Rebuild unselected destinations offstage.
+        }
+      },
+    );
+    return controller;
+  }
 }
 
 class Destination {
@@ -208,9 +194,9 @@ class Destination {
 
 class RootPage extends StatefulWidget {
   final Destination destination;
-  final Map<String, dynamic>? userData; // Define userData parameter
+  final Map<String, dynamic>? userData; // Tambahkan parameter userData
 
-  const RootPage({Key? key, required this.destination, required this.userData})
+  const RootPage({Key? key, required this.destination, this.userData})
       : super(key: key);
 
   @override
@@ -218,12 +204,13 @@ class RootPage extends StatefulWidget {
 }
 
 class _RootPageState extends State<RootPage> {
-  DateTime? currentBackPressTime;
-  Map<String, dynamic>? userData; // Mendefinisikan userData
+  late final GlobalVar globalVar;
+  late Map<String, dynamic>? userData; // Define userData parameter
 
   @override
   void initState() {
     super.initState();
+    globalVar = Provider.of<GlobalVar>(context, listen: false);
     // Memanggil initState akan memastikan bahwa data pengguna diperbarui saat halaman diinisialisasi
     _updateUserData();
   }
@@ -232,7 +219,7 @@ class _RootPageState extends State<RootPage> {
   void _updateUserData() {
     setState(() {
       // Memperbarui data pengguna dengan data baru
-      userData = widget.userData;
+      userData = globalVar.userLoginData;
     });
   }
 
@@ -253,7 +240,7 @@ class _RootPageState extends State<RootPage> {
       case 1:
         return OrderPage();
       case 2:
-        return SortTrash();
+        return SortTrashPage();
       case 3:
         return SocialPage();
       case 4:

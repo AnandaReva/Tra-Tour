@@ -5,6 +5,7 @@ import 'package:gallery_picker/gallery_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:tratour/globalVar.dart';
 import 'package:tratour/database/updateUser.dart';
+import 'package:tratour/main.dart';
 //import 'package:tratour/main.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -80,7 +81,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
             setState(() {
               globalVar.isLoading = false;
             });
-            Navigator.of(context).pop();
+            /*   Navigator.of(context).pop(); */
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => MainPage(),
+              ),
+            );
           },
         ),
       ),

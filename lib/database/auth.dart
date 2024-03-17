@@ -51,22 +51,19 @@ class Auth {
     }
   }
 
-  Future<void> signOut(BuildContext context) async {
-    await _firebaseAuth.signOut();
+Future<void> signOut(BuildContext context) async {
+  await _firebaseAuth.signOut();
 
-    globalVar.userLoginData = [];
-    globalVar.isLogin = false;
+  globalVar.userLoginData = null; // Set userLoginData menjadi null atau kosong
+  globalVar.isLogin = false;
 
-    // List<dynamic> userDataList = globalVar.userLoginData;
-    //  print('SignoutData: $userDataList');
+  Navigator.pushAndRemoveUntil(
+    context,
+    MaterialPageRoute(builder: (context) => LoginPage(globalVar: globalVar)),
+    (route) => false,
+  );
+}
 
-    // Navigate to LoginPage
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPage(globalVar: globalVar)),
-      (route) => false, // Predicate: hapus semua halaman di atasnya
-    );
-  }
 
   Future<void> signInWithGoogle(BuildContext context) async {
     try {

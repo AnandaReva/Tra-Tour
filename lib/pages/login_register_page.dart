@@ -24,15 +24,13 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => LoginPageState();
 }
 
-
-
 String generateRandomString(int length) {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; // Huruf kapital ditambahkan di awal
+  const chars =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; // Huruf kapital ditambahkan di awal
   final random = Random();
   return List.generate(length, (index) => chars[random.nextInt(chars.length)])
       .join();
 }
-
 
 class LoginPageState extends State<LoginPage> {
   GlobalVar globalVar = GlobalVar.instance;
@@ -156,7 +154,7 @@ class LoginPageState extends State<LoginPage> {
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => MainPage(globalVar: globalVar),
+                  builder: (context) => MainPage(),
                 ),
                 (route) => false,
               );
@@ -226,7 +224,7 @@ class LoginPageState extends State<LoginPage> {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-            builder: (context) => MainPage(globalVar: globalVar),
+            builder: (context) => MainPage(),
           ),
           (route) => false,
         );
@@ -389,7 +387,7 @@ class LoginPageState extends State<LoginPage> {
           ),
         ),
       ),
-    ); 
+    );
   }
 
   Widget _entryRole(
@@ -416,14 +414,11 @@ class LoginPageState extends State<LoginPage> {
             DropdownMenuItem<String>(
               value: null,
               child: Container(
-                color: Colors.grey, 
-                child:Text(
-                    'Apa peran yang mau anda pilih: ',
-                    style: TextStyle(
-                        color: Colors
-                            .white), 
-                  ),
-              
+                color: Colors.grey,
+                child: Text(
+                  'Apa peran yang mau anda pilih: ',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
             DropdownMenuItem<String>(
@@ -448,8 +443,6 @@ class LoginPageState extends State<LoginPage> {
         ),
       ),
     );
-
-   
   }
 
   Widget _errorMessage() {
@@ -693,45 +686,6 @@ class LoginPageState extends State<LoginPage> {
                 ],
               ),
             ),
-
-      /* SingleChildScrollView(
-              child: Container(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Center(
-                      child: Text(
-                        !loginForm ? 'Buat Akun' : 'Masuk',
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    _entryField('email', _controllerEmail),
-                    const SizedBox(height: 20),
-                    _entryField('password', _controllerPassword),
-                    const SizedBox(height: 20),
-                    // Tampilkan input username dan nomor telepon hanya ketika tidak dalam mode login
-                    if (!loginForm) ...[
-                      _entryField('username', _controllerUsername),
-                      const SizedBox(height: 20),
-                      _entryFieldPhone('Nomor telepon', _controllerPhone),
-                      const SizedBox(height: 20),
-                      _entryRole('Pilih Peran', _controllerRole),
-                    ],
-                    _errorMessage(), // Tambahkan widget _errorMessage() di sini
-                    const SizedBox(height: 20),
-                    _submitButton(),
-                    const SizedBox(height: 20),
-                    _loginRegisterButton(),
-                    const SizedBox(height: 20),
-                    _googleAuth(),
-                  ],
-                ),
-              ),
-            ), */
     );
   }
 

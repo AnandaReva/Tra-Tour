@@ -63,7 +63,7 @@ class UpdateUser {
       String postal_code_update,
       String? profileImageUpdateUrl) async {
     try {
-      String url = 'https://tratour.000webhostapp.com/cobaUpdateUser.php';
+      String url = 'https://tratour.000webhostapp.com/updateUser.php';
 
       Map<String, dynamic> updatedUserdata = {
         'email': userEmail,

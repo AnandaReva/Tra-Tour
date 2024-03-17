@@ -6,7 +6,7 @@ import 'package:tratour/main.dart';
 import 'package:flutter/material.dart';
 
 class WidgetTree extends StatefulWidget {
-  const WidgetTree({Key? key}) : super(key: key);
+  const WidgetTree({Key? key, required GlobalVar globalVar}) : super(key: key);
 
   @override
   State<WidgetTree> createState() => _WidgetTreeState();
@@ -38,7 +38,7 @@ class _WidgetTreeState extends State<WidgetTree> {
           globalVar.isLogin = true;
 
 
-          return MainPage(globalVar: globalVar);
+          return MainPage();
         } else {
           return LoginPage(
             globalVar: globalVar,

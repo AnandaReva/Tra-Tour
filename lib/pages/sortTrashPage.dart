@@ -1,18 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:tratour/components/custom_button.dart';
+
+import 'package:provider/provider.dart';
+import 'package:tratour/components/appBar.dart';
 import 'package:tratour/components/box_kategori.dart';
+import 'package:tratour/components/custom_button.dart';
+import 'package:tratour/globalVar.dart';
 
-class SortTrash extends StatelessWidget {
-  const SortTrash({super.key});
+class SortTrashPage extends StatelessWidget {
+  const SortTrashPage({super.key});
 
-  @override
+
+
+    @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _buildBody(),
+    return ChangeNotifierProvider.value(
+      value: GlobalVar.instance,
+      child: Scaffold(
+        appBar: MyAppBar(),
+        body: _buildBody(),
+      ),
     );
   }
 
-  _buildBody() {
+  Widget _buildBody() {
     return Padding(
       padding: EdgeInsets.all(20),
       child: ListView(
@@ -20,10 +30,7 @@ class SortTrash extends StatelessWidget {
           subTitle(),
           kategori(),
           CustomButton(
-            onPressed: () {
-
-              
-            },
+            onPressed: () {},
             text: 'Atur Lokasi Pengambilan',
             margin: EdgeInsets.only(top: 30),
           )
@@ -35,7 +42,7 @@ class SortTrash extends StatelessWidget {
   Widget subTitle() {
     return Container(
       margin: EdgeInsets.only(bottom: 24),
-      child: Text(
+      child: const Text(
         "Pilih jenis sampah dari kategori di bawah ini!",
         style: TextStyle(
           fontWeight: FontWeight.w600,
@@ -48,8 +55,7 @@ class SortTrash extends StatelessWidget {
   Widget kategori() {
     return SingleChildScrollView(
       child: Column(
-        children: [
-          Row(
+        children: [Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               BoxKategori(

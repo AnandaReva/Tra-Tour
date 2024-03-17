@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tratour/components/appBar.dart';
 import 'package:tratour/globalVar.dart';
 import 'package:tratour/model/articles_model.dart';
 
@@ -9,81 +11,85 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _getInfo();
-    return Scaffold(
-      appBar: AppBar(),
-      body: ListView(
-        children: [
-          // Banner
-          Padding(
-            padding: EdgeInsets.all(20),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: <Widget>[
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.180),
-                        spreadRadius: 2,
-                        blurRadius: 1,
-                        offset: Offset(0, 0),
-                      ), //BoxShadow
-                    ],
-                  ),
-                  padding: const EdgeInsets.all(8),
-                  child: const Row(
-                    children: <Widget>[
-                      Flexible(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              "Setor sampah bawa keuntungan",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                              "Tukar sampah di rumahmu dengan reward menarik dari kami",
-                              style: TextStyle(
-                                fontSize: 12,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                          ],
-                        ),
+    return Consumer<GlobalVar>(
+      builder: (context, globalVar, _) {
+        return Scaffold(
+          extendBody: true,
+          appBar: MyAppBar(),
+          body: ListView(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(20),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: <Widget>[
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.180),
+                            spreadRadius: 2,
+                            blurRadius: 1,
+                            offset: Offset(0, 0),
+                          ), //BoxShadow
+                        ],
                       ),
-                      SizedBox(
-                        width: 100,
-                      )
-                    ],
-                  ),
+                      padding: const EdgeInsets.all(8),
+                      child: const Row(
+                        children: <Widget>[
+                          Flexible(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  "Setor sampah bawa keuntungan",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  "Tukar sampah di rumahmu dengan reward menarik dari kami",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            width: 100,
+                          )
+                        ],
+                      ),
+                    ),
+                    Positioned(
+                      top: -20,
+                      right: 0,
+                      child: Image.asset(
+                        'assets/images/Homepage-removebg-preview.png',
+                        scale: 0.92,
+                      ),
+                    ),
+                  ],
                 ),
-                Positioned(
-                  top: -20,
-                  right: 0,
-                  child: Image.asset(
-                    'assets/images/Homepage-removebg-preview.png',
-                    scale: 0.92,
-                  ),
-                ),
-              ],
-            ),
+              ),
+              // Poin dan Voucher
+              _poinSection(),
+              // Artikel Pilihan1
+              _artikelPilihan(),
+            ],
           ),
-          // Poin dan Voucher
-          _poinSection(),
-          // Artikel Pilihan1
-          _artikelPilihan(),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -211,7 +217,7 @@ Padding _poinSection() {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
+            const Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
                 'Poin Kamu',
@@ -224,7 +230,7 @@ Padding _poinSection() {
             ),
             Row(
               children: [
-                Padding(
+                const Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
                     'Total Poin Anda: ',
@@ -242,12 +248,12 @@ Padding _poinSection() {
                         children: <TextSpan>[
                           TextSpan(
                             text: userData['user_point']?.toString() ?? '',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 14,
                               fontFamily: 'PTSans',
                             ),
                           ),
-                          TextSpan(
+                          const TextSpan(
                             text: ' Poin',
                             style: TextStyle(
                               fontSize: 10,
@@ -266,11 +272,11 @@ Padding _poinSection() {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
+            const Padding(
               padding: EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const <Widget>[
+                children: <Widget>[
                   Text(
                     'Voucher',
                     style: TextStyle(
@@ -301,7 +307,7 @@ Padding _poinSection() {
                         onPressed: () {},
                         icon: Icon(Icons.smartphone),
                       ),
-                      Text(
+                      const Text(
                         "Pulsa\nPrabayar",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 12, fontFamily: 'PTSans'),
@@ -314,7 +320,7 @@ Padding _poinSection() {
                         onPressed: () {},
                         icon: Icon(Icons.wifi),
                       ),
-                      Text(
+                      const Text(
                         "Paket\nData",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 12, fontFamily: 'PTSans'),
