@@ -151,12 +151,12 @@ class LoginPageState extends State<LoginPage> {
             );
 
             if (mounted) {
-              Navigator.pushAndRemoveUntil(
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => MainPage(),
                 ),
-                (route) => false,
+               // (route) => false,
               );
             }
 
@@ -241,7 +241,10 @@ class LoginPageState extends State<LoginPage> {
         } else if (e.message ==
             'The supplied auth credential is incorrect, malformed or has expired.') {
           errorMessage = 'Email atau password salah';
-        } else {
+        } else if (e.message ==
+            'A network error (such as timeout, interrupted connection or unreachable host) has occurred.') {
+          errorMessage = 'Periksa koneksi internet';
+        }else {
           errorMessage = 'Terjadi kesalahan saat masuk: ${e.message}';
         }
         print('error Signin: ${e.message}');

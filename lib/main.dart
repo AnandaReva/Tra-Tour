@@ -35,7 +35,7 @@ Future<void> main() async {
               storageBucket: "tra-tour.appspot.com"))
       : await Firebase.initializeApp();
 
-  // Load user data before building the app
+ 
   User? user = FirebaseAuth.instance.currentUser;
   if (user != null) {
     String userEmail = user.email ?? "Terjadi Kesalahan saat mengambil data";

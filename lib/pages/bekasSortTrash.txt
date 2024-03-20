@@ -59,6 +59,7 @@ class ChecBoxImages extends StatelessWidget {
             }
           }
           return SingleChildScrollView(
+            // Add a SingleChildScrollView
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -69,11 +70,10 @@ class ChecBoxImages extends StatelessWidget {
                     CustomCheckbox(title: 'pilihan ${i + 1}', index: i),
                   ElevatedButton(
                     onPressed: () {
-                      // Use GlobalVar to access selectedTrashIndexes
-                      GlobalVar.instance.selectedTrashIndexes = selectedTrashIndexes;
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => ResultScreen(),
+                          builder: (context) =>
+                              ResultScreen(selectedTrashIndexes: selectedTrashIndexes),
                         ),
                       );
                     },
@@ -89,13 +89,13 @@ class ChecBoxImages extends StatelessWidget {
   }
 }
 
-
 class ResultScreen extends StatelessWidget {
+  final List<int> selectedTrashIndexes;
+
+  const ResultScreen({required this.selectedTrashIndexes});
+
   @override
   Widget build(BuildContext context) {
-    // Access selectedTrashIndexes from GlobalVar
-    List<int> selectedTrashIndexes = GlobalVar.instance.selectedTrashIndexes;
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Pilihan yang Dipilih'),
@@ -107,17 +107,16 @@ class ResultScreen extends StatelessWidget {
             if (index == 0) {
               return Text('Pilihan 1 dipilih');
             } else if (index == 1) {
-              return Text('Sampah 2 dipilih');
+              return Text('Sampah dipilih');
             } else if (index == 2) {
               return Text('Pilihan 3 dipilih');
-            }  else if (index == 3) {
+            } else if (index == 3) {
               return Text('Pilihan 4 dipilih');
-            }  else if (index == 4) {
+            } else if (index == 4) {
               return Text('Pilihan 5 dipilih');
-            }  else if (index == 5) {
-              return Text('Pilihan 6 dipilih');
-            }  
-            else {
+              
+              
+            } else {
               return Text('Pilihan ${index} dipilih');
             }
           }).toList(),
@@ -168,7 +167,7 @@ class SortTrashPage extends StatelessWidget {
           child:  SizedBox(child:ChecBoxImages(),
            width: 200.0,
       height: 1000.0,
-                 )  
+                 )  // Remove SizedBox and Flexible
         ),
       ),
     );

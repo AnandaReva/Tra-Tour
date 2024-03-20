@@ -9,9 +9,12 @@ class OrderPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: MyAppBar(), // Gunakan MyAppBar di sini
-      body: _buildBody(context),
+    return ChangeNotifierProvider.value(
+      value: GlobalVar.instance,
+      child: Scaffold(
+        appBar: const MyAppBar(),
+        body: _buildBody(context),
+      ),
     );
   }
 

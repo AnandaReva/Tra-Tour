@@ -9,11 +9,19 @@ class GlobalVar extends ChangeNotifier {
   dynamic _userLoginData;
   bool _isLogin = false;
   bool _isLoading = false;
-  int _selectedIndex;
+  int _selectedIndex = 0;
+  
+  List<int> _selectedTrashIndexes = []; // Initialize with an empty list
 
   int get selectedIndex => _selectedIndex;
   set selectedIndex(int value) {
     _selectedIndex = value;
+    notifyListeners();
+  }
+
+  List<int> get selectedTrashIndexes => _selectedTrashIndexes;
+  set selectedTrashIndexes(List<int> value) {
+    _selectedTrashIndexes = value;
     notifyListeners();
   }
 
@@ -28,15 +36,15 @@ class GlobalVar extends ChangeNotifier {
 
   set isLogin(bool value) {
     _isLogin = value;
-  
+
   }
 
   set isLoading(bool value) {
     _isLoading = value;
-  
+   
   }
 
-  GlobalVar._internal() : _selectedIndex = 0;
+  GlobalVar._internal();
 
   static GlobalVar get instance => _instance;
 }

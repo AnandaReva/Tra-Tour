@@ -51,19 +51,19 @@ class Auth {
     }
   }
 
-Future<void> signOut(BuildContext context) async {
-  await _firebaseAuth.signOut();
+  Future<void> signOut(BuildContext context) async {
+    await _firebaseAuth.signOut();
 
-  globalVar.userLoginData = null; // Set userLoginData menjadi null atau kosong
-  globalVar.isLogin = false;
+    globalVar.userLoginData =
+        null; // Set userLoginData menjadi null atau kosong
+    globalVar.isLogin = false;
 
-  Navigator.pushAndRemoveUntil(
-    context,
-    MaterialPageRoute(builder: (context) => LoginPage(globalVar: globalVar)),
-    (route) => false,
-  );
-}
-
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage(globalVar: globalVar)),
+      (route) => false,
+    );
+  }
 
   Future<void> signInWithGoogle(BuildContext context) async {
     try {
@@ -99,7 +99,7 @@ Future<void> signOut(BuildContext context) async {
 
         // Redirect to home page or perform any necessary actions after successful sign-in
         globalVar.isLogin = true;
-       /*  Navigator.push(
+        /*  Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => HomePage(globalVar: globalVar),
@@ -310,12 +310,17 @@ Future<void> signOut(BuildContext context) async {
         GlobalVar globalVar = GlobalVar.instance;
 
         globalVar.userLoginData = newUserData;
+        globalVar.userLoginData['profile_photo'] = null;
 
-        print('debig m31: $newUserData');
+        if ( globalVar.userLoginData['profile_photo']  == null) {
+          // Lakukan sesuatu jika variable null
+          print('debug Variable is null');
+        } else {
+          // Lakukan sesuatu jika variable tidak null
+          print('Variable is not null');
+        }
 
-        print('debig m3: $globalVar.userLoginData');
-
-        
+        // print('debig m3: $globalVar.userLoginData[profile_photo]');
 
         // Cetak tipe data respons
         print('Response Type: ${response.body.runtimeType}');
@@ -329,4 +334,3 @@ Future<void> signOut(BuildContext context) async {
     }
   }
 }
-

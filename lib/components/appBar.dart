@@ -15,6 +15,8 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
         String role = getUserRole(user_type);
         print("Role: $role");
 
+      
+
         return AppBar(
           toolbarHeight: 80,
           leadingWidth: 75,
