@@ -43,8 +43,8 @@ dependencies:
 # flutter pub get
 # flutter pub run flutter_native_splash:create
 flutter_native_splash:
-  color: #1D7948
-  image: assets/images/Logo.png
+  color: "#1D7948"
+  image: assets/images/SplashLogo.png
 
 dev_dependencies:
   flutter_test:

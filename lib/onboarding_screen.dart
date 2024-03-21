@@ -14,20 +14,41 @@ class OnBoardingScreen extends StatefulWidget {
 }
 
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
-  PageController _controller = PageController();
+  final PageController _pageController = PageController(initialPage: 0);
+  int currentPage = 0;
+  // OnBoarding Page
   List<Widget> listPage = [
     IntroPage1(),
     IntroPage2(),
     IntroPage3(),
   ];
+
+// biar tau lagi di page berapa
+  @override
+  void initState() {
+    super.initState();
+    _pageController.addListener(() {
+      setState(() {
+        currentPage = _pageController.page!.round();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
   bool onLastPage = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
           PageView(
-            controller: _controller,
+            controller: _pageController,
             onPageChanged: (index) {
               setState(() {
                 onLastPage = (index == listPage.length - 1);
@@ -56,11 +77,11 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                         ),
                       ),
                       onTap: () {
-                        _controller.jumpToPage(listPage.length - 1);
+                        _pageController.jumpToPage(listPage.length - 1);
                       },
                     ),
                     SmoothPageIndicator(
-                      controller: _controller,
+                      controller: _pageController,
                       count: listPage.length,
                       effect: ExpandingDotsEffect(
                           dotColor: Colors.white30,
@@ -92,7 +113,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                               padding: EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),
-                                color: Color.fromARGB(255, 243, 183, 62),
+                                color: currentPage == 1
+                                    ? Color.fromARGB(255, 29, 121, 72)
+                                    : Color.fromARGB(255, 243, 183, 62),
                               ),
                               child: const Icon(
                                 Icons.arrow_forward_ios,
@@ -100,7 +123,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                               ),
                             ),
                             onTap: () {
-                              _controller.nextPage(
+                              _pageController.nextPage(
                                 duration: Duration(milliseconds: 500),
                                 curve: Curves.easeIn,
                               );
