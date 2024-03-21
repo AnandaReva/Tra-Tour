@@ -38,7 +38,9 @@ class IntroPage3 extends StatelessWidget {
             Center(
               child: SizedBox(
                 child: GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    print("Pengepul Tap");
+                  },
                   child: Column(
                     children: [
                       Image.asset("assets/images/User Pengepul.png"),
@@ -63,7 +65,9 @@ class IntroPage3 extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      print("Pickuper Tap");
+                    },
                     child: Column(
                       children: [
                         Image.asset("assets/images/User Pickuper.png"),
@@ -79,7 +83,9 @@ class IntroPage3 extends StatelessWidget {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      print("User Tap");
+                    },
                     child: Column(
                       children: [
                         Image.asset("assets/images/User User.png"),
