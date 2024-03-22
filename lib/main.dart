@@ -5,8 +5,10 @@ import 'dart:io';
 
 //import 'package:tratour/components/drawer.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:tratour/globalVar.dart';
+import 'package:tratour/onboarding/onboarding_screen.dart';
 import 'package:tratour/pages/homePage.dart';
 import 'package:tratour/pages/login_register_page.dart';
 import 'package:tratour/pages/orderPage.dart';
@@ -20,6 +22,13 @@ import 'package:flutter/material.dart';
 //import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:tratour/components/appBar.dart';
 import 'package:tratour/Pages/ProfilePage.dart';
+
+//int initScreen = 0;
+
+/* Future<void> resetInitScreen() async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.remove('initScreen');
+} */
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +44,19 @@ Future<void> main() async {
               storageBucket: "tra-tour.appspot.com"))
       : await Firebase.initializeApp();
 
+//reset initScreen
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
  
+ // await prefs.remove('initScreen');
+ // print('initScreen: $globalVar.initScreen');
+
+  
+ // globalVar.initScreen = prefs.getInt("initScreen") ?? 0;
+  //await prefs.setInt("initScreen", 1); // set to 1 if not exist, otherwise 0
+  ///////////////////
+
+  print('initScreen: ${globalVar.initScreen}');
+
   User? user = FirebaseAuth.instance.currentUser;
   if (user != null) {
     String userEmail = user.email ?? "Terjadi Kesalahan saat mengambil data";
@@ -43,7 +64,7 @@ Future<void> main() async {
 
     // Load user data
     await LoginPageState().findUserDataFromDB(userEmail);
-    print('debug m1: ${globalVar.userLoginData}');
+    print('cek user: ${globalVar.userLoginData}');
   }
 
   // Build the app passing user data to RootPage
@@ -59,20 +80,30 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final GlobalVar globalVar = Provider.of<GlobalVar>(context);
     return MaterialApp(
       title: 'Tra-tour',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: WidgetTree(globalVar: globalVar),
+      initialRoute: globalVar.initScreen == 0 || globalVar.initScreen == null
+          ? 'onboard'
+          : 'widgetTree',
+      routes: {
+        'widgetTree': (context) => WidgetTree(globalVar: globalVar),
+        'onboard': (context) => OnBoardingScreen(globalVar: globalVar),
+      },
     );
   }
 }
 
 class MainPage extends StatefulWidget {
+  const MainPage({super.key});
+
   @override
   State<MainPage> createState() => _MainState();
 }

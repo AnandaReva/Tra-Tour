@@ -1,6 +1,8 @@
 //import 'package:tratour/dbHelper/mysql.dart';
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, non_constant_identifier_names
 
+import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tratour/database/auth.dart';
 import 'package:tratour/globalVar.dart';
 import 'package:tratour/main.dart';
@@ -15,13 +17,14 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-bool loginForm = true; // Defaultnya dalam mode login
+bool loginForm = true; // Inisialisasi di luar blok if
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key, required GlobalVar globalVar}) : super(key: key);
 
   @override
   State<LoginPage> createState() => LoginPageState();
+  
 }
 
 String generateRandomString(int length) {
@@ -35,6 +38,19 @@ String generateRandomString(int length) {
 class LoginPageState extends State<LoginPage> {
   GlobalVar globalVar = GlobalVar.instance;
 
+  @override
+  void initState() {
+    super.initState();
+    if (globalVar.initScreen == 0) {
+        print('initScreen: ${globalVar.initScreen}');
+         print("awal 2 : ${globalVar.selected_role_onboarding}");
+      
+      loginForm = false; // Setel nilai loginForm di dalam blok if
+    } else {
+      loginForm = true;
+    }
+  }
+
   String? errorMessage = '';
 
   final TextEditingController _controllerEmail = TextEditingController();
@@ -42,14 +58,25 @@ class LoginPageState extends State<LoginPage> {
   final TextEditingController _controllerUsername = TextEditingController();
   final TextEditingController _controllerPhone = TextEditingController();
   final TextEditingController _controllerRole = TextEditingController();
+  final TextEditingController _controllerReferralCodeInput =
+      TextEditingController();
   final String initial_user_point = '0';
   final String initial_profile_image = 'null';
   final String initial_address = 'null';
   final String initial_postal_code = 'null';
+  final String initial_referral_code = 'null';
 
   String referral_code = '';
+
+  
+
   // bool globalVar.isLoading = false;
   Future<void> createUserWithEmailAndPassword() async {
+    print('initScreen: $globalVar.initScreen');
+    if (globalVar.initScreen == 0) {
+      // dari onboarding
+      _controllerRole.text = globalVar.selected_role_onboarding;
+    }
     referral_code = generateRandomString(6); // abis didapat terus cek db
     print('cek create Akun 1');
 
@@ -143,6 +170,7 @@ class LoginPageState extends State<LoginPage> {
               _controllerEmail.text,
               _controllerPhone.text, // Pass phone as string
               _controllerRole.text,
+
               initial_user_point,
               initial_profile_image,
               initial_address,
@@ -151,13 +179,14 @@ class LoginPageState extends State<LoginPage> {
             );
 
             if (mounted) {
-              Navigator.pushReplacement(
+              Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
                   builder: (context) => MainPage(),
                 ),
-               // (route) => false,
+                (route) => false,
               );
+             
             }
 
             setState(() {
@@ -194,7 +223,7 @@ class LoginPageState extends State<LoginPage> {
     }
   }
 
-  final Auth _auth = Auth(); // Inisialisasi instance Auth
+  final Auth auth = Auth(); // Inisialisasi instance Auth
 
   Future<void> signInWithEmailAndPassword() async {
     if (_controllerEmail.text.isEmpty || _controllerPassword.text.isEmpty) {
@@ -208,8 +237,6 @@ class LoginPageState extends State<LoginPage> {
       setState(() {
         globalVar.isLoading = true; // Menampilkan animasi loading
       });
-
-      Auth auth = Auth(); // Buat objek dari kelas Auth
 
       // Panggil metode findUserDataFromDB dari objek auth yang sama
       await findUserDataFromDB(_controllerEmail.text);
@@ -244,7 +271,7 @@ class LoginPageState extends State<LoginPage> {
         } else if (e.message ==
             'A network error (such as timeout, interrupted connection or unreachable host) has occurred.') {
           errorMessage = 'Periksa koneksi internet';
-        }else {
+        } else {
           errorMessage = 'Terjadi kesalahan saat masuk: ${e.message}';
         }
         print('error Signin: ${e.message}');
@@ -259,26 +286,18 @@ class LoginPageState extends State<LoginPage> {
 
   Future<void> signInWithGoogle() async {
     try {
-      await _auth.signInWithGoogle(
+      await auth.signInWithGoogle(
           context); // Memanggil metode signInWithGoogle dari instance Auth
     } catch (e) {
       print('Error signing in with Google: $e');
     }
   }
 
-/*   Widget _title() {
-    return Image.asset('assets/images/logo.png') ;/* Text(
-      'Tra-tour',
-      style: TextStyle(
-        color: Colors.white,
-        fontFamily: 'Poppins-Bold',
-        fontWeight: FontWeight.bold,
-      ),
-    ); */
-  } */
-
   Widget _title() {
-    return Image.asset(
+    return
+    
+    
+     Image.asset(
       'assets/images/logo.png',
       width: 100, // Menyesuaikan lebar sesuai kebutuhan
 
@@ -340,17 +359,53 @@ class LoginPageState extends State<LoginPage> {
         child: Padding(
           padding: EdgeInsets.only(left: 20),
           child: TextField(
-            keyboardType: TextInputType.name,
+            keyboardType: TextInputType.text,
             inputFormatters: [
-              // Corrected regex to allow only letters and spaces:
-              FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\s]*$')),
-              LengthLimitingTextInputFormatter(40),
+              FilteringTextInputFormatter.allow(
+                  RegExp(r'^[a-zA-Z0-9 ]*$')), // Allow only letters and numbers
+              LengthLimitingTextInputFormatter(25),
             ],
             controller: controller,
             decoration: InputDecoration(
               border: InputBorder.none,
               hintText: title,
-              labelText: 'username',
+              labelText: 'Nama Pengguna',
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _entryReferralCodeInput(
+    String title,
+    TextEditingController controller,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 25),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          border: Border.all(
+            color: Colors.white,
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: EdgeInsets.only(left: 20),
+          child: TextField(
+            keyboardType: TextInputType.text,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(
+                  r'^[a-zA-Z0-9]*$')), // Allow only uppercase letters and numbers
+              LengthLimitingTextInputFormatter(6), // Limit to 6 characters
+            ],
+            controller: controller,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: title,
+              labelText: 'Referral Code (Opsional)',
             ),
           ),
         ),
@@ -465,19 +520,12 @@ class LoginPageState extends State<LoginPage> {
             ),
           ));
     }
-
-/*     Text(
-      errorMessage == '' ? '' : '$errorMessage',
-      style: const TextStyle(
-        color: Colors.red,
-        fontFamily: 'Poppins-Bold',
-        fontWeight: FontWeight.bold,
-      ),
-    ); */
   }
 
   Widget _submitButton() {
-    print('sub button: ${globalVar.isLogin}');
+    if (kDebugMode) {
+      print('sub button: ${globalVar.isLogin}');
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25),
       child: GestureDetector(
@@ -503,13 +551,6 @@ class LoginPageState extends State<LoginPage> {
         ),
       ),
     );
-
-    /*  ElevatedButton(
-      onPressed: loginForm
-          ? signInWithEmailAndPassword
-          : createUserWithEmailAndPassword,
-      child: Text(loginForm ? 'Masuk' : 'Buat Akun'),
-    ); */
   }
 
   Widget _loginRegisterButton() {
@@ -553,15 +594,6 @@ class LoginPageState extends State<LoginPage> {
         ],
       ),
     );
-
-    /*    TextButton(
-      onPressed: () {
-        setState(() {
-          loginForm = !loginForm; // Toggle antara mode login dan registrasi
-        });
-      },
-      child: Text(loginForm ? 'Buat Akun' : 'Sudah punya Akun? Masuk '),
-    ); */
   }
 
   Widget _googleAuth() {
@@ -599,28 +631,13 @@ class LoginPageState extends State<LoginPage> {
             )),
       ),
     );
-
-    /*  Column(
-      children: [
-        const Text(
-          'atau',
-          style:
-              TextStyle(fontSize: 12), // Ganti dengan ukuran font yang sesuai
-        ),
-        ElevatedButton.icon(
-          onPressed: signInWithGoogle, // Panggil metode signInWithGoogle
-          icon: FaIcon(FontAwesomeIcons.google),
-          label: Text('Masuk dengan Akun Google'),
-        ),
-        SizedBox(height: 8), // Jarak antara tombol dan teks
-      ],
-    ); */
   }
 
   @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       appBar: AppBar(backgroundColor: GlobalVar.mainColor, title: _title()),
       body: globalVar.isLoading
           ? Center(
@@ -650,6 +667,7 @@ class LoginPageState extends State<LoginPage> {
                                   ),
                                 )),
                             if (!loginForm) ...[
+                              
                               _entryFieldUsername(
                                   'Nama Lengkap', _controllerUsername),
                               const SizedBox(height: 10),
@@ -661,8 +679,13 @@ class LoginPageState extends State<LoginPage> {
                               const SizedBox(height: 10),
                               _entryFieldPhone(
                                   'Cth: 081234567890', _controllerPhone),
+                              if (globalVar.initScreen == 1) ...[
+                                SizedBox(height: 10),
+                                _entryRole('Pilih Peran', _controllerRole)
+                              ],
                               const SizedBox(height: 10),
-                              _entryRole('Pilih Peran', _controllerRole),
+                              _entryReferralCodeInput('Kode Referral',
+                                  _controllerReferralCodeInput),
                             ],
                             SizedBox(
                               height: 10,

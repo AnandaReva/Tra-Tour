@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 import 'package:tratour/components/appBar.dart';
-import 'package:tratour/components/box_kategori.dart';
-import 'package:tratour/components/custom_button.dart';
+
 import 'package:tratour/globalVar.dart';
 
 class CustomCheckbox extends StatelessWidget {
@@ -70,14 +69,15 @@ class ChecBoxImages extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       // Use GlobalVar to access selectedTrashIndexes
-                      GlobalVar.instance.selectedTrashIndexes = selectedTrashIndexes;
+                      GlobalVar.instance.selectedTrashIndexes =
+                          selectedTrashIndexes;
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => ResultScreen(),
                         ),
                       );
                     },
-                    child: Text('Submit Pilihan'),
+                    child: const Text('Submit Pilihan'),
                   ),
                 ],
               ),
@@ -89,7 +89,6 @@ class ChecBoxImages extends StatelessWidget {
   }
 }
 
-
 class ResultScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -98,26 +97,25 @@ class ResultScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pilihan yang Dipilih'),
+        title: const Text('Pilihan yang Dipilih'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: selectedTrashIndexes.map((index) {
             if (index == 0) {
-              return Text('Pilihan 1 dipilih');
+              return const Text('Pilihan 1 dipilih');
             } else if (index == 1) {
-              return Text('Sampah 2 dipilih');
+              return const Text('Sampah 2 dipilih');
             } else if (index == 2) {
-              return Text('Pilihan 3 dipilih');
-            }  else if (index == 3) {
-              return Text('Pilihan 4 dipilih');
-            }  else if (index == 4) {
-              return Text('Pilihan 5 dipilih');
-            }  else if (index == 5) {
-              return Text('Pilihan 6 dipilih');
-            }  
-            else {
+              return const Text('Pilihan 3 dipilih');
+            } else if (index == 3) {
+              return const Text('Pilihan 4 dipilih');
+            } else if (index == 4) {
+              return const Text('Pilihan 5 dipilih');
+            } else if (index == 5) {
+              return const Text('Pilihan 6 dipilih');
+            } else {
               return Text('Pilihan ${index} dipilih');
             }
           }).toList(),
@@ -128,7 +126,7 @@ class ResultScreen extends StatelessWidget {
 }
 
 class CheckboxProvider with ChangeNotifier {
-  List<bool> _isChecked = [
+  final List<bool> _isChecked = [
     false,
     false,
     false,
@@ -162,18 +160,15 @@ class SortTrashPage extends StatelessWidget {
     return ChangeNotifierProvider<CheckboxProvider>(
       create: (context) => CheckboxProvider(),
       child: Scaffold(
-        appBar: MyAppBar(),
+        appBar: const MyAppBar(),
         body: SingleChildScrollView(
-          padding: EdgeInsets.all(20),
-          child:  SizedBox(child:ChecBoxImages(),
-           width: 200.0,
-      height: 1000.0,
-                 )  
-        ),
+            padding: const EdgeInsets.all(20),
+            child: SizedBox(
+              child: ChecBoxImages(),
+              width: 200.0,
+              height: 1000.0,
+            )),
       ),
     );
   }
 }
-
-
-

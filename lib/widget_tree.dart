@@ -22,21 +22,7 @@ class _WidgetTreeState extends State<WidgetTree> {
       builder: (context, snapshot) {
         // Perbaiki sintaks di sini
         if (snapshot.hasData) {
-
-/*             User? user = FirebaseAuth.instance.currentUser;
-  if (user != null) {
-    String userEmail = user.email ?? "";
-    print("User email firebase: $userEmail");
-
-    // Load user data
-    await LoginPageState().findUserDataFromDB(userEmail);
-    print('debug m1: ${globalVar.userLoginData}');
-
-    // Build the app passing user data to RootPage
-    runApp(MyApp(globalVar: globalVar, userData: globalVar.userLoginData));
-  } */
           globalVar.isLogin = true;
-
 
           return MainPage();
         } else {

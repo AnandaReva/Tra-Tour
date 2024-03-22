@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gallery_picker/gallery_picker.dart';
@@ -160,11 +161,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           children: [
                             // Add onChanged callback to update userData map
                             TextFormField(
-                              keyboardType: TextInputType.name,
+                              keyboardType: TextInputType.text,
                               inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(r'^[a-zA-Z\s]*$')),
-                                LengthLimitingTextInputFormatter(40),
+                                FilteringTextInputFormatter.allow(RegExp(
+                                    r'^[a-zA-Z0-9 ]*$')), // Allow letters, numbers, and spaces
+                                LengthLimitingTextInputFormatter(25),
                               ],
                               controller: _usernameUpdateController,
                               decoration: const InputDecoration(
@@ -351,7 +352,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
   }
 
-  Future<File?> getImageFromGallery(BuildContext context) async {
+/*   Future<File?> getImageFromGallery(BuildContext context) async {
     try {
       List<MediaFile>? singleMedia =
           await GalleryPicker.pickMedia(context: context, singleMedia: true);
@@ -360,5 +361,43 @@ class _EditProfilePageState extends State<EditProfilePage> {
       print('Error Image Picker: $e');
     }
     return null;
+  } */
+  Future<File?> getImageFromGallery(BuildContext context) async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['jpg', 'jpeg', 'webp'], // Batasan tipe file
+        allowMultiple: false,
+      );
+
+      if (result == null || result.files.isEmpty) {
+        return null;
+      }
+
+      File file = File(result.files.single.path!);
+      int fileSize = await file.length();
+
+      if (fileSize > 50 * 1024 * 1024) {
+        // File is too large, handle error
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Ukuran file terlalu besar dari 50 MB.'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+        return null;
+      }
+
+      return file;
+    } catch (e) {
+      print('Error Image Picker: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error selecting image: $e'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+      return null;
+    }
   }
 }
