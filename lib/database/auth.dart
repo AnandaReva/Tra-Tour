@@ -1,16 +1,18 @@
-import 'package:aplikasi_sampah/dbHelper/mysql.dart';
-import 'package:aplikasi_sampah/globalVar.dart';
-import 'package:aplikasi_sampah/login_register_page.dart';
-import 'package:aplikasi_sampah/main.dart';
+//import 'package:tratour/dbHelper/mysql.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tratour/globalVar.dart';
+import 'package:tratour/pages/login_register_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import 'package:http/http.dart' as http;
+//import 'package:intl/intl.dart';
+import 'dart:convert';
 //import 'package:mysql1/mysql1.dart';
 
-import 'dart:math';
-
-import 'package:mysql1/mysql1.dart';
+//import 'package:mysql1/mysql1.dart';
 
 class Auth {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -42,40 +44,27 @@ class Auth {
         password: password,
       );
 
-      
-
-      /*   // Panggil method untuk menyimpan data user ke MySQL
-       // sudah dipanggil di login_register_page.dart
-        await addUserToDatabase(username, email,password , no_hp, kecamatan, kelurahan, kota ); */
-
-
-
       globalVar.isLogin = true;
     } catch (e) {
-      globalVar.isLoading = false; 
+      globalVar.isLoading = false;
       print('Error creating user: $e');
       throw e;
     }
   }
 
- Future<void> signOut(BuildContext context) async {
-  await _firebaseAuth.signOut();
+  Future<void> signOut(BuildContext context) async {
+    await _firebaseAuth.signOut();
 
-  
-  globalVar.userLoginData = [];
-  globalVar.isLogin = false;
+    globalVar.userLoginData =
+        null; // Set userLoginData menjadi null atau kosong
+    globalVar.isLogin = false;
 
- 
-  List<dynamic> userDataList = globalVar.userLoginData;
-  print('SignoutData: $userDataList');
-
-  // Navigate to LoginPage
-  Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(builder: (context) => LoginPage(globalVar: globalVar)),
-  );
-}
-
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage(globalVar: globalVar)),
+      (route) => false,
+    );
+  }
 
   Future<void> signInWithGoogle(BuildContext context) async {
     try {
@@ -111,12 +100,12 @@ class Auth {
 
         // Redirect to home page or perform any necessary actions after successful sign-in
         globalVar.isLogin = true;
-        Navigator.push(
+        /*  Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => HomePage(globalVar: globalVar),
           ),
-        );
+        ); */
       } else {
         // Handle case when user cancels the sign-in process
         print("Sign-in process cancelled");
@@ -275,104 +264,80 @@ class Auth {
     );
   }
 
-  // Metode untuk menambahkan data user ke database MySQL
   Future<void> addUserToDatabase(
-      String username,
-      String password,
-      String email,
-      String phone,
-      String user_point,
-      String user_type,
-      profile_image,
-      referral_code,
-      createAndUpdateAt) async {
+    String username,
+    String password,
+    String email,
+    String phone,
+    String role,
+    String initial_user_point,
+    String initial_profile_image,
+    String initial_address,
+    String initial_postal_code,
+    String referral_code,
+  ) async {
     try {
-      await Mysql.connect();
-      var results = await Mysql.connection.query(
-        'INSERT INTO user (username, email, no_hp, password, user_point ,user_type, profile_image, referral_code, created_at, updated_at) '
-        'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) '
-        'ON DUPLICATE KEY UPDATE '
-        'username = VALUES(username), '
-        'no_hp = VALUES(no_hp), '
-        'password = VALUES(password), '
-        'user_point = VALUES(user_point), '
-        'user_type = VALUES(user_type), '
-        'profile_image = VALUES(profile_image), '
-        'referral_code = VALUES(referral_code), '
-        'created_at = VALUES(created_at), '
-        'updated_at = VALUES(updated_at);',
-        [
-          username,
-          email,
-          phone,
-          password,
-          user_point,
-          user_type,
-          profile_image,
-          referral_code,
-          createAndUpdateAt,
-          createAndUpdateAt // Menambahkan nilai createAndUpdateAt kedua
-        ],
+      String url = 'https://tratour.000webhostapp.com/createUser.php';
 
-        // berhasil masukkan data user baru ke user Login
+      Map<String, dynamic> newUserData = {
+        'username': username,
+        'email': email,
+        'phone': phone,
+        'password': password,
+        'user_type': role,
+        'user_point': initial_user_point,
+        'profile_image': initial_profile_image,
+        'address': initial_address,
+        'postal_code': initial_postal_code,
+        'referral_code': referral_code,
+      };
+
+      String body = json.encode(newUserData);
+
+      print('debug 5: $newUserData ');
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+        },
+        body: body,
       );
 
-      globalVar.userLoginData = results.toList();
-      print('data login: $globalVar.userLoginData');
+      if (response.statusCode == 200) {
+        print('New user added successfully.');
+
+        // Memperbarui userLoginData setelah menambahkan pengguna baru
+        GlobalVar globalVar = GlobalVar.instance;
+
+        globalVar.userLoginData = newUserData;
+        globalVar.userLoginData['profile_photo'] = null;
+
+        if (globalVar.userLoginData['profile_photo'] == null) {
+          // Lakukan sesuatu jika variable null
+          print('debug Variable is null');
+        } else {
+          // Lakukan sesuatu jika variable tidak null
+          print('Variable is not null');
+        }
+
+        // print('debig m3: $globalVar.userLoginData[profile_photo]');
+
+        // Cetak tipe data respons
+
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        globalVar.initScreen = prefs.getInt("initScreen") ?? 0;
+        await prefs.setInt("initScreen", 1);
+
+        print('initScreen 2: ${globalVar.initScreen}');
+        print('Response Type: ${response.body.runtimeType}');
+      } else {
+        print('Failed to create user: ${response.statusCode}');
+        // Lakukan sesuatu jika gagal menambahkan pengguna
+      }
     } catch (e) {
-      print('Error Insert Data MYSQL: $e');
-    } finally {
-      await Mysql.close();
+      print('Error adding user: $e');
+      // Lakukan sesuatu jika terjadi kesalahan
     }
   }
 }
-
-
-
-
-
-/*  Future<void> signInWithGoogle(BuildContext context) async {
-    try {
-      final GoogleSignIn googleSignIn = GoogleSignIn();
-        print('cek auth 1');
-      final GoogleSignInAccount? googleSignInAccount =
-          await googleSignIn.signIn();
-
-            print('cek auth 2');
-
-      if (googleSignInAccount != null) {
-        final GoogleSignInAuthentication googleSignInAuthentication =
-            await googleSignInAccount.authentication;
-        final AuthCredential credential = GoogleAuthProvider.credential(
-          accessToken: googleSignInAuthentication.accessToken,
-          idToken: googleSignInAuthentication.idToken,
-        );
-
-        print('cek auth 4');
-        await _firebaseAuth.signInWithCredential(credential);
-
-
-        // Redirect to home page or perform any necessary actions after successful sign-in
-        globalVar.isLogin = true;
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => HomePage(
-                    globalVar: globalVar,
-                  )),
-        );
-      } else {
-        // Handle case when user cancels the sign-in process
-        print("Sign-in process cancelled");
-      }
-    } catch (e) {
-      // Handle any errors that occur during sign-in process
-      print("Error during sign-in with Google: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content:
-              Text('Failed to sign in with Google. Please try again later.'),
-        ),
-      );
-    }
-  } */

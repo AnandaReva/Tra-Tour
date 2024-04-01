@@ -1,13 +1,12 @@
-import 'package:aplikasi_sampah/login_register_page.dart';
-import 'package:aplikasi_sampah/components/profilePage.dart';
-import 'package:aplikasi_sampah/firebase/auth.dart';
-import 'package:aplikasi_sampah/globalVar.dart';
-import 'package:aplikasi_sampah/main.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tratour/pages/login_register_page.dart';
+import 'package:tratour/database/auth.dart';
+import 'package:tratour/globalVar.dart';
+import 'package:tratour/main.dart';
+
 import 'package:flutter/material.dart';
 
 class WidgetTree extends StatefulWidget {
-  const WidgetTree({Key? key}) : super(key: key);
+  const WidgetTree({Key? key, required GlobalVar globalVar}) : super(key: key);
 
   @override
   State<WidgetTree> createState() => _WidgetTreeState();
@@ -23,9 +22,13 @@ class _WidgetTreeState extends State<WidgetTree> {
       builder: (context, snapshot) {
         // Perbaiki sintaks di sini
         if (snapshot.hasData) {
-          return HomePage(globalVar: globalVar); // Perbaiki sintaks di sini
+          globalVar.isLogin = true;
+
+          return MainPage();
         } else {
-          return LoginPage(globalVar: globalVar,); // Perbaiki sintaks di sini
+          return LoginPage(
+            globalVar: globalVar,
+          );
         }
       },
     );

@@ -1,21 +1,35 @@
 //import 'dart:convert';
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:io';
 
-//import 'package:aplikasi_sampah/components/drawer.dart';
-import 'package:aplikasi_sampah/firebase/auth.dart';
-import 'package:aplikasi_sampah/globalVar.dart';
-import 'package:aplikasi_sampah/login_register_page.dart';
-import 'package:aplikasi_sampah/model/articles_model.dart';
+//import 'package:tratour/components/drawer.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:aplikasi_sampah/widget_tree.dart';
+import 'package:tratour/globalVar.dart';
+import 'package:tratour/onboarding/onboarding_screen.dart';
+import 'package:tratour/pages/homePage.dart';
+import 'package:tratour/pages/login_register_page.dart';
+import 'package:tratour/pages/orderPage.dart';
+import 'package:tratour/pages/socialPage.dart';
+import 'package:tratour/pages/sortTrashPage.dart';
+
+import 'package:tratour/widget_tree.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 //import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:aplikasi_sampah/components/appBar.dart';
-import 'package:aplikasi_sampah/components/ProfilePage.dart';
+import 'package:tratour/components/appBar.dart';
+import 'package:tratour/Pages/ProfilePage.dart';
 
-//import 'package:aplikasi_sampah/profile.dart';6
+//int initScreen = 0;
+
+/* Future<void> resetInitScreen() async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.remove('initScreen');
+} */
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   GlobalVar globalVar = GlobalVar.instance;
@@ -26,77 +40,92 @@ Future<void> main() async {
               apiKey: 'AIzaSyBxDijkEkT9meAuvaAPUIcM9NLW0S46O7w',
               appId: '1:525346093175:android:e0136e9c61854d9f0dee72',
               messagingSenderId: '525346093175',
-              projectId: 'tra-tour'))
+              projectId: 'tra-tour',
+              storageBucket: "tra-tour.appspot.com"))
       : await Firebase.initializeApp();
 
-  print('isLoginkkk: ${globalVar.isLogin}');
+//reset initScreen
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+ 
+ // await prefs.remove('initScreen');
+ // print('initScreen: $globalVar.initScreen');
 
   
+ // globalVar.initScreen = prefs.getInt("initScreen") ?? 0;
+  //await prefs.setInt("initScreen", 1); // set to 1 if not exist, otherwise 0
+  ///////////////////
 
-  runApp(MyApp(globalVar: globalVar));
+  print('initScreen: ${globalVar.initScreen}');
+
+  User? user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    String userEmail = user.email ?? "Terjadi Kesalahan saat mengambil data";
+    print("User email firebase: $userEmail");
+
+    // Load user data
+    await LoginPageState().findUserDataFromDB(userEmail);
+    print('cek user: ${globalVar.userLoginData}');
+  }
+
+  // Build the app passing user data to RootPage
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => GlobalVar.instance),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  final GlobalVar globalVar;
-  const MyApp({Key? key, required this.globalVar}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final GlobalVar globalVar = Provider.of<GlobalVar>(context);
     return MaterialApp(
       title: 'Tra-tour',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: WidgetTree(),
+      initialRoute: globalVar.initScreen == 0 || globalVar.initScreen == null
+          ? 'onboard'
+          : 'widgetTree',
+      routes: {
+        'widgetTree': (context) => WidgetTree(globalVar: globalVar),
+        'onboard': (context) => OnBoardingScreen(globalVar: globalVar),
+      },
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  final GlobalVar globalVar;
-  HomePage({Key? key, required this.globalVar}) : super(key: key);
-
-  final User? user = Auth().currentUser;
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
 
   @override
-  State<HomePage> createState() => _HomeState(globalVar: globalVar);
+  State<MainPage> createState() => _MainState();
 }
 
-class _HomeState extends State<HomePage> with TickerProviderStateMixin {
-  final GlobalVar globalVar;
+class _MainState extends State<MainPage> with TickerProviderStateMixin {
+  late final GlobalVar globalVar;
   late final List<GlobalKey<NavigatorState>> navigatorKeys;
   late final List<AnimationController> destinationFaders;
   late final List<Widget> destinationViews;
-
   final List<Destination> allDestinations = [
-    Destination(0, 'Beranda', Icons.home, Colors.blue),
-    Destination(1, 'Pesanan', Icons.reorder, Colors.green),
-    Destination(2, 'Tambah', Icons.add_circle, Colors.red),
-    Destination(3, 'Sosial', Icons.groups, Colors.purple),
+    Destination(0, 'Beranda', Icons.home, Colors.grey),
+    Destination(1, 'Pesanan', Icons.reorder, Colors.grey),
+    Destination(2, 'Pilah Sampah', Icons.add_circle, Colors.grey),
+    Destination(3, 'Sosial', Icons.groups, Colors.grey),
     Destination(4, 'Profile', Icons.person, Colors.grey),
     // Add more destinations as needed
   ];
 
-  _HomeState({required this.globalVar});
-
   @override
   void initState() {
     super.initState();
-
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        
-        String userEmail =
-            user.email ?? ""; // Mengambil email pengguna, jika ada
-        print("User email firebase: $userEmail");
-
-        LoginPageState loginPageState = LoginPageState();
-
-        // Panggil metode findUserDataFromDB dari objek LoginPageState
-        loginPageState.findUserDataFromDB(userEmail);
-      }
-    });
+    globalVar = Provider.of<GlobalVar>(context, listen: false);
 
     navigatorKeys = List<GlobalKey<NavigatorState>>.generate(
       allDestinations.length,
@@ -109,41 +138,14 @@ class _HomeState extends State<HomePage> with TickerProviderStateMixin {
     ).toList();
     destinationFaders[globalVar.selectedIndex].value = 1.0;
 
-    final CurveTween tween = CurveTween(curve: Curves.fastOutSlowIn);
-    destinationViews = allDestinations.map<Widget>(
-      (Destination destination) {
-        return FadeTransition(
-          opacity: destinationFaders[destination.index].drive(tween),
-          child: DestinationView(
-            destination: destination,
-            navigatorKey: navigatorKeys[destination.index],
-          ),
-        );
-      },
-    ).toList();
-  }
-
-  AnimationController buildFaderController() {
-    final AnimationController controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-    controller.addStatusListener(
-      (AnimationStatus status) {
-        if (status == AnimationStatus.dismissed) {
-          setState(() {}); // Rebuild unselected destinations offstage.
-        }
-      },
-    );
-    return controller;
-  }
-
-  @override
-  void dispose() {
-    for (final AnimationController controller in destinationFaders) {
-      controller.dispose();
-    }
-    super.dispose();
+    // Inisialisasi destinationViews dengan tampilan dari setiap destinasi
+    destinationViews = [
+      HomePage(userData: globalVar.userLoginData),
+      OrderPage(),
+      SortTrashPage(),
+      SocialPage(),
+      ProfilePage(),
+    ];
   }
 
   @override
@@ -196,6 +198,21 @@ class _HomeState extends State<HomePage> with TickerProviderStateMixin {
       ),
     );
   }
+
+  AnimationController buildFaderController() {
+    final AnimationController controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    controller.addStatusListener(
+      (AnimationStatus status) {
+        if (status == AnimationStatus.dismissed) {
+          setState(() {}); // Rebuild unselected destinations offstage.
+        }
+      },
+    );
+    return controller;
+  }
 }
 
 class Destination {
@@ -206,88 +223,62 @@ class Destination {
   final MaterialColor color;
 }
 
-class RootPage extends StatelessWidget {
-  const RootPage({Key? key, required this.destination});
-
+class RootPage extends StatefulWidget {
   final Destination destination;
+  final Map<String, dynamic>? userData; // Tambahkan parameter userData
 
-  Widget _buildPage(BuildContext context) {
-    // Return the appropriate widget based on the destination
-    switch (destination.index) {
-      case 0:
-        return BerandaPage();
-      case 1:
-        return PesananPage();
-      case 2:
-        return TambahPage();
-      case 3:
-        return SosialPage();
-      case 4:
-        return ProfilePage();
-      default:
-        return SizedBox(); // Return an empty widget for unknown destinations
-    }
+  const RootPage({Key? key, required this.destination, this.userData})
+      : super(key: key);
+
+  @override
+  _RootPageState createState() => _RootPageState();
+}
+
+class _RootPageState extends State<RootPage> {
+  late final GlobalVar globalVar;
+  late Map<String, dynamic>? userData; // Define userData parameter
+
+  @override
+  void initState() {
+    super.initState();
+    globalVar = Provider.of<GlobalVar>(context, listen: false);
+    // Memanggil initState akan memastikan bahwa data pengguna diperbarui saat halaman diinisialisasi
+    _updateUserData();
+  }
+
+  // Method untuk memperbarui data pengguna dan memicu pembaruan widget
+  void _updateUserData() {
+    setState(() {
+      // Memperbarui data pengguna dengan data baru
+      userData = globalVar.userLoginData;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: destination.index != 4 ? MyAppBar() : null,
-      backgroundColor: destination.color[50],
+      appBar: widget.destination.index != 4 ? MyAppBar() : null,
+      backgroundColor: widget.destination.color[50],
       body: _buildPage(context), // Build the appropriate page
     );
   }
-}
 
-class BerandaPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    _getInfo();
-    return Scaffold(
-      body: ListView(
-        children: [
-          // Poin kamu
-          _poinSection(),
-
-          // Voucher
-          _voucherSection(),
-
-          // Artikel Pilihan1
-          _artikelPilihan(),
-
-          // Artikel Pilihan2
-          _artikelPilihan(),
-        ],
-      ),
-      //bottomNavigationBar: _bottomNavigationBar(),
-    );
-  }
-}
-
-class PesananPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Text('Ini adalah halaman Pesanan'),
-    );
-  }
-}
-
-class SosialPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Text('Ini adalah halaman Siasal'),
-    );
-  }
-}
-
-class TambahPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Text('Ini adalah halaman Tambah'),
-    );
+  Widget _buildPage(BuildContext context) {
+    // Return the appropriate widget based on the destination
+    switch (widget.destination.index) {
+      case 0:
+        return HomePage(userData: userData);
+      case 1:
+        return OrderPage();
+      case 2:
+        return SortTrashPage();
+      case 3:
+        return SocialPage();
+      case 4:
+        return ProfilePage();
+      default:
+        return const SizedBox(); // Return an empty widget for unknown destinations
+    }
   }
 }
 
@@ -316,7 +307,10 @@ class _DestinationViewState extends State<DestinationView> {
           builder: (BuildContext context) {
             switch (settings.name) {
               case '/':
-                return RootPage(destination: widget.destination);
+                return RootPage(
+                  destination: widget.destination,
+                  userData: {},
+                );
               /* case '/list':
                 return ListPage(destination: widget.destination);
               case '/text':
@@ -329,375 +323,6 @@ class _DestinationViewState extends State<DestinationView> {
       },
     );
   }
-}
-
-List<ArticlesModel> articles = [];
-
-void _getInfo() {
-  articles = ArticlesModel.getArticles();
-}
-
-/* @override
-Widget build(BuildContext context) {
-  _getInfo();
-  return Scaffold(
-    appBar: MyAppBar(),
-    body: ListView(
-      children: [
-        // Poin kamu
-        _poinSection(),
-
-        // Voucher
-        _voucherSection(),
-
-        // Artikel Pilihan1
-        _artikelPilihan(),
-
-        // Artikel Pilihan2
-        _artikelPilihan(),
-      ],
-    ),
-    //bottomNavigationBar: _bottomNavigationBar(),
-  );
-}
- */
-Padding _artikelPilihan() {
-  return Padding(
-    padding: const EdgeInsets.all(15.0),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              Text(
-                "Artikel Pilihan",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'PTSans',
-                ),
-              ),
-              Icon(
-                Icons.chevron_right,
-                size: 16,
-              ),
-            ],
-          ),
-        ),
-        Container(
-          height: 185,
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.red),
-          ),
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) {
-              return Container(
-                width: 152,
-                decoration: const BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(15),
-                    topRight: Radius.circular(15),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10),
-                      ),
-                      child: Image.asset(
-                        articles[index].articleImage,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            articles[index].title,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                              fontFamily: 'PTSans',
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.calendar_month,
-                                size: 12,
-                              ),
-                              Text(
-                                articles[index].date,
-                                style: TextStyle(fontSize: 8),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          Text(
-                            articles[index].description,
-                            style: TextStyle(
-                              fontSize: 10,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-            separatorBuilder: (context, index) => SizedBox(width: 25),
-            itemCount: articles.length,
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-Padding _voucherSection() {
-  return Padding(
-    padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
-    child: Container(
-      width: 320,
-      height: 149,
-      decoration: BoxDecoration(
-          color: Colors.amber,
-          borderRadius: BorderRadius.all(Radius.circular(4))),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: 
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Voucher',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'PTSans',
-                  ),
-                ),
-                Text(
-                  'Total poin kamu dapat ditukarkan dengan voucher dibawah ini loh!',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontFamily: 'PTSans',
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment
-                  .spaceAround, // Memberikan ruang sekitar setiap child
-              children: [
-                Column(
-                  children: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.smartphone),
-                    ),
-                    RichText(
-                      textAlign: TextAlign.center,
-                      text: const TextSpan(
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 10.0,
-                          fontFamily: 'PTSans',
-                        ),
-                        children: <TextSpan>[
-                          TextSpan(
-                            text: 'Pulsa \n',
-                          ),
-                          TextSpan(
-                            text: 'Prabayar',
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.wifi),
-                    ),
-                    RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 10.0,
-                          fontFamily: 'PTSans',
-                        ),
-                        children: <TextSpan>[
-                          TextSpan(
-                            text: 'Paket\n',
-                          ),
-                          TextSpan(
-                            text: 'Data',
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.bolt),
-                    ),
-                    RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 10.0,
-                          fontFamily: 'PTSans',
-                        ),
-                        children: <TextSpan>[
-                          TextSpan(
-                            text: 'Voucher \n',
-                          ),
-                          TextSpan(
-                            text: 'Listrik',
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.arrow_right_alt),
-                    ),
-                    RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 10.0,
-                          fontFamily: 'PTSans',
-                        ),
-                        children: <TextSpan>[
-                          TextSpan(
-                            text: 'Voucher \n',
-                          ),
-                          TextSpan(
-                            text: 'Lainnya',
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-Padding _poinSection() {
-  GlobalVar globalVar = GlobalVar.instance;
-
-  List<dynamic> userDataList = globalVar.userLoginData;
-
-  // Get user data from the list
-
-  String user_pointLogin = userDataList.isNotEmpty
-      ? userDataList[0]['user_point'].toString() ?? 'ERROR CONNECTING TO DB'
-      : '';
-
-  return Padding(
-    padding: const EdgeInsets.all(15.0),
-    child: Container(
-      width: 320,
-      height: 70,
-      decoration: const BoxDecoration(
-          color: Colors.amber,
-          borderRadius: BorderRadius.all(Radius.circular(4))),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text(
-              'Poin Kamu',
-              style: TextStyle(
-                fontFamily: 'PTSans',
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Text(
-                  'Total Poin Anda: ',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontFamily: 'PTSans',
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Center(
-                  child: RichText(
-                    text: TextSpan(
-                      style: const TextStyle(color: Colors.black),
-                      children: <TextSpan>[
-                        TextSpan(
-                          text: user_pointLogin,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontFamily: 'PTSans',
-                          ),
-                        ),
-                        TextSpan(
-                          text: ' Poin',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontFamily: 'PTSans',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // child: Text(
-                  //   '10000 Poin',
-                  //   style: TextStyle(fontSize: 14),
-                  // ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    ),
-  );
 }
 
 class NavigationBar extends StatelessWidget {

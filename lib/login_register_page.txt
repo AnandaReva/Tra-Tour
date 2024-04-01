@@ -10,6 +10,8 @@ import 'package:intl/intl.dart';
 import 'package:mysql1/mysql1.dart';
 import 'dart:math';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 bool loginForm = false; // Defaultnya dalam mode login
 
@@ -41,7 +43,7 @@ class LoginPageState extends State<LoginPage> {
   final initial_profile_image = null;
   String createAndUpdateAt = '';
   String referral_code = '';
- // bool globalVar.isLoading = false;
+  // bool globalVar.isLoading = false;
 
   final Auth _auth = Auth(); // Inisialisasi instance Auth
 
@@ -75,11 +77,12 @@ class LoginPageState extends State<LoginPage> {
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
-        globalVar.isLoading = false; 
+        globalVar.isLoading = false;
       });
     } finally {
       setState(() {
-        globalVar.isLoading = false; // Menyembunyikan animasi loading setelah selesai
+        globalVar.isLoading =
+            false; // Menyembunyikan animasi loading setelah selesai
       });
     }
   }
@@ -135,8 +138,8 @@ class LoginPageState extends State<LoginPage> {
   }
 
   Future<void> checkReferralCodeDB(referral_code) async {
-    DateTime now = DateTime.now();
-    createAndUpdateAt = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+  //  DateTime now = DateTime.now();
+   // createAndUpdateAt = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
 
     try {
       await Mysql.connect();
@@ -154,11 +157,9 @@ class LoginPageState extends State<LoginPage> {
         // Lanjutkan proses menyimpan data user
 
         try {
-
-           setState(() {
-                globalVar.isLoading = true; // Menampilkan animasi loading
-              });
-
+          setState(() {
+            globalVar.isLoading = true; // Menampilkan animasi loading
+          });
 
           // Menambahkan data user ke database MySQL
 
@@ -166,7 +167,8 @@ class LoginPageState extends State<LoginPage> {
           await Auth().createUserWithEmailAndPassword(
             _controllerEmail.text,
             _controllerPassword.text,
-          );  Auth auth = Auth(); // Buat objek dari kelas Auth
+          );
+          Auth auth = Auth(); // Buat objek dari kelas Auth
 
           await auth.addUserToDatabase(
             _controllerUsername.text,
@@ -180,9 +182,9 @@ class LoginPageState extends State<LoginPage> {
             createAndUpdateAt,
           );
 
-            setState(() {
-                globalVar.isLoading = false; // Menampilkan animasi loading
-              });
+          setState(() {
+            globalVar.isLoading = false; // Menampilkan animasi loading
+          });
 
           globalVar.isLogin = true;
           Navigator.push(
@@ -195,11 +197,11 @@ class LoginPageState extends State<LoginPage> {
           );
         } on FirebaseAuthException catch (e) {
           setState(() {
-            globalVar.isLoading = false; 
+            globalVar.isLoading = false;
             errorMessage = e.message;
             print('error sql:  $errorMessage');
           });
-        } 
+        }
       } else {
         print('Referal code telah digunakan: $referral_code');
 
@@ -224,7 +226,7 @@ class LoginPageState extends State<LoginPage> {
 
               // Mendaftarkan user menggunakan Firebase Authentication
 
-             /*  setState(() {
+              /*  setState(() {
                 globalVar.isLoading = true; // Menampilkan animasi loading
               }); */
 
@@ -420,7 +422,7 @@ class LoginPageState extends State<LoginPage> {
   Future<void> findUserDataFromDB(
     String email,
   ) async {
-    try {
+    /*   try {
       await Mysql.connect();
       Results results = await Mysql.connection
           .query('SELECT * FROM user WHERE email = ? ', [email]);
@@ -433,6 +435,33 @@ class LoginPageState extends State<LoginPage> {
       }
     } catch (e) {
       print('Error Get User Data: $e');
+    } */
+    String url = 'https://tratour.000webhostapp.com/cobaLogin.php?email=$email';
+
+    try {
+      // Melakukan HTTP GET request
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        // Berhasil mendapatkan respon dari server
+        GlobalVar globalVar = GlobalVar.instance;
+        Map<String, dynamic> data = json.decode(response.body);
+
+        // Memperbarui userLoginData dengan data yang diperoleh
+        globalVar.userLoginData = data['data'];
+
+        // Set isLogin menjadi true
+        globalVar.isLogin = true;
+      } else {
+        // Gagal mendapatkan respon dari server
+        print('Failed to load data: ${response.statusCode}');
+        setState(() {
+          globalVar.isLoading = false;
+        });
+      }
+    } catch (e) {
+      // Terjadi kesalahan saat melakukan permintaan HTTP
+      print('Error: $e');
     }
   }
 }
