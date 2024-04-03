@@ -23,7 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:tratour/components/appBar.dart';
 import 'package:tratour/Pages/ProfilePage.dart';
 
-//int initScreen = 0;
+int initScreen = 0;
 
 /* Future<void> resetInitScreen() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -45,17 +45,15 @@ Future<void> main() async {
       : await Firebase.initializeApp();
 
 //reset initScreen
-        final SharedPreferences prefs = await SharedPreferences.getInstance();
- 
- // await prefs.remove('initScreen');
- // print('initScreen: $globalVar.initScreen');
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  
- // globalVar.initScreen = prefs.getInt("initScreen") ?? 0;
-  //await prefs.setInt("initScreen", 1); // set to 1 if not exist, otherwise 0
+  //  await prefs.remove('initScreen');
+
+  initScreen = prefs.getInt("initScreen") ?? 0;
+  await prefs.setInt("initScreen", 1); // set to 1 if not exist, otherwise 0
   ///////////////////
 
-  print('initScreen: ${globalVar.initScreen}');
+  print('initScreen Main: $initScreen');
 
   User? user = FirebaseAuth.instance.currentUser;
   if (user != null) {
@@ -90,12 +88,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      initialRoute: globalVar.initScreen == 0 || globalVar.initScreen == null
-          ? 'onboard'
-          : 'widgetTree',
+      initialRoute:
+          initScreen == 0 || initScreen == null ? 'onboard' : 'widgetTree',
       routes: {
         'widgetTree': (context) => WidgetTree(globalVar: globalVar),
         'onboard': (context) => OnBoardingScreen(globalVar: globalVar),
+        // 'onOrder' : (context) => CreateOrderPage(globalVar: globalVar),
       },
     );
   }
@@ -142,7 +140,7 @@ class _MainState extends State<MainPage> with TickerProviderStateMixin {
     destinationViews = [
       HomePage(userData: globalVar.userLoginData),
       OrderPage(),
-      SortTrashPage(),
+      SortTrashPage(globalVar: globalVar,),
       SocialPage(),
       ProfilePage(),
     ];
@@ -271,7 +269,7 @@ class _RootPageState extends State<RootPage> {
       case 1:
         return OrderPage();
       case 2:
-        return SortTrashPage();
+        return SortTrashPage(globalVar: globalVar,);
       case 3:
         return SocialPage();
       case 4:

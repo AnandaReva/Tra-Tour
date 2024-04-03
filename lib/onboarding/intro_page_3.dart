@@ -54,25 +54,20 @@ class _IntroPage3State extends State<IntroPage3> {
                 },
                 child: Column(
                   children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color:
-                              widget.globalVar.selected_role_onboarding == '3'
-                                  ? Colors.black
-                                  : Colors.transparent,
-                          width: 2,
-                        ),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+                    Opacity(
+                      opacity: widget.globalVar.selected_role_onboarding == '3'
+                          ? 0.5
+                          : 1.0,
                       child: Image.asset("assets/images/User Pengepul.png"),
                     ),
-                    const Text(
+                    Text(
                       "Pengepul",
                       style: TextStyle(
-                        fontSize: 32,
+                        fontSize: 30,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: widget.globalVar.selected_role_onboarding == '3'
+                            ? GlobalVar.secondaryColor
+                            : Colors.white,
                       ),
                     ),
                   ],
@@ -85,73 +80,70 @@ class _IntroPage3State extends State<IntroPage3> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      widget.globalVar.selected_role_onboarding = '2';
-                      print(
-                          "Pengangkut : ${widget.globalVar.selected_role_onboarding}");
-                    });
-                  },
-                  child: Column(
-                    children: [
-                      Container(
-                        child: Image.asset("assets/images/User Pickuper.png"),
-                        decoration: BoxDecoration(
-                          border: Border.all(
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        widget.globalVar.selected_role_onboarding = '2';
+                        print(
+                            "Pengangkut : ${widget.globalVar.selected_role_onboarding}");
+                      });
+                    },
+                    child: Column(
+                      children: [
+                        Opacity(
+                          opacity:
+                              widget.globalVar.selected_role_onboarding == '2'
+                                  ? 0.5
+                                  : 1.0,
+                          child: Image.asset("assets/images/User Pickuper.png"),
+                        ),
+                        Text(
+                          "Pengangkut",
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
                             color:
                                 widget.globalVar.selected_role_onboarding == '2'
-                                    ? Colors.black
-                                    : Colors.transparent,
-                            width: 2,
+                                    ? GlobalVar.secondaryColor
+                                    : Colors.white,
                           ),
-                          borderRadius: BorderRadius.circular(8),
                         ),
-                      ),
-                      const Text(
-                        "Pengangkut",
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-                const SizedBox(width: 20),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      widget.globalVar.selected_role_onboarding = '1';
-                      print(
-                          "Pengguna : ${widget.globalVar.selected_role_onboarding}");
-                    });
-                  },
-                  child: Column(
-                    children: [
-                      Container(
-                        child: Image.asset("assets/images/User User.png"),
-                        decoration: BoxDecoration(
-                          border: Border.all(
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        widget.globalVar.selected_role_onboarding = '1';
+                        print(
+                            "Pengguna : ${widget.globalVar.selected_role_onboarding}");
+                      });
+                    },
+                    child: Column(
+                      children: [
+                        Opacity(
+                          opacity:
+                              widget.globalVar.selected_role_onboarding == '1'
+                                  ? 0.5
+                                  : 1.0,
+                          child: Image.asset("assets/images/User User.png"),
+                        ),
+                        Text(
+                          "Pengguna",
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
                             color:
                                 widget.globalVar.selected_role_onboarding == '1'
-                                    ? Colors.black
-                                    : Colors.transparent,
-                            width: 2,
+                                    ? GlobalVar.secondaryColor
+                                    : Colors.white,
                           ),
-                          borderRadius: BorderRadius.circular(8),
                         ),
-                      ),
-                      const Text(
-                        "Pengguna",
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ],

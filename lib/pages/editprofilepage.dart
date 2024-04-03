@@ -278,10 +278,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       true; // Set isLoading to true when updating starts
                 });
                 await _updateUserData();
-                setState(() {
-                  globalVar.isLoading =
-                      false; // Set isLoading to false when updating finishes
-                });
+
+                if (globalVar.isLoading == true) {
+                  setState(() {
+                    globalVar.isLoading =
+                        false; // Set isLoading to false when updating finishes
+                  });
+                }
 
                 print('check textfield C: ${_usernameUpdateController.text}');
                 print('check textfield C: ${_phoneUpdateController.text}');

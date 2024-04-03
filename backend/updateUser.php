@@ -15,13 +15,11 @@ print_r($input);
 
 // Memeriksa apakah data yang diterima sesuai dengan yang diharapkan
 if (
-    isset($input['username']) && 
-    isset($input['email']) && 
+    isset($input['email']) &&  
+    isset($input['username']) && // Menambahkan pengecekan untuk username
     isset($input['phone']) && 
-    isset($input['password']) && 
-    isset($input['user_point']) && 
-    isset($input['user_type']) && 
-    isset($input['referral_code'])
+    isset($input['address']) && 
+    isset($input['postal_code'])
 ) {
     // Koneksi ke database
     $servername = "localhost";
@@ -38,27 +36,35 @@ if (
     }
 
     // Mendapatkan data dari permintaan POST
-    $username = $input['username'];
-    $email = $input['email'];
-    $phone = ($input['phone']); // Mengonversi ke integer
-    $password = $input['password'];
-    $user_point = intval($input['user_point']); // Mengonversi ke integer
-    $user_type = ($input['user_type']); // Mengonversi ke integer
-    $referral_code = $input['referral_code'];
-    $profile_image = $input['profile_image']; // Anda dapat menyesuaikan ini jika perlu
+    $email = $input['email']; 
+    $new_username = $input['username']; // Menggunakan nama variabel yang berbeda
+    $phone = $input['phone']; 
     $address = $input['address'];
     $postal_code = $input['postal_code'];
-    //
-    $created_at = date("Y-m-d H:i:s");
+
+    // Mendapatkan waktu sekarang
     $updated_at = date("Y-m-d H:i:s");
 
-    // Query untuk melakukan insert data
-    //$sql = "INSERT INTO user (username, email, phone, password, user_point, user_type, referral_code, profile_image)
-   // VALUES ('$username', '$email', $phone, '$password', $user_point, $user_type, '$referral_code', '$profile_image';
-    $sql = "INSERT INTO user (username, email, phone, password, user_point, user_type, referral_code, profile_image, address, postal_code , created_at, updated_at)
-    VALUES ('$username', '$email', '$phone', '$password', $user_point, $user_type, '$referral_code', NULL , NULL , NULL , '$created_at', '$updated_at')";
+    // Inisialisasi variabel profile_image dengan NULL
+    
+
+    // Jika profile_image ada dalam data yang diterima, gunakan nilainya
+if (isset($input['profile_image']) && $input['profile_image'] !== "") {
+    $profile_image = $input['profile_image'];
+    $sql = "UPDATE user SET username='$new_username', phone='$phone', address='$address', postal_code='$postal_code', updated_at='$updated_at', profile_image='$profile_image' WHERE email='$email'";
+    echo "Profile Image tidak kosong: ";
+} else {
+    echo "Profile Image kosong: ";
+    $sql = "UPDATE user SET username='$new_username', phone='$phone', address='$address', postal_code='$postal_code', updated_at='$updated_at' WHERE email='$email'";
+}
+
+
+
+    // Query untuk melakukan update data
+   
+
     if ($conn->query($sql) === TRUE) {
-        echo "Data baru berhasil ditambahkan";
+        echo "Data berhasil diperbarui";
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }

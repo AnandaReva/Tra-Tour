@@ -15,12 +15,13 @@ print_r($input);
 
 // Memeriksa apakah data yang diterima sesuai dengan yang diharapkan
 if (
-    isset($input['username']) && 
-    isset($input['email']) && 
-    isset($input['phone']) && 
-    isset($input['password']) && 
-    isset($input['user_point']) && 
-    isset($input['user_type']) && 
+    isset($input['email']) &&
+    isset($input['phone']) &&
+
+    isset($input['user_location']) &&
+    isset($input['cost']) &&
+    isset($input['status']) &&
+    isset($input['user_id']) &&
     isset($input['referral_code'])
 ) {
     // Koneksi ke database
@@ -40,10 +41,10 @@ if (
     // Mendapatkan data dari permintaan POST
     $username = $input['username'];
     $email = $input['email'];
-    $phone = ($input['phone']); // Mengonversi ke integer
+    $phone = intval($input['phone']); // Mengonversi ke integer
     $password = $input['password'];
     $user_point = intval($input['user_point']); // Mengonversi ke integer
-    $user_type = ($input['user_type']); // Mengonversi ke integer
+    $user_type = intval($input['user_type']); // Mengonversi ke integer
     $referral_code = $input['referral_code'];
     $profile_image = $input['profile_image']; // Anda dapat menyesuaikan ini jika perlu
     $address = $input['address'];
@@ -54,9 +55,9 @@ if (
 
     // Query untuk melakukan insert data
     //$sql = "INSERT INTO user (username, email, phone, password, user_point, user_type, referral_code, profile_image)
-   // VALUES ('$username', '$email', $phone, '$password', $user_point, $user_type, '$referral_code', '$profile_image';
+    // VALUES ('$username', '$email', $phone, '$password', $user_point, $user_type, '$referral_code', '$profile_image';
     $sql = "INSERT INTO user (username, email, phone, password, user_point, user_type, referral_code, profile_image, address, postal_code , created_at, updated_at)
-    VALUES ('$username', '$email', '$phone', '$password', $user_point, $user_type, '$referral_code', NULL , NULL , NULL , '$created_at', '$updated_at')";
+    VALUES ('$username', '$email', $phone, '$password', $user_point, $user_type, '$referral_code', NULL , NULL , NULL , '$created_at', '$updated_at')";
     if ($conn->query($sql) === TRUE) {
         echo "Data baru berhasil ditambahkan";
     } else {
@@ -69,4 +70,3 @@ if (
     // Jika data yang diterima tidak lengkap atau tidak sesuai
     echo "Data yang diterima tidak lengkap atau tidak sesuai";
 }
-?>

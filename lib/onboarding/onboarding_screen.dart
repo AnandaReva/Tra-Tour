@@ -79,7 +79,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   children: [
                     GestureDetector(
                       child: Text(
-                        "Skip",
+                        "Lewati",
                         style: TextStyle(
                           fontSize: 20,
                           color: Colors.white,
@@ -103,7 +103,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                 globalVar.selected_role_onboarding.isNotEmpty)
                             ? GestureDetector(
                                 child: Text(
-                                  "Done",
+                                  "Lanjut",
                                   style: TextStyle(
                                     fontSize: 20,
                                     color: Colors.white,

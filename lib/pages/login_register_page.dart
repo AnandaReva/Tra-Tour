@@ -2,7 +2,6 @@
 // ignore_for_file: prefer_const_constructors, non_constant_identifier_names
 
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tratour/database/auth.dart';
 import 'package:tratour/globalVar.dart';
 import 'package:tratour/main.dart';
@@ -24,7 +23,6 @@ class LoginPage extends StatefulWidget {
 
   @override
   State<LoginPage> createState() => LoginPageState();
-  
 }
 
 String generateRandomString(int length) {
@@ -41,10 +39,10 @@ class LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    if (globalVar.initScreen == 0) {
-        print('initScreen: ${globalVar.initScreen}');
-         print("awal 2 : ${globalVar.selected_role_onboarding}");
-      
+    if (initScreen == 0) {
+      print('initScreen: $initScreen');
+      print("awal 2 : ${globalVar.selected_role_onboarding}");
+
       loginForm = false; // Setel nilai loginForm di dalam blok if
     } else {
       loginForm = true;
@@ -60,20 +58,18 @@ class LoginPageState extends State<LoginPage> {
   final TextEditingController _controllerRole = TextEditingController();
   final TextEditingController _controllerReferralCodeInput =
       TextEditingController();
-  final String initial_user_point = '0';
-  final String initial_profile_image = 'null';
-  final String initial_address = 'null';
-  final String initial_postal_code = 'null';
-  final String initial_referral_code = 'null';
+  String initial_user_point = '0';
+  final String initial_profile_image = '';
+  final String initial_address = '';
+  final String initial_postal_code = '';
+  final String initial_referral_code = '';
 
   String referral_code = '';
 
-  
-
   // bool globalVar.isLoading = false;
   Future<void> createUserWithEmailAndPassword() async {
-    print('initScreen: $globalVar.initScreen');
-    if (globalVar.initScreen == 0) {
+    print('initScreen: $initScreen');
+    if (initScreen == 0) {
       // dari onboarding
       _controllerRole.text = globalVar.selected_role_onboarding;
     }
@@ -115,7 +111,11 @@ class LoginPageState extends State<LoginPage> {
               onPressed: () {
                 Navigator.of(context).pop();
                 // Jika konfirmasi diterima, lanjutkan dengan membuat akun
-                checkReferralCode(referral_code);
+                if (_controllerReferralCodeInput.text.isEmpty) {
+                  checkReferralCode(referral_code);
+                } else {
+                  findReferralCodeInput(_controllerReferralCodeInput.text);
+                }
               },
               child: const Text("Ya"),
             ),
@@ -125,15 +125,104 @@ class LoginPageState extends State<LoginPage> {
     );
   }
 
+  Future<void> findReferralCodeInput(String referral_code_input) async {
+    String url =
+        'https://tratour.000webhostapp.com/checkReferralCode.php?referral_code=$referral_code_input';
+
+    try {
+      print('referral_code_input: $referral_code_input');
+      setState(() {
+        globalVar.isLoading =
+            true; // Menyembunyikan animasi loading setelah selesai
+      });
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        // cari user dengan referral code input
+        Map<String, dynamic> referralCodeUserData = json.decode(response.body);
+        print('Hasil Pencarian input Referral Code: $referralCodeUserData');
+
+        if (referralCodeUserData['success'] == true) {
+          // Lakukan sesuatu dengan data yang diperoleh dari server
+          print('Hasil Pencarian input Referral Code2: $referralCodeUserData');
+
+          Map<String, dynamic> inviterData = referralCodeUserData['data'];
+          String inviterId = inviterData['id'].toString();
+          // Pastikan user_point yang diterima adalah integer
+          int userPoint = int.parse(inviterData['user_point'].toString());
+// Tambahkan 100 ke user_point
+          int inviterPoint = userPoint + 100;
+
+          print('inviter id:  $inviterId');
+
+          // Mengeksekusi pembaruan poin pengguna
+          updateUserPoint(String id, int userPoint) async {
+            // URL ke skrip PHP
+            String url =
+                'https://tratour.000webhostapp.com/updateUserPoint.php';
+
+            // Membuat payload untuk dikirim ke skrip PHP
+            Map<String, String> payload = {
+              'id': id,
+              'user_point': userPoint.toString(),
+            };
+
+            // Mengirim permintaan POST ke skrip PHP
+            try {
+              final response = await http.post(Uri.parse(url), body: payload);
+
+              // Menampilkan respons dari server
+              print('Response status: ${response.statusCode}');
+              print('Response body: ${response.body}');
+            } catch (error) {
+              print('Error: $error');
+            }
+          }
+
+          // Mengeksekusi pembaruan poin untuk pengundang
+          updateUserPoint(inviterId, inviterPoint);
+
+           initial_user_point = '100'; // tidak perlu lagi karena poin sekarang ditambah 100
+
+          checkReferralCode(referral_code);
+        } else {
+          print('user dengan referral code tidak ada: ${response.statusCode}');
+
+          setState(() {
+            errorMessage = 'Referral Code Salah!!';
+            globalVar.isLoading =
+                false; // Menyembunyikan animasi loading setelah selesai
+          });
+        }
+      } else {
+        setState(() {
+          errorMessage = 'Terjadi Kesalahan!!';
+          globalVar.isLoading =
+              false; // Menyembunyikan animasi loading setelah selesai
+        });
+
+        return;
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = 'Terjadi kesalahan, mohon coba lagi.';
+        globalVar.isLoading =
+            false; // Menyembunyikan animasi loading setelah selesai
+      });
+
+      print('Error Find data: $e');
+    }
+  }
+
   Future<void> checkReferralCode(referral_code) async {
     String url =
         'https://tratour.000webhostapp.com/checkReferralCode.php?referral_code=$referral_code';
 
     try {
-      setState(() {
+      /* setState(() {
         globalVar.isLoading =
             true; // Menyembunyikan animasi loading setelah selesai
-      });
+      }); */
       final response = await http.get(Uri.parse(url));
 
       if (response.statusCode == 200) {
@@ -151,6 +240,8 @@ class LoginPageState extends State<LoginPage> {
           setState(() {
             globalVar.isLoading = false;
           });
+
+          return;
         } else {
           // Data null, berikan pesan atau lakukan tindakan lain
           print('Referal code unik: $referral_code');
@@ -162,7 +253,6 @@ class LoginPageState extends State<LoginPage> {
               _controllerEmail.text,
               _controllerPassword.text,
             );
-            Auth auth = Auth(); // Buat objek dari kelas Auth
 
             await auth.addUserToDatabase(
               _controllerUsername.text,
@@ -178,6 +268,13 @@ class LoginPageState extends State<LoginPage> {
               referral_code,
             );
 
+            /*  final SharedPreferences prefs =
+                await SharedPreferences.getInstance();
+            initScreen = 1;
+            await prefs.setInt("initScreen", 1);
+
+            print('initScreen Sign Up: $initScreen'); */
+
             if (mounted) {
               Navigator.pushAndRemoveUntil(
                 context,
@@ -186,7 +283,6 @@ class LoginPageState extends State<LoginPage> {
                 ),
                 (route) => false,
               );
-             
             }
 
             setState(() {
@@ -246,6 +342,12 @@ class LoginPageState extends State<LoginPage> {
         password: _controllerPassword.text,
       );
 
+      /*  final SharedPreferences prefs = await SharedPreferences.getInstance();
+   initScreen = prefs.getInt("initScreen") ?? 0;
+  await prefs.setInt("initScreen", 1);  */
+
+      print('initScreen Login: $initScreen');
+
       globalVar.isLogin = true;
       if (mounted) {
         Navigator.pushAndRemoveUntil(
@@ -294,10 +396,7 @@ class LoginPageState extends State<LoginPage> {
   }
 
   Widget _title() {
-    return
-    
-    
-     Image.asset(
+    return Image.asset(
       'assets/images/logo.png',
       width: 100, // Menyesuaikan lebar sesuai kebutuhan
 
@@ -472,10 +571,10 @@ class LoginPageState extends State<LoginPage> {
             DropdownMenuItem<String>(
               value: null,
               child: Container(
-                color: Colors.grey,
+                color: Colors.white,
                 child: Text(
                   'Apa peran yang mau anda pilih: ',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.black),
                 ),
               ),
             ),
@@ -637,7 +736,6 @@ class LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       appBar: AppBar(backgroundColor: GlobalVar.mainColor, title: _title()),
       body: globalVar.isLoading
           ? Center(
@@ -667,7 +765,6 @@ class LoginPageState extends State<LoginPage> {
                                   ),
                                 )),
                             if (!loginForm) ...[
-                              
                               _entryFieldUsername(
                                   'Nama Lengkap', _controllerUsername),
                               const SizedBox(height: 10),
@@ -679,7 +776,7 @@ class LoginPageState extends State<LoginPage> {
                               const SizedBox(height: 10),
                               _entryFieldPhone(
                                   'Cth: 081234567890', _controllerPhone),
-                              if (globalVar.initScreen == 1) ...[
+                              if (initScreen == 1) ...[
                                 SizedBox(height: 10),
                                 _entryRole('Pilih Peran', _controllerRole)
                               ],
@@ -735,6 +832,12 @@ class LoginPageState extends State<LoginPage> {
         // Set isLogin menjadi true
         globalVar.isLogin = true;
       } else {
+        if (globalVar.isLoading == true) {
+          setState(() {
+            globalVar.isLoading = false; // Menampilkan animasi loading
+          });
+        }
+
         // Gagal mendapatkan respon dari server
         print('Failed to load data: ${response.statusCode}');
       }

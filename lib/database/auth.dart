@@ -1,5 +1,5 @@
 //import 'package:tratour/dbHelper/mysql.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:tratour/globalVar.dart';
 import 'package:tratour/pages/login_register_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -311,25 +311,7 @@ class Auth {
         GlobalVar globalVar = GlobalVar.instance;
 
         globalVar.userLoginData = newUserData;
-        globalVar.userLoginData['profile_photo'] = null;
 
-        if (globalVar.userLoginData['profile_photo'] == null) {
-          // Lakukan sesuatu jika variable null
-          print('debug Variable is null');
-        } else {
-          // Lakukan sesuatu jika variable tidak null
-          print('Variable is not null');
-        }
-
-        // print('debig m3: $globalVar.userLoginData[profile_photo]');
-
-        // Cetak tipe data respons
-
-        final SharedPreferences prefs = await SharedPreferences.getInstance();
-        globalVar.initScreen = prefs.getInt("initScreen") ?? 0;
-        await prefs.setInt("initScreen", 1);
-
-        print('initScreen 2: ${globalVar.initScreen}');
         print('Response Type: ${response.body.runtimeType}');
       } else {
         print('Failed to create user: ${response.statusCode}');

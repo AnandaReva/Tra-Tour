@@ -11,7 +11,8 @@ class GlobalVar extends ChangeNotifier {
   bool _isLoading = false;
   int _selectedIndex = 0;
   String _selected_role_onboarding = "";
-  int _initScreen = 0;
+  String _userLocation = "";
+ // int _initScreen = 0;
 
   List<int> _selectedTrashIndexes = []; // Initialize with an empty list
 
@@ -27,13 +28,14 @@ class GlobalVar extends ChangeNotifier {
     notifyListeners();
   }
 
-  int get initScreen => _initScreen;
+/*   int get initScreen => _initScreen;
   set initScreen(int value) {
     _initScreen = value;
     notifyListeners();
-  }
+  } */
 
   String get selected_role_onboarding => _selected_role_onboarding;
+  String get userLocation => _userLocation;
 
   dynamic get userLoginData => _userLoginData;
   bool get isLogin => _isLogin;
@@ -56,6 +58,12 @@ class GlobalVar extends ChangeNotifier {
     _selected_role_onboarding = value;
     notifyListeners();
   }
+
+  set userLocation(String value) {
+    _userLocation = value;
+    notifyListeners();
+  }
+
 
   GlobalVar._internal();
 
