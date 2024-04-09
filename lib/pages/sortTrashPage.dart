@@ -75,7 +75,8 @@ class ChecBoxImages extends StatelessWidget {
                       children: [
                         CustomCheckbox(title: 'pilihan ${i + 1}', index: i),
                         if (i + 1 < checkboxProvider.checkboxImages.length)
-                          CustomCheckbox(title: 'pilihan ${i + 2}', index: i + 1),
+                          CustomCheckbox(
+                              title: 'pilihan ${i + 2}', index: i + 1),
                       ],
                     ),
                   ElevatedButton(
@@ -141,8 +142,10 @@ class SortTrashPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (globalVar.userLoginData['address'] == null ||
+    if (globalVar.userLoginData == null ||
+        globalVar.userLoginData['address'] == null ||
         globalVar.userLoginData['address'] == '') {
+      // Tampilkan widget jika data login belum tersedia atau alamat kosong
       return Scaffold(
         appBar: MyAppBar(),
         body: Builder(
@@ -158,6 +161,7 @@ class SortTrashPage extends StatelessWidget {
         ),
       );
     } else {
+      // Tampilkan widget jika data login sudah tersedia dan alamat tidak kosong
       return ChangeNotifierProvider<CheckboxProvider>(
         create: (context) => CheckboxProvider(),
         child: Scaffold(
@@ -238,8 +242,6 @@ class SortTrashPage extends StatelessWidget {
           },
           child: Text('Ubah Alamat'),
         ),
-
-      
       ],
     );
   }

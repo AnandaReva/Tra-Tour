@@ -8,6 +8,7 @@ class GlobalVar extends ChangeNotifier {
 
   dynamic _userLoginData;
     dynamic _orderData;
+    dynamic _sweeperData;
   bool _isLogin = false;
   bool _isLoading = false;
   bool _isOrdering = false;
@@ -42,6 +43,8 @@ class GlobalVar extends ChangeNotifier {
 
   dynamic get userLoginData => _userLoginData;
   dynamic get orderData => _orderData;
+  dynamic get sweeperData => _sweeperData;
+  
   bool get isLogin => _isLogin;
   bool get isLoading => _isLoading;
   bool get isOrdering => _isOrdering;
@@ -52,6 +55,10 @@ class GlobalVar extends ChangeNotifier {
   }
   set orderData(dynamic value) {
     _orderData = value;
+    notifyListeners();
+  }
+  set sweeperData(dynamic value) {
+    _sweeperData = value;
     notifyListeners();
   }
 
