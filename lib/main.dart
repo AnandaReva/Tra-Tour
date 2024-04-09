@@ -264,7 +264,7 @@ class _RootPageState extends State<RootPage> {
   }
 
   Widget _buildPage(BuildContext context) {
-    // Return the appropriate widget based on the destination
+    // Mereturn widget yang sesuai dengan destinasi yang dipilih user.
     switch (widget.destination.index) {
       case 0:
         return HomePage(userData: userData);
@@ -279,7 +279,8 @@ class _RootPageState extends State<RootPage> {
       case 4:
         return ProfilePage();
       default:
-        return const SizedBox(); // Return an empty widget for unknown destinations
+        return const SizedBox(); // Mengembalikan widget kosong 
+                                 // untuk destinasi yang belum tentu.
     }
   }
 }
