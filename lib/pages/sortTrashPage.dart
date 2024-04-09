@@ -48,7 +48,10 @@ class CustomCheckbox extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class ChecBoxImages extends StatelessWidget {
+  GlobalVar globalVar = GlobalVar.instance;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,20 +70,29 @@ class ChecBoxImages extends StatelessWidget {
                 children: [
                   for (int i = 0;
                       i < checkboxProvider.checkboxImages.length;
-                      i++)
-                    CustomCheckbox(title: 'pilihan ${i + 1}', index: i),
+                      i += 2)
+                    Row(
+                      children: [
+                        CustomCheckbox(title: 'pilihan ${i + 1}', index: i),
+                        if (i + 1 < checkboxProvider.checkboxImages.length)
+                          CustomCheckbox(title: 'pilihan ${i + 2}', index: i + 1),
+                      ],
+                    ),
                   ElevatedButton(
                     onPressed: selectedTrashIndexes.isEmpty
                         ? null // Nonaktifkan tombol jika tidak ada pilihan yang dipilih
                         : () {
                             // Gunakan GlobalVar untuk mengakses selectedTrashIndexes
-                            GlobalVar.instance.selectedTrashIndexes =
+
+                            globalVar.selectedTrashIndexes =
                                 selectedTrashIndexes;
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => PickLocationPage(),
                               ),
                             );
+                            print(
+                                'selected indexes:  ${globalVar.selectedTrashIndexes}  ');
                           },
                     child: const Text('Atur lokasi pengangkutan'),
                   )
@@ -121,6 +133,7 @@ class CheckboxProvider with ChangeNotifier {
   }
 }
 
+// ignore: must_be_immutable
 class SortTrashPage extends StatelessWidget {
   SortTrashPage({Key? key, required GlobalVar globalVar}) : super(key: key);
 
@@ -226,7 +239,7 @@ class SortTrashPage extends StatelessWidget {
           child: Text('Ubah Alamat'),
         ),
 
-        // Add more content as needed
+      
       ],
     );
   }

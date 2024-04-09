@@ -1,8 +1,11 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
+import 'package:tratour/database/order.dart';
 import 'package:tratour/globalVar.dart';
-import 'package:tratour/pages/createOrderPage.dart';
+import 'package:tratour/pages/orderProcess.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PickLocationPage extends StatefulWidget {
@@ -13,38 +16,104 @@ class PickLocationPage extends StatefulWidget {
 }
 
 class _PickLocationPageState extends State<PickLocationPage> {
-  late TextEditingController _addressUpdateController;
-  late TextEditingController _usernameUpdateController;
-  late TextEditingController _phoneUpdateController;
-  late TextEditingController _postalUpdateCodeController;
+  late final TextEditingController _addressOrderController;
+  final TextEditingController _controllerPaymentMethod =
+      TextEditingController();
+  final String initial_status = 'Open';
+  final String initial_cost = '';
+  final String initial_pickup_id = '';
+  final String initial_sweeper_coordinate = '';
 
   @override
   void initState() {
     super.initState();
-    _addressUpdateController = TextEditingController();
-    _usernameUpdateController = TextEditingController();
-    _phoneUpdateController = TextEditingController();
-    _postalUpdateCodeController = TextEditingController();
+    final globalVar = Provider.of<GlobalVar>(context, listen: false);
+    _addressOrderController =
+        TextEditingController(text: globalVar.userLoginData['address'] ?? '');
   }
 
-  @override
-  void dispose() {
-    _addressUpdateController.dispose();
-    _usernameUpdateController.dispose();
-    _phoneUpdateController.dispose();
-    _postalUpdateCodeController.dispose();
-    super.dispose();
+  Widget _entryPaymenMethod(TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 25),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          border: Border.all(
+            color: Colors.white,
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        width: MediaQuery.of(context).size.width -
+            50, // Menyesuaikan lebar container
+        child: DropdownButtonFormField<String>(
+          value: controller.text.isEmpty ? null : controller.text,
+          onChanged: (String? newValue) {
+            if (newValue != null) {
+              setState(() {
+                controller.text = newValue;
+              });
+            }
+          },
+          items: [
+            DropdownMenuItem<String>(
+              value: null,
+              child: Container(
+                color: Colors.white,
+                child: Text(
+                  'Pilih Metode Pembayaran:',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            ),
+            DropdownMenuItem<String>(
+              value: '1',
+              child: Text('Tunai'),
+            ),
+          ],
+          decoration: InputDecoration(
+            hintText: 'Pilih Metode Pembayaran',
+            border: InputBorder.none,
+            contentPadding: EdgeInsets.symmetric(horizontal: 20),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _entyAddress(TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 25),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          border: Border.all(
+            color: Colors.white,
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: EdgeInsets.only(left: 20),
+          child: TextFormField(
+            controller: controller,
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.all(10),
+              border: OutlineInputBorder(),
+              labelText: 'Alamat',
+            ),
+            onChanged: (value) {
+              // Tidak perlu menyimpan data alamat di sini
+            },
+          ),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    GlobalVar globalVar = Provider.of<GlobalVar>(context);
-    Map<String, dynamic> userData = globalVar.userLoginData ?? {};
-
-    _usernameUpdateController.text = userData['username'] ?? '';
-    _phoneUpdateController.text = userData['phone'] ?? '';
-    _addressUpdateController.text = userData['address'] ?? '';
-    _postalUpdateCodeController.text = userData['postal_code'] ?? '';
+    final GlobalVar globalVar = Provider.of<GlobalVar>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -53,61 +122,100 @@ class _PickLocationPageState extends State<PickLocationPage> {
           style: TextStyle(fontSize: 18),
         ),
       ),
-      body: Center(
-        child: Consumer<GlobalVar>(
-          builder: (context, globalVar, child) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('${globalVar.userLocation}'),
-                SizedBox(height: 20),
-                TextButton(
-                  onPressed: () {
-                    _getCurrentPosition(context);
-                  },
-                  child: Text('Gunakan Lokasimu'),
-                ),
-                SizedBox(width: 20),
-                ElevatedButton(
-                  onPressed: globalVar.userLocation.isEmpty
-                      ? null
-                      : () {
-                          _openGoogleMaps(context);
-                        },
-                  child: const Text('Periksa Lokasi'),
-                ),
-                SizedBox(height: 20),
-                Text("Alamat Anda"),
-                TextFormField(
-                  controller: _addressUpdateController,
-                  decoration: const InputDecoration(
-                    contentPadding: EdgeInsets.all(10),
-                    border: OutlineInputBorder(),
-                    labelText: 'Alamat',
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      userData['address'] = value;
-                    });
-                  },
-                ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: globalVar.userLocation.isEmpty
-                      ? null
-                      : () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => CreateOrderPage(),
-                              fullscreenDialog: true,
-                            ),
-                          );
-                        },
-                  child: const Text('Buat Pesanan'),
-                )
-              ],
-            );
-          },
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '${globalVar.userLocation}',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () async {
+                await _getCurrentPosition(context);
+                setState(
+                    () {}); // Memperbarui state setelah userLocation berubah
+              },
+              child: Text('Gunakan Lokasimu'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: globalVar.userLocation.isEmpty
+                  ? null
+                  : () {
+                      _openGoogleMaps(context);
+                    },
+              child: const Text('Periksa Lokasi'),
+            ),
+            SizedBox(height: 20),
+            Text(
+              "Alamat Anda",
+              style: TextStyle(fontSize: 18),
+            ),
+            _entyAddress(_addressOrderController),
+            SizedBox(height: 20),
+            _entryPaymenMethod(_controllerPaymentMethod),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: Provider.of<GlobalVar>(context).userLocation.isEmpty ||
+                      _controllerPaymentMethod.text.isEmpty
+                  ? null
+                  : () async {
+                      Order order = Order();
+                      DateTime now = DateTime.now();
+                      String formattedDate =
+                          '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+
+                      try {
+                        await order.addOrderToDatabase(
+                          globalVar.userLoginData['id'],
+                          initial_pickup_id,
+                          globalVar.selectedTrashIndexes.join(','),
+                          globalVar.userLocation,
+                          initial_sweeper_coordinate,
+                          _addressOrderController.text,
+                          initial_cost,
+                          _controllerPaymentMethod.text,
+                          formattedDate,
+                          initial_status,
+                        );
+
+                        // Navigasi ke layar berikutnya hanya jika pembuatan pesanan berhasil
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                OrderProcess(globalVar: globalVar),
+                            fullscreenDialog: true,
+                          ),
+                        );
+                      } catch (e) {
+                        print('Error while adding order: $e');
+                        // Tampilkan pesan error kepada pengguna
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Gagal Membuat Pesanan'),
+                            content: Text(
+                                'Terjadi kesalahan saat menambahkan pesanan, periksa koneksi internet: $e'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('OK'),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    },
+              child: const Text('Buat Pesanan'),
+            ),
+          ],
         ),
       ),
     );
@@ -173,7 +281,7 @@ class _PickLocationPageState extends State<PickLocationPage> {
       );
 
       Provider.of<GlobalVar>(context, listen: false).userLocation =
-          'Latitude: ${position.latitude}, Longitude: ${position.longitude}';
+          '${position.latitude},${position.longitude}';
       print(
           'location:  ${Provider.of<GlobalVar>(context, listen: false).userLocation}');
     } catch (e) {

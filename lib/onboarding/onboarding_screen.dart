@@ -99,8 +99,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                       ),
                     ),
                     onLastPage
-                        ? (globalVar.selected_role_onboarding != null &&
-                                globalVar.selected_role_onboarding.isNotEmpty)
+                        ? (globalVar.selected_role_onboarding.isNotEmpty)
                             ? GestureDetector(
                                 child: Text(
                                   "Lanjut",

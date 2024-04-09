@@ -129,7 +129,7 @@ Padding _artikelPilihan() {
           height: 225,
           child: ListView.separated(
             separatorBuilder: (context, index) => SizedBox(width: 25),
-            padding: EdgeInsets.only(
+            padding: const EdgeInsets.only(
               left: 25,
               right: 25,
             ),
@@ -206,9 +206,9 @@ Padding _artikelPilihan() {
 Padding _poinSection() {
   GlobalVar globalVar = GlobalVar.instance;
 
-  print('debug m: ${globalVar.userLoginData}');
+ // print('debug m: ${globalVar.userLoginData}');
   Map<String, dynamic> userData = globalVar.userLoginData ?? {};
-  print('debug m Tipe data userData: ${userData.runtimeType}');
+ // print('debug m Tipe data userData: ${userData.runtimeType}');
 
   return Padding(
     padding: const EdgeInsets.all(20),

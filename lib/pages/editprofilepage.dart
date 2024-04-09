@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gallery_picker/gallery_picker.dart';
+
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:tratour/globalVar.dart';
 import 'package:tratour/database/updateUser.dart';

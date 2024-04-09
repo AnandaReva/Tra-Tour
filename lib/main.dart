@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:tratour/globalVar.dart';
 import 'package:tratour/onboarding/onboarding_screen.dart';
+import 'package:tratour/pages/orderProcess.dart';
 import 'package:tratour/pages/homePage.dart';
 import 'package:tratour/pages/login_register_page.dart';
 import 'package:tratour/pages/orderPage.dart';
@@ -65,8 +66,6 @@ Future<void> main() async {
     print('cek user: ${globalVar.userLoginData}');
   }
 
-  // Build the app passing user data to RootPage
-
   runApp(
     MultiProvider(
       providers: [
@@ -86,14 +85,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Tra-tour',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: GlobalVar.mainColor),
       ),
-      initialRoute:
-          initScreen == 0 || initScreen == null ? 'onboard' : 'widgetTree',
+      initialRoute: globalVar.isOrdering
+          ? 'inOrder'
+          : (initScreen == 0 ? 'onboard' : 'widgetTree'),
       routes: {
         'widgetTree': (context) => WidgetTree(globalVar: globalVar),
         'onboard': (context) => OnBoardingScreen(globalVar: globalVar),
-        // 'onOrder' : (context) => CreateOrderPage(globalVar: globalVar),
+        'inOrder': (context) => OrderProcess(globalVar: globalVar),
       },
     );
   }
@@ -112,11 +112,11 @@ class _MainState extends State<MainPage> with TickerProviderStateMixin {
   late final List<AnimationController> destinationFaders;
   late final List<Widget> destinationViews;
   final List<Destination> allDestinations = [
-    Destination(0, 'Beranda', Icons.home, Colors.grey),
-    Destination(1, 'Pesanan', Icons.reorder, Colors.grey),
-    Destination(2, 'Pilah Sampah', Icons.add_circle, Colors.grey),
-    Destination(3, 'Sosial', Icons.groups, Colors.grey),
-    Destination(4, 'Profile', Icons.person, Colors.grey),
+    Destination(0, 'Beranda', Icons.home, GlobalVar.mainColor),
+    Destination(1, 'Pesanan', Icons.list,  GlobalVar.mainColor),
+    Destination(2, 'Pilah Sampah', Icons.add_circle,  GlobalVar.mainColor),
+    Destination(3, 'Sosial', Icons.groups,  GlobalVar.mainColor),
+    Destination(4, 'Profile', Icons.person,  GlobalVar.mainColor),
     // Add more destinations as needed
   ];
 
@@ -140,7 +140,9 @@ class _MainState extends State<MainPage> with TickerProviderStateMixin {
     destinationViews = [
       HomePage(userData: globalVar.userLoginData),
       OrderPage(),
-      SortTrashPage(globalVar: globalVar,),
+      SortTrashPage(
+        globalVar: globalVar,
+      ),
       SocialPage(),
       ProfilePage(),
     ];
@@ -218,7 +220,7 @@ class Destination {
   final int index;
   final String title;
   final IconData icon;
-  final MaterialColor color;
+  final Color color;
 }
 
 class RootPage extends StatefulWidget {
@@ -256,7 +258,7 @@ class _RootPageState extends State<RootPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: widget.destination.index != 4 ? MyAppBar() : null,
-      backgroundColor: widget.destination.color[50],
+    //  backgroundColor: widget.destination.color[50],
       body: _buildPage(context), // Build the appropriate page
     );
   }
@@ -269,7 +271,9 @@ class _RootPageState extends State<RootPage> {
       case 1:
         return OrderPage();
       case 2:
-        return SortTrashPage(globalVar: globalVar,);
+        return SortTrashPage(
+          globalVar: globalVar,
+        );
       case 3:
         return SocialPage();
       case 4:
@@ -337,15 +341,24 @@ class NavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: selectedIndex,
-      onTap: onDestinationSelected,
-      items: destinations.map((destination) {
-        return BottomNavigationBarItem(
-          icon: destination.icon,
-          label: destination.label,
-        );
-      }).toList(),
+    return Container(
+      decoration: BoxDecoration(
+        color: GlobalVar.baseColor, // Set the background color here
+      ),
+      child: BottomNavigationBar(
+        backgroundColor: Colors.transparent, // Make the BottomNavigationBar background transparent
+        currentIndex: selectedIndex,
+        onTap: onDestinationSelected,
+        items: destinations.map<BottomNavigationBarItem>(
+          (NavigationDestination destination) {
+            return BottomNavigationBarItem(
+              backgroundColor: GlobalVar.baseColor, // Set the background color for the BottomNavigationBar item
+              icon: destination.icon,
+              label: destination.label,
+            );
+          },
+        ).toList(),
+      ),
     );
   }
 }

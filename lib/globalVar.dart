@@ -4,15 +4,18 @@ class GlobalVar extends ChangeNotifier {
   static final GlobalVar _instance = GlobalVar._internal();
   static const mainColor = Color.fromRGBO(29, 121, 72, 1.0);
   static const secondaryColor = Color.fromRGBO(251, 188, 5, 1.0);
-  static const baseColor = Color.fromRGBO(217, 217, 217, 1.0);
+  static const baseColor = Color.fromRGBO(240, 240, 240, 1.0);
 
   dynamic _userLoginData;
+    dynamic _orderData;
   bool _isLogin = false;
   bool _isLoading = false;
+  bool _isOrdering = false;
   int _selectedIndex = 0;
   String _selected_role_onboarding = "";
   String _userLocation = "";
- // int _initScreen = 0;
+
+  // int _initScreen = 0;
 
   List<int> _selectedTrashIndexes = []; // Initialize with an empty list
 
@@ -38,13 +41,20 @@ class GlobalVar extends ChangeNotifier {
   String get userLocation => _userLocation;
 
   dynamic get userLoginData => _userLoginData;
+  dynamic get orderData => _orderData;
   bool get isLogin => _isLogin;
   bool get isLoading => _isLoading;
+  bool get isOrdering => _isOrdering;
 
   set userLoginData(dynamic value) {
     _userLoginData = value;
     notifyListeners();
   }
+  set orderData(dynamic value) {
+    _orderData = value;
+    notifyListeners();
+  }
+
 
   set isLogin(bool value) {
     _isLogin = value;
@@ -52,6 +62,11 @@ class GlobalVar extends ChangeNotifier {
 
   set isLoading(bool value) {
     _isLoading = value;
+  }
+
+  set isOrdering(bool value) {
+    _isOrdering = value;
+    notifyListeners();
   }
 
   set selected_role_onboarding(String value) {
@@ -63,7 +78,6 @@ class GlobalVar extends ChangeNotifier {
     _userLocation = value;
     notifyListeners();
   }
-
 
   GlobalVar._internal();
 

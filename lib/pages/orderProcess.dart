@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:tratour/globalVar.dart';
 
-class CreateOrderPage extends StatefulWidget {
-  CreateOrderPage({Key? key}) : super(key: key);
+class OrderProcess extends StatefulWidget {
+  OrderProcess({Key? key, required GlobalVar globalVar}) : super(key: key);
 
   @override
-  _CreateOrderPageState createState() => _CreateOrderPageState();
+  _OrderProcessState createState() => _OrderProcessState();
 }
 
-class _CreateOrderPageState extends State<CreateOrderPage> {
+class _OrderProcessState extends State<OrderProcess> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Pilih Petugas Pengangkutan',
+          'Mencari Petugas Pengangkut Terdekat',
           style: TextStyle(fontSize: 18), // Atur ukuran font di sini
         ),
       ),
