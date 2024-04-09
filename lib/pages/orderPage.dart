@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tratour/components/appBar.dart';
 import 'package:tratour/globalVar.dart';
-import 'package:tratour/pages/orderDetail.dart';
+import 'package:tratour/pages/orderDataList.dart';
 
 class OrderPage extends StatelessWidget {
   const OrderPage({Key? key}) : super(key: key);
@@ -83,7 +83,7 @@ class OrderPage extends StatelessWidget {
                         onPressed: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => const OrderDetail(),
+                              builder: (context) => const OrderListDetail(),
                             ),
                           );
                         },

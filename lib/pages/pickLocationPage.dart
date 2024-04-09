@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:tratour/database/order.dart';
 import 'package:tratour/globalVar.dart';
@@ -30,6 +31,13 @@ class _PickLocationPageState extends State<PickLocationPage> {
     final globalVar = Provider.of<GlobalVar>(context, listen: false);
     _addressOrderController =
         TextEditingController(text: globalVar.userLoginData['address'] ?? '');
+  }
+
+  @override
+  void dispose() {
+    _addressOrderController.dispose();
+    _controllerPaymentMethod.dispose();
+    super.dispose();
   }
 
   Widget _entryPaymenMethod(TextEditingController controller) {
@@ -165,7 +173,34 @@ class _PickLocationPageState extends State<PickLocationPage> {
                       _controllerPaymentMethod.text.isEmpty
                   ? null
                   : () async {
+                      setState(() {
+                        globalVar.isLoading =
+                            true; // Menampilkan animasi loading
+                      });
                       Order order = Order();
+
+                      bool success = await order.checkSweeperOrder(
+                        '51', // ini order_id
+                      );
+                      if (success) {
+                        if (globalVar.isLoading == true) {
+                          setState(() {
+                            globalVar.isLoading =
+                                false; // Menampilkan animasi loading
+                          });
+                        }
+                        // Navigasi ke layar berikutnya hanya jika pembuatan pesanan berhasil
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                OrderProcess(),
+                                // OrderProcess(globalVar: globalVar),
+                            fullscreenDialog: true,
+                          ),
+                        );
+                      }
+
+                      /* 
                       DateTime now = DateTime.now();
                       String formattedDate =
                           '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
@@ -211,7 +246,7 @@ class _PickLocationPageState extends State<PickLocationPage> {
                             ],
                           ),
                         );
-                      }
+                      } */
                     },
               child: const Text('Buat Pesanan'),
             ),
@@ -280,8 +315,11 @@ class _PickLocationPageState extends State<PickLocationPage> {
         desiredAccuracy: LocationAccuracy.high,
       );
 
+      double latitude = position.latitude;
+      double longitude = position.longitude;
+
       Provider.of<GlobalVar>(context, listen: false).userLocation =
-          '${position.latitude},${position.longitude}';
+          'Latitude: $latitude, Longitude: $longitude';
       print(
           'location:  ${Provider.of<GlobalVar>(context, listen: false).userLocation}');
     } catch (e) {
@@ -293,18 +331,52 @@ class _PickLocationPageState extends State<PickLocationPage> {
     String userLocation =
         Provider.of<GlobalVar>(context, listen: false).userLocation;
     List<String> coordinates = userLocation.split(', ');
-    double latitude = double.parse(coordinates[0]
-        .substring(9)); // Mengambil nilai latitude setelah "Latitude: "
-    double longitude = double.parse(coordinates[1]
-        .substring(10)); // Mengambil nilai longitude setelah "Longitude: "
+    double latitude = 0.0;
+    double longitude = 0.0;
+
+    for (String coordinate in coordinates) {
+      if (coordinate.contains('Latitude')) {
+        latitude = double.parse(coordinate.substring(10));
+      } else if (coordinate.contains('Longitude')) {
+        longitude = double.parse(coordinate.substring(11));
+      }
+    }
 
     final Uri googleMapsUrl = Uri.parse(
-        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude' /*'https://www.google.com/maps/dir/?api=1&origin=-6.1754,106.8272&destination=-6.2009,106.8276'  // ini rute*/);
+        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude');
 
     if (await launchUrl(googleMapsUrl)) {
       await launchUrl(googleMapsUrl);
     } else {
       throw 'Tidak dapat membuka Google Maps';
     }
+  }
+}
+
+class LoadingScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white, // Set background color to white
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Gambar logo
+            Image.asset(
+              'assets/findingSweeperLlogo.png',
+              width: 200, // Ubah sesuai kebutuhan
+              height: 200, // Ubah sesuai kebutuhan
+            ),
+            SizedBox(height: 20), // Spasi antara logo dan animasi loading
+            // Animasi loading
+            LoadingAnimationWidget.staggeredDotsWave(
+              color: Colors.orange, // Warna animasi
+              size: 75, // Ukuran animasi
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

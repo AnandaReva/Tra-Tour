@@ -7,8 +7,13 @@ class GlobalVar extends ChangeNotifier {
   static const baseColor = Color.fromRGBO(240, 240, 240, 1.0);
 
   dynamic _userLoginData;
-    dynamic _orderData;
-    dynamic _sweeperData;
+  dynamic _currentOrderData;
+  dynamic _currentPickUpData;
+  dynamic _sweeperData;
+
+  dynamic _orderDataList;
+  
+
   bool _isLogin = false;
   bool _isLoading = false;
   bool _isOrdering = false;
@@ -42,9 +47,11 @@ class GlobalVar extends ChangeNotifier {
   String get userLocation => _userLocation;
 
   dynamic get userLoginData => _userLoginData;
-  dynamic get orderData => _orderData;
+  dynamic get currentOrderData => _currentOrderData;
+  dynamic get orderDataList => _orderDataList;
+   dynamic get currentPickUpData => _currentPickUpData;
   dynamic get sweeperData => _sweeperData;
-  
+
   bool get isLogin => _isLogin;
   bool get isLoading => _isLoading;
   bool get isOrdering => _isOrdering;
@@ -53,15 +60,26 @@ class GlobalVar extends ChangeNotifier {
     _userLoginData = value;
     notifyListeners();
   }
-  set orderData(dynamic value) {
-    _orderData = value;
+
+  set currentOrderData(dynamic value) {
+    _currentOrderData = value;
     notifyListeners();
   }
+
+  set currentPickUpData(dynamic value) {
+    _currentPickUpData = value;
+    notifyListeners();
+  }
+
+  set orderDataList(dynamic value) {
+    _orderDataList = value;
+    notifyListeners();
+  }
+
   set sweeperData(dynamic value) {
     _sweeperData = value;
     notifyListeners();
   }
-
 
   set isLogin(bool value) {
     _isLogin = value;

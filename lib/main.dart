@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:tratour/globalVar.dart';
 import 'package:tratour/onboarding/onboarding_screen.dart';
+
 import 'package:tratour/pages/orderProcess.dart';
 import 'package:tratour/pages/homePage.dart';
 import 'package:tratour/pages/login_register_page.dart';
@@ -93,7 +94,7 @@ class MyApp extends StatelessWidget {
       routes: {
         'widgetTree': (context) => WidgetTree(globalVar: globalVar),
         'onboard': (context) => OnBoardingScreen(globalVar: globalVar),
-        'inOrder': (context) => OrderProcess(globalVar: globalVar),
+        'inOrder': (context) => OrderProcess(),
       },
     );
   }
@@ -113,10 +114,10 @@ class _MainState extends State<MainPage> with TickerProviderStateMixin {
   late final List<Widget> destinationViews;
   final List<Destination> allDestinations = [
     Destination(0, 'Beranda', Icons.home, GlobalVar.mainColor),
-    Destination(1, 'Pesanan', Icons.list,  GlobalVar.mainColor),
-    Destination(2, 'Pilah Sampah', Icons.add_circle,  GlobalVar.mainColor),
-    Destination(3, 'Sosial', Icons.groups,  GlobalVar.mainColor),
-    Destination(4, 'Profile', Icons.person,  GlobalVar.mainColor),
+    Destination(1, 'Pesanan', Icons.list, GlobalVar.mainColor),
+    Destination(2, 'Pilah Sampah', Icons.add_circle, GlobalVar.mainColor),
+    Destination(3, 'Sosial', Icons.groups, GlobalVar.mainColor),
+    Destination(4, 'Profile', Icons.person, GlobalVar.mainColor),
     // Add more destinations as needed
   ];
 
@@ -140,9 +141,7 @@ class _MainState extends State<MainPage> with TickerProviderStateMixin {
     destinationViews = [
       HomePage(userData: globalVar.userLoginData),
       OrderPage(),
-      SortTrashPage(
-        globalVar: globalVar,
-      ),
+      SortTrashPage(globalVar: globalVar),
       SocialPage(),
       ProfilePage(),
     ];
@@ -258,7 +257,7 @@ class _RootPageState extends State<RootPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: widget.destination.index != 4 ? MyAppBar() : null,
-    //  backgroundColor: widget.destination.color[50],
+      //  backgroundColor: widget.destination.color[50],
       body: _buildPage(context), // Build the appropriate page
     );
   }
@@ -271,15 +270,13 @@ class _RootPageState extends State<RootPage> {
       case 1:
         return OrderPage();
       case 2:
-        return SortTrashPage(
-          globalVar: globalVar,
-        );
+        return SortTrashPage(globalVar: globalVar);
       case 3:
         return SocialPage();
       case 4:
         return ProfilePage();
       default:
-        return const SizedBox(); // Return an empty widget for unknown destinations
+        return const SizedBox();
     }
   }
 }
@@ -346,13 +343,15 @@ class NavigationBar extends StatelessWidget {
         color: GlobalVar.baseColor, // Set the background color here
       ),
       child: BottomNavigationBar(
-        backgroundColor: Colors.transparent, // Make the BottomNavigationBar background transparent
+        backgroundColor: Colors
+            .transparent, // Make the BottomNavigationBar background transparent
         currentIndex: selectedIndex,
         onTap: onDestinationSelected,
         items: destinations.map<BottomNavigationBarItem>(
           (NavigationDestination destination) {
             return BottomNavigationBarItem(
-              backgroundColor: GlobalVar.baseColor, // Set the background color for the BottomNavigationBar item
+              backgroundColor: GlobalVar
+                  .baseColor, // Set the background color for the BottomNavigationBar item
               icon: destination.icon,
               label: destination.label,
             );

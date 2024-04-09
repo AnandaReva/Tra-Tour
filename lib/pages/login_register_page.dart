@@ -182,7 +182,8 @@ class LoginPageState extends State<LoginPage> {
           // Mengeksekusi pembaruan poin untuk pengundang
           updateUserPoint(inviterId, inviterPoint);
 
-           initial_user_point = '100'; // tidak perlu lagi karena poin sekarang ditambah 100
+          initial_user_point =
+              '100'; // tidak perlu lagi karena poin sekarang ditambah 100
 
           checkReferralCode(referral_code);
         } else {
@@ -358,10 +359,11 @@ class LoginPageState extends State<LoginPage> {
           (route) => false,
         );
       }
-
-      setState(() {
-        globalVar.isLoading = false; // Menampilkan animasi loading
-      });
+      if (globalVar.isLoading == true) {
+        setState(() {
+          globalVar.isLoading = false; // Menampilkan animasi loading
+        });
+      }
     } on FirebaseAuthException catch (e) {
       setState(() {
         // Periksa kode kesalahan FirebaseAuthException
@@ -380,9 +382,11 @@ class LoginPageState extends State<LoginPage> {
         globalVar.isLoading = false;
       });
     } finally {
-      setState(() {
-        globalVar.isLoading = false; // Menampilkan animasi loading
-      });
+      if (globalVar.isLoading == true) {
+        setState(() {
+          globalVar.isLoading = false; // Menampilkan animasi loading
+        });
+      }
     }
   }
 
@@ -732,7 +736,6 @@ class LoginPageState extends State<LoginPage> {
     );
   }
 
- 
   @override
   Widget build(BuildContext context) {
     return Scaffold(

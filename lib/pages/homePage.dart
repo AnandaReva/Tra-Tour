@@ -208,7 +208,7 @@ Padding _poinSection() {
 
  // print('debug m: ${globalVar.userLoginData}');
   Map<String, dynamic> userData = globalVar.userLoginData ?? {};
- // print('debug m Tipe data userData: ${userData.runtimeType}');
+  // print('debug m Tipe data userData: ${userData.runtimeType}');
 
   return Padding(
     padding: const EdgeInsets.all(20),
