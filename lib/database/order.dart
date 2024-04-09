@@ -1,14 +1,14 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:tratour/globalVar.dart';
 import 'package:http/http.dart' as http;
+import 'package:tratour/pages/orderProcess.dart';
 
 class Order {
   GlobalVar globalVar = GlobalVar.instance;
 
-
-
-  Future<void> addOrderToDatabase(
+  Future<bool> addOrderToDatabase(
     String user_id,
     String pickup_id,
     String waste_types,
@@ -19,6 +19,7 @@ class Order {
     String payment_method,
     String formattedDate,
     String initial_status,
+    BuildContext context,
   ) async {
     try {
       String url = 'https://tratour.000webhostapp.com/createOrder.php';
@@ -47,7 +48,6 @@ class Order {
         body: body,
       );
 
-   
       print('Data sent: $body');
       final responseData = json.decode(response.body);
       if (response.statusCode == 200 && responseData['status'] == 'success') {
@@ -55,54 +55,58 @@ class Order {
         GlobalVar globalVar = GlobalVar.instance;
         globalVar.orderData = newOrderData;
         print('Response Message: ${responseData['message']}');
+
+        // Return true to indicate success
+        return true;
       } else {
-        print('Failed to create order 1: ${response.body}');
+        print('Failed to create order: ${response.body}');
+        print('Response Message: ${responseData['message']}');
+
+        // Return false to indicate failure
+        return false;
       }
     } catch (e) {
       // Tangani kesalahan yang terjadi selama proses HTTP request
       print('Error adding order: $e');
       // Lakukan sesuatu jika terjadi kesalahan
+
+      // Return false to indicate failure
+      return false;
     }
   }
 
-
-/*   Future<void> findSweeper(
-    String order_id,
-
+/*   Future<void> findSweeperFromDB(
+    String email,
   ) async {
+    String url = 'https://tratour.000webhostapp.com/findUser.php?email=$email';
+
     try {
-      String url = 'https://tratour.000webhostapp.com/findSweeper.php';
+      // Melakukan HTTP GET request
+      final response = await http.get(Uri.parse(url));
 
-      Map<String, dynamic> newOrderData = {
-        'user_id': user_id,
-     
-      };
-
-      String body = json.encode(newOrderData);
-
-      final response = await http.post(
-        Uri.parse(url),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-        },
-        body: body,
-      );
-
-   
-      print('Data sent: $body');
-      final responseData = json.decode(response.body);
-      if (response.statusCode == 200 && responseData['status'] == 'success') {
-        print('New order added successfully.');
+      if (response.statusCode == 200) {
+        // Berhasil mendapatkan respon dari server
         GlobalVar globalVar = GlobalVar.instance;
-        globalVar.orderData = newOrderData;
-        print('Response Message: ${responseData['message']}');
+        Map<String, dynamic> data = json.decode(response.body);
+
+        // Memperbarui userLoginData dengan data yang diperoleh
+        globalVar.userLoginData = data['data'];
+
+        // Set isLogin menjadi true
+        globalVar.isLogin = true;
       } else {
-        print('Failed to create order 1: ${response.body}');
+        if (globalVar.isLoading == true) {
+          setState(() {
+            globalVar.isLoading = false; // Menampilkan animasi loading
+          });
+        }
+
+        // Gagal mendapatkan respon dari server
+        print('Failed to load data: ${response.statusCode}');
       }
     } catch (e) {
-      // Tangani kesalahan yang terjadi selama proses HTTP request
-      print('Error adding order: $e');
-      // Lakukan sesuatu jika terjadi kesalahan
+      // Terjadi kesalahan saat melakukan permintaan HTTP
+      print('Error Find: $e');
     }
   } */
 }

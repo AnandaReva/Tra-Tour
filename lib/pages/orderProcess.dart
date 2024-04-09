@@ -9,6 +9,8 @@ class OrderProcess extends StatefulWidget {
 }
 
 class _OrderProcessState extends State<OrderProcess> {
+  GlobalVar globalVar = GlobalVar.instance;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,6 +24,7 @@ class _OrderProcessState extends State<OrderProcess> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Text(' ${globalVar.orderData};'),
             /*  ElevatedButton(
               onPressed: () {
                 Navigator.of(context).push(

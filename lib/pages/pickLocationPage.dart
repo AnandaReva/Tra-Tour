@@ -170,20 +170,21 @@ class _PickLocationPageState extends State<PickLocationPage> {
                       String formattedDate =
                           '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
 
-                      try {
-                        await order.addOrderToDatabase(
-                          globalVar.userLoginData['id'],
-                          initial_pickup_id,
-                          globalVar.selectedTrashIndexes.join(','),
-                          globalVar.userLocation,
-                          initial_sweeper_coordinate,
-                          _addressOrderController.text,
-                          initial_cost,
-                          _controllerPaymentMethod.text,
-                          formattedDate,
-                          initial_status,
-                        );
+                      bool success = await order.addOrderToDatabase(
+                        globalVar.userLoginData['id'],
+                        initial_pickup_id,
+                        globalVar.selectedTrashIndexes.join(','),
+                        globalVar.userLocation,
+                        initial_sweeper_coordinate,
+                        _addressOrderController.text,
+                        initial_cost,
+                        _controllerPaymentMethod.text,
+                        formattedDate,
+                        initial_status,
+                        context,
+                      );
 
+                      if (success) {
                         // Navigasi ke layar berikutnya hanya jika pembuatan pesanan berhasil
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -192,15 +193,14 @@ class _PickLocationPageState extends State<PickLocationPage> {
                             fullscreenDialog: true,
                           ),
                         );
-                      } catch (e) {
-                        print('Error while adding order: $e');
+                      } else {
                         // Tampilkan pesan error kepada pengguna
                         showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
                             title: Text('Gagal Membuat Pesanan'),
                             content: Text(
-                                'Terjadi kesalahan saat menambahkan pesanan, periksa koneksi internet: $e'),
+                                'Terjadi kesalahan saat menambahkan pesanan, periksa koneksi internet.'),
                             actions: <Widget>[
                               TextButton(
                                 onPressed: () {
