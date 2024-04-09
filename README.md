@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # aplikasi_sampah
 
 A new Flutter project.
