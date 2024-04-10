@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:tratour/globalVar.dart';
 import 'package:http/http.dart' as http;
 
-
 class Order {
   GlobalVar globalVar = GlobalVar.instance;
 
@@ -54,12 +53,17 @@ class Order {
         print('New order added successfully.');
         GlobalVar globalVar = GlobalVar.instance;
         globalVar.currentOrderData = newOrderData;
-        print('Response Message: ${responseData['message']}');
+
+        String newOrderId = responseData['id'].toString();
+        globalVar.currentOrderData['id'] = newOrderId;
+
+        
+        print('New order ID: $newOrderId');
 
         /* 
         ); */
 
-        bool isSweeperOrderFound = false;
+        /*  bool isSweeperOrderFound = false;
         while (!isSweeperOrderFound) {
           isSweeperOrderFound =
               await checkSweeperOrder(globalVar.currentOrderData['id']);
@@ -70,7 +74,7 @@ class Order {
             await Future.delayed(
                 Duration(seconds: 5)); // Delay 5 detik sebelum mencoba lagi
           }
-        }
+        } */
 
         // Return true to indicate success
         return true;
@@ -106,8 +110,17 @@ class Order {
         String pickupId = responseData['data']['pickup_id'];
         print('pickup_id: $pickupId');
 
-        await findSweeperFromDB(pickupId);
-        return true; // Return true jika berhasil menemukan sweeper order
+        //   await findSweeperFromDB(pickupId);
+
+        bool foundSweeper = await findSweeperFromDB(pickupId);
+
+        if (foundSweeper) {
+          print('Sweeper berhasil ditemukan!');
+          return true; // Return true jika berhasil menemukan sweeper order
+        } else {
+          print('Gagal menemukan sweeper.');
+          return false;
+        }
       } else {
         // Gagal mendapatkan data sweeper atau respon dari server
         print('Gagal mendapatkan data sweeper: ${response.statusCode}');
@@ -120,7 +133,7 @@ class Order {
     }
   }
 
-  Future<void> findSweeperFromDB(String pickup_id) async {
+  Future<bool> findSweeperFromDB(String pickup_id) async {
     String url = 'https://tratour.000webhostapp.com/findSweeper.php';
 
     try {
@@ -134,24 +147,63 @@ class Order {
 
         if (responseData['status'] == 'success') {
           // Jika status success, simpan data pickup ke dalam variabel globalVar
-   
           globalVar.currentPickUpData = responseData['data_pickup'];
-          globalVar.sweeperData = responseData['user_data'];
+          globalVar.currentSweeperData = responseData['user_data'];
 
           print('pickup_data: ${globalVar.currentPickUpData}');
-          print('sweeper_data: ${globalVar.sweeperData}');
-
+          print('sweeper_data: ${globalVar.currentSweeperData}');
+          return true; // Jika berhasil, kembalikan true
         } else {
           // Jika status bukan success, cetak pesan error dari server
           print('Gagal mendapatkan data sweeper: ${responseData['message']}');
+          return false; // Jika gagal, kembalikan false
         }
       } else {
         // Gagal mendapatkan respon dari server
         print('Gagal mendapatkan data sweeper: ${response.statusCode}');
+        return false; // Jika gagal, kembalikan false
       }
     } catch (e) {
       // Terjadi kesalahan saat melakukan permintaan HTTP
       print('Error Find: $e');
+      return false; // Jika terjadi kesalahan, kembalikan false
+    }
+  }
+
+  Future<bool> cancelOrderFromDB(String order_id, String status_change) async {
+    String url = 'https://tratour.000webhostapp.com/updateStatusOrder.php';
+
+    try {
+      // Melakukan HTTP POST request dengan body pickup_id dan status_change
+      final response = await http.post(Uri.parse(url), body: {
+        'order_id': order_id,
+        'status_change': status_change,
+      });
+
+      print('order_id: $order_id');
+      print('status_change: $status_change');
+
+      if (response.statusCode == 200) {
+        // Berhasil mendapatkan respon dari server
+        Map<String, dynamic> responseData = json.decode(response.body);
+
+        if (responseData['status'] == 'success') {
+          print('Pesanan berhasil dibatalkan');
+          return true; // return true jika pesanan berhasil dibatalkan
+        } else {
+          // Jika status bukan success, cetak pesan error dari server
+          print('Gagal membatalkan pesanan: ${responseData['message']}');
+          return false; // return false jika gagal membatalkan pesanan
+        }
+      } else {
+        // Gagal mendapatkan respon dari server
+        print('Gagal membatalkan pesanan: ${response.statusCode}');
+        return false; // return false jika gagal membatalkan pesanan
+      }
+    } catch (e) {
+      // Terjadi kesalahan saat melakukan permintaan HTTP
+      print('Error Cancelling Order: $e');
+      return false; // return false jika terjadi kesalahan saat melakukan permintaan HTTP
     }
   }
 }

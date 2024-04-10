@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tratour/globalVar.dart';
-import 'package:tratour/pages/pickLocationPage.dart';
+import 'package:tratour/pages/user/pickLocationPage.dart';
 
 class CustomCheckbox extends StatelessWidget {
   final int index;

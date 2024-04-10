@@ -7,7 +7,7 @@ import 'package:tratour/components/customCheckBox.dart';
 
 import 'package:tratour/globalVar.dart';
 import 'package:tratour/pages/editprofilepage.dart';
-import 'package:tratour/pages/findOrderAvailable.dart';
+import 'package:tratour/pages/sweeper/findOrderAvailable.dart';
 
 
 // ignore: must_be_immutable

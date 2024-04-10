@@ -10,12 +10,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tratour/globalVar.dart';
 import 'package:tratour/onboarding/onboarding_screen.dart';
 
-import 'package:tratour/pages/orderProcess.dart';
+import 'package:tratour/pages/user/orderProcess.dart';
 import 'package:tratour/pages/homePage.dart';
 import 'package:tratour/pages/login_register_page.dart';
 import 'package:tratour/pages/orderPage.dart';
 import 'package:tratour/pages/socialPage.dart';
-import 'package:tratour/pages/sortTrashPage.dart';
+import 'package:tratour/pages/user/sortTrashPage.dart';
 
 import 'package:tratour/widget_tree.dart';
 import 'package:firebase_auth/firebase_auth.dart';

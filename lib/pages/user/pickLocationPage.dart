@@ -6,7 +6,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:tratour/database/order.dart';
 import 'package:tratour/globalVar.dart';
-import 'package:tratour/pages/orderProcess.dart';
+import 'package:tratour/pages/user/orderProcess.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PickLocationPage extends StatefulWidget {
@@ -177,9 +177,11 @@ class _PickLocationPageState extends State<PickLocationPage> {
                         globalVar.isLoading =
                             true; // Menampilkan animasi loading
                       });
+
+                      showLoadingScreen(context);
                       Order order = Order();
 
-                      bool success = await order.checkSweeperOrder(
+                      /*  bool success = await order.checkSweeperOrder(
                         '51', // ini order_id
                       );
                       if (success) {
@@ -198,9 +200,8 @@ class _PickLocationPageState extends State<PickLocationPage> {
                             fullscreenDialog: true,
                           ),
                         );
-                      }
+                      } */
 
-                      /* 
                       DateTime now = DateTime.now();
                       String formattedDate =
                           '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
@@ -220,15 +221,45 @@ class _PickLocationPageState extends State<PickLocationPage> {
                       );
 
                       if (success) {
-                        // Navigasi ke layar berikutnya hanya jika pembuatan pesanan berhasil
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                OrderProcess(globalVar: globalVar),
-                            fullscreenDialog: true,
-                          ),
-                        );
+                        bool isSweeperOrderFound = false;
+                        while (!isSweeperOrderFound) {
+                          print(
+                              'globalVar.currentOrderData ${globalVar.currentOrderData}');
+                          isSweeperOrderFound = await order.checkSweeperOrder(
+                              globalVar.currentOrderData['id']);
+                          if (isSweeperOrderFound) {
+                            print('Sweeper order found.');
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) => OrderProcess(),
+                                // OrderProcess(globalVar: globalVar),
+                                fullscreenDialog: true,
+                              ),
+                            );
+                          } else {
+                            print('Failed to find sweeper order. Retrying...');
+                            setState(() {
+                              // Mengubah nilai isLoading menjadi false untuk menghilangkan layar loading
+                              globalVar.isLoading = false;
+                            });
+                            await Future.delayed(Duration(
+                                seconds:
+                                    5)); // Delay 5 detik sebelum mencoba lagi
+                            setState(() {
+                              // Mengubah nilai isLoading menjadi true untuk menampilkan layar loading
+                              globalVar.isLoading = true;
+                            });
+                          }
+                        }
                       } else {
+                        if (globalVar.isLoading == true) {
+                          setState(() {
+                            globalVar.isLoading =
+                                false; // Menampilkan animasi loading
+                          });
+                          Navigator.of(context).pop();
+                        }
                         // Tampilkan pesan error kepada pengguna
                         showDialog(
                           context: context,
@@ -246,13 +277,24 @@ class _PickLocationPageState extends State<PickLocationPage> {
                             ],
                           ),
                         );
-                      } */
+                      }
                     },
               child: const Text('Buat Pesanan'),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  void showLoadingScreen(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible:
+          false, // Mencegah menutup dialog dengan mengetuk di luar dialog
+      builder: (BuildContext context) {
+        return LoadingScreen();
+      },
     );
   }
 
@@ -319,7 +361,7 @@ class _PickLocationPageState extends State<PickLocationPage> {
       double longitude = position.longitude;
 
       Provider.of<GlobalVar>(context, listen: false).userLocation =
-          'Latitude: $latitude, Longitude: $longitude';
+          '$latitude,$longitude'; // Simpan hanya latitude dan longitude
       print(
           'location:  ${Provider.of<GlobalVar>(context, listen: false).userLocation}');
     } catch (e) {
@@ -330,16 +372,13 @@ class _PickLocationPageState extends State<PickLocationPage> {
   Future<void> _openGoogleMaps(BuildContext context) async {
     String userLocation =
         Provider.of<GlobalVar>(context, listen: false).userLocation;
-    List<String> coordinates = userLocation.split(', ');
+    List<String> coordinates = userLocation.split(',');
     double latitude = 0.0;
     double longitude = 0.0;
 
-    for (String coordinate in coordinates) {
-      if (coordinate.contains('Latitude')) {
-        latitude = double.parse(coordinate.substring(10));
-      } else if (coordinate.contains('Longitude')) {
-        longitude = double.parse(coordinate.substring(11));
-      }
+    if (coordinates.length >= 2) {
+      latitude = double.parse(coordinates[0]);
+      longitude = double.parse(coordinates[1]);
     }
 
     final Uri googleMapsUrl = Uri.parse(
@@ -364,7 +403,7 @@ class LoadingScreen extends StatelessWidget {
           children: [
             // Gambar logo
             Image.asset(
-              'assets/findingSweeperLlogo.png',
+              'assets/images/findingSweeperLlogo.png',
               width: 200, // Ubah sesuai kebutuhan
               height: 200, // Ubah sesuai kebutuhan
             ),
