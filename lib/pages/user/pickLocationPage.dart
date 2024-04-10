@@ -181,27 +181,6 @@ class _PickLocationPageState extends State<PickLocationPage> {
                       showLoadingScreen(context);
                       Order order = Order();
 
-                      /*  bool success = await order.checkSweeperOrder(
-                        '51', // ini order_id
-                      );
-                      if (success) {
-                        if (globalVar.isLoading == true) {
-                          setState(() {
-                            globalVar.isLoading =
-                                false; // Menampilkan animasi loading
-                          });
-                        }
-                        // Navigasi ke layar berikutnya hanya jika pembuatan pesanan berhasil
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                OrderProcess(),
-                                // OrderProcess(globalVar: globalVar),
-                            fullscreenDialog: true,
-                          ),
-                        );
-                      } */
-
                       DateTime now = DateTime.now();
                       String formattedDate =
                           '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
@@ -221,35 +200,37 @@ class _PickLocationPageState extends State<PickLocationPage> {
                       );
 
                       if (success) {
-                        bool isSweeperOrderFound = false;
-                        while (!isSweeperOrderFound) {
-                          print(
-                              'globalVar.currentOrderData ${globalVar.currentOrderData}');
-                          isSweeperOrderFound = await order.checkSweeperOrder(
-                              globalVar.currentOrderData['id']);
-                          if (isSweeperOrderFound) {
-                            print('Sweeper order found.');
-                            Navigator.of(context).pop();
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (context) => OrderProcess(),
-                                // OrderProcess(globalVar: globalVar),
-                                fullscreenDialog: true,
-                              ),
-                            );
-                          } else {
-                            print('Failed to find sweeper order. Retrying...');
-                            setState(() {
-                              // Mengubah nilai isLoading menjadi false untuk menghilangkan layar loading
-                              globalVar.isLoading = false;
-                            });
-                            await Future.delayed(Duration(
-                                seconds:
-                                    5)); // Delay 5 detik sebelum mencoba lagi
-                            setState(() {
-                              // Mengubah nilai isLoading menjadi true untuk menampilkan layar loading
-                              globalVar.isLoading = true;
-                            });
+                        bool isOrderFound = false;
+                        String order_id = globalVar.currentOrderData['id'];
+
+                        while (!isOrderFound) {
+                          try {
+                            // Memanggil method checkPickUpOrder untuk memeriksa order
+                            isOrderFound =
+                                await order.checkPickUpOrder(order_id);
+
+                            // Jika order ditemukan, keluar dari loop
+                            if (isOrderFound) {
+                              // Hentikan tampilan LoadingScreen
+                              Navigator.of(context).pop();
+                              // Navigasi ke layar OrderProcess
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      OrderProcess(), // Ganti dengan nama widget OrderProcess
+                                ),
+                              );
+                              break;
+                            } else {
+                              print(
+                                  'Order tidak ditemukan, melakukan percobaan kembali...');
+                              // Tunggu sejenak sebelum memanggil method checkPickUpOrder kembali
+                              await Future.delayed(Duration(seconds: 5));
+                            }
+                          } catch (e) {
+                            print('Terjadi kesalahan saat memeriksa order: $e');
+                            break;
                           }
                         }
                       } else {

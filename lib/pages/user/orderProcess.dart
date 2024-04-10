@@ -3,225 +3,138 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
-import 'package:tratour/database/order.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:tratour/globalVar.dart';
+import 'package:tratour/database/auth.dart';
+import 'package:tratour/database/order.dart';
 
-class OrderProcess extends StatefulWidget {
-  GlobalVar globalVar = GlobalVar.instance;
-
-  @override
-  // ignore: library_private_types_in_public_api
-  _OrderProcessState createState() => _OrderProcessState();
-}
-
-class _OrderProcessState extends State<OrderProcess> {
-  late Map<String, dynamic> currentOrderData;
-  String _distanceText = '';
-
-  @override
-  void initState() {
-    super.initState();
-    // Panggil _calculateDistance saat widget diinisialisasi
-    _initializeOrderData();
-  }
-
-  // Inisialisasi currentOrderData
-  void _initializeOrderData() {
-    currentOrderData = {
-      'id': '51',
-      'user_id': '64',
-      'pickup_id': '1',
-      'waste_types': '0,1,2,5',
-      'user_coordinate': '-6.2126044,106.8688975',
-      'sweeper_coordinate': '-6.175392,106.827153',
-      'address': 'Jalan Kemana saja',
-      'cost': '30000',
-      'payment_method': '1',
-      'created_at': '2024-04-09 00:00:00',
-      'updated_at': '2024-04-09 00:00:00',
-      'status': 'inprogress'
-    };
-    calculateDistance(context);
-  }
-
+class OrderProcess extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        Navigator.of(context).pop(); // Kembali ke halaman sebelumnya
-        return Future.value(true); // Return a Future that completes with true
+    return ChangeNotifierProvider(
+      create: (context) => GlobalVar.instance,
+      child: OrderProcessContent(),
+    );
+  }
+}
+
+class OrderProcessContent extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<GlobalVar>(
+      builder: (context, globalVar, _) {
+        // Ambil data dari globalVar
+        Map<String, dynamic> currentOrderData =
+            globalVar.currentOrderData ?? {};
+        Map<String, dynamic> currentPickUpData =
+            globalVar.currentPickUpData ?? {};
+        Map<String, dynamic> currentSweeperData =
+            globalVar.currentSweeperData ?? {};
+
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text(
+              'Sweeper Ditemukan',
+              style: TextStyle(fontSize: 18),
+            ),
+            automaticallyImplyLeading: false,
+            actions: [
+              IconButton(
+                onPressed: () {
+                  // Logika refresh di sini
+                },
+                icon: Icon(Icons.refresh),
+              ),
+            ],
+          ),
+          body: SingleChildScrollView(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Order Data:',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  Text('ID: ${currentOrderData['id'] ?? ''}'),
+                  Text('User ID: ${currentOrderData['user_id'] ?? ''}'),
+                  Text('Pickup ID: ${currentOrderData['pickup_id'] ?? ''}'),
+                  Text('Waste Types: ${currentOrderData['waste_types'] ?? ''}'),
+                  Text(
+                      'User Coordinate: ${currentOrderData['user_coordinate'] ?? ''}'),
+                  Text(
+                      'Sweeper Coordinate: ${currentOrderData['sweeper_coordinate'] ?? ''}'),
+                  Text('Address: ${currentOrderData['address'] ?? ''}'),
+                  Text('Cost: ${currentOrderData['cost'] ?? ''}'),
+                  Text(
+                      'Payment Method: ${currentOrderData['payment_method'] ?? ''}'),
+                  Text('Created At: ${currentOrderData['created_at'] ?? ''}'),
+                  Text('Updated At: ${currentOrderData['updated_at'] ?? ''}'),
+                  Text('Status: ${currentOrderData['status'] ?? ''}'),
+                  // Tampilkan data dari pickup_data
+                  Text(
+                    'Pickup Data:',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  Text('ID: ${currentPickUpData['id'] ?? ''}'),
+                  Text('Order ID: ${currentPickUpData['order_id'] ?? ''}'),
+                  Text(
+                      'Pickuper ID: ${currentPickUpData['pickuper_id'] ?? ''}'),
+                  Text('Reward: ${currentPickUpData['reward'] ?? ''}'),
+                  // Tampilkan data dari sweeper_data
+                  Text(
+                    'Sweeper Data:',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  Text('ID: ${currentSweeperData['id'] ?? ''}'),
+                  Text('Username: ${currentSweeperData['username'] ?? ''}'),
+                  Text('Email: ${currentSweeperData['email'] ?? ''}'),
+                  Text('Phone: ${currentSweeperData['phone'] ?? ''}'),
+                  Text('User Type: ${currentSweeperData['user_type'] ?? ''}'),
+                  Text(
+                    'Jarak:',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  // Text('Distance: $_distanceText meters'), // Memperbaiki ini
+
+                  CircleAvatar(
+                    radius: 42,
+                    backgroundImage: NetworkImage(
+                      currentSweeperData != null
+                          ? currentSweeperData['profile_image'] ??
+                              'https://firebasestorage.googleapis.com/v0/b/tra-tour.appspot.com/o/default_profile_image.png?alt=media&token=83bb623d-473f-4c5e-93c3-ecc3fc5f915b'
+                          : 'https://firebasestorage.googleapis.com/v0/b/tra-tour.appspot.com/o/default_profile_image.png?alt=media&token=83bb623d-473f-4c5e-93c3-ecc3fc5f915b',
+                    ),
+                  ),
+
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      _openRouteGoogleMaps(context,
+                          currentOrderData); // Menambah parameter currentOrderData
+                    },
+                    child: const Text('Lihat Posisi Sweeper'),
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () async {
+                      // Memperbaiki pemanggilan showDialog
+                      _showCancelOrderDialog(
+                          context, globalVar, currentOrderData);
+                    },
+                    child: Text('Batal'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Sweeper Ditemukan',
-            style: TextStyle(fontSize: 18), // Atur ukuran font di sini
-          ),
-          automaticallyImplyLeading: false, // Tambahkan baris ini
-          actions: [
-            IconButton(
-              onPressed: () {
-                // Tambahkan logika refresh di sini
-                // Anda dapat menambahkan kode untuk memperbarui data atau melakukan tindakan lain saat tombol refresh ditekan
-              },
-              icon: Icon(Icons.refresh),
-            ),
-          ],
-        ),
-        body: SingleChildScrollView(
-          child: Center(
-            child: Consumer<GlobalVar>(
-              builder: (context, globalVar, _) {
-                Map<String, dynamic> currentPickUpData =
-                    globalVar.currentPickUpData ?? {};
-                Map<String, dynamic> currentSweeperData =
-                    globalVar.currentSweeperData ?? {};
-
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Order Data:',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    Text('ID: ${currentOrderData['id'] ?? ''}'),
-                    Text('User ID: ${currentOrderData['user_id'] ?? ''}'),
-                    Text('Pickup ID: ${currentOrderData['pickup_id'] ?? ''}'),
-                    Text(
-                        'Waste Types: ${currentOrderData['waste_types'] ?? ''}'),
-                    Text(
-                        'User Coordinate: ${currentOrderData['user_coordinate'] ?? ''}'),
-                    Text(
-                        'Sweeper Coordinate: ${currentOrderData['sweeper_coordinate'] ?? ''}'),
-                    Text('Address: ${currentOrderData['address'] ?? ''}'),
-                    Text('Cost: ${currentOrderData['cost'] ?? ''}'),
-                    Text(
-                        'Payment Method: ${currentOrderData['payment_method'] ?? ''}'),
-                    Text('Created At: ${currentOrderData['created_at'] ?? ''}'),
-                    Text('Updated At: ${currentOrderData['updated_at'] ?? ''}'),
-                    Text('Status: ${currentOrderData['status'] ?? ''}'),
-                    // Tampilkan data dari pickup_data
-                    Text(
-                      'Pickup Data:',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    Text('ID: ${currentPickUpData['id'] ?? ''}'),
-                    Text('Order ID: ${currentPickUpData['order_id'] ?? ''}'),
-                    Text(
-                        'Pickuper ID: ${currentPickUpData['pickuper_id'] ?? ''}'),
-                    Text('Reward: ${currentPickUpData['reward'] ?? ''}'),
-                    // Tampilkan data dari sweeper_data
-                    Text(
-                      'Sweeper Data:',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    Text('ID: ${currentSweeperData['id'] ?? ''}'),
-                    Text('Username: ${currentSweeperData['username'] ?? ''}'),
-                    Text('Email: ${currentSweeperData['email'] ?? ''}'),
-                    Text('Phone: ${currentSweeperData['phone'] ?? ''}'),
-                    Text('User Type: ${currentSweeperData['user_type'] ?? ''}'),
-                    Text(
-                      'Jarak:',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-
-                    Text('Distance: $_distanceText meters'),
-
-                    CircleAvatar(
-                      radius: 42,
-                      backgroundImage: NetworkImage(
-                        globalVar.currentSweeperData != null
-                            ? globalVar.currentSweeperData['profile_image'] ??
-                                'https://firebasestorage.googleapis.com/v0/b/tra-tour.appspot.com/o/default_profile_image.png?alt=media&token=83bb623d-473f-4c5e-93c3-ecc3fc5f915b'
-                            : 'https://firebasestorage.googleapis.com/v0/b/tra-tour.appspot.com/o/default_profile_image.png?alt=media&token=83bb623d-473f-4c5e-93c3-ecc3fc5f915b',
-                      ),
-                    ),
-
-                    SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: globalVar.userLocation.isEmpty
-                          ? null
-                          : () {
-                              _openRouteGoogleMaps(context);
-                            },
-                      child: const Text('Lihat Posisi Sweeper'),
-                    ),
-                    SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () async {
-                        // Logika untuk tombol batal
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text('Konfirmasi'),
-                              content: Text(
-                                  'Apakah Anda yakin ingin membatalkan pesanan?'),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context)
-                                        .pop(false); // Tutup dialog
-                                  },
-                                  child: Text('Tidak'),
-                                ),
-                                TextButton(
-                                  onPressed: () async {
-                                    Order order = Order();
-                                    bool orderCancelled =
-                                        await order.cancelOrderFromDB(
-                                      '${currentOrderData['id'] ?? ''}',
-                                      'cancelled',
-                                    );
-
-                                    if (orderCancelled) {
-                                      // Jika pesanan berhasil dibatalkan, lakukan tindakan yang sesuai
-                                      Navigator.of(context)
-                                          .pop(true); // Tutup dialog
-                                      Navigator.of(context)
-                                          .pop(); // Kembali ke halaman sebelumnya
-                                      globalVar.currentOrderData = null;
-                                      globalVar.currentPickUpData = null;
-                                      globalVar.currentSweeperData = null;
-                                      print('Pesanan berhasil dibatalkan!');
-                                    } else {
-                                      // Jika terjadi kesalahan dalam pembatalan pesanan, tampilkan Snackbar
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                              'Gagal membatalkan pesanan, Periksa Koneksi Internet.'),
-                                        ),
-                                      );
-                                      Navigator.of(context)
-                                          .pop(); // Tutup dialog
-                                    }
-                                  },
-                                  child: Text('Ya'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      child: Text('Batal'),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ),
-        ),
-      ),
     );
   }
 
-  Future<void> _openRouteGoogleMaps(BuildContext context) async {
+  Future<void> _openRouteGoogleMaps(
+      BuildContext context, Map<String, dynamic> currentOrderData) async {
     String userLocation =
         Provider.of<GlobalVar>(context, listen: false).userLocation;
     List<String> coordinates = userLocation.split(', ');
@@ -273,7 +186,8 @@ class _OrderProcessState extends State<OrderProcess> {
     }
   }
 
-  Future<void> calculateDistance(BuildContext context) async {
+  Future<void> _showCancelOrderDialog(BuildContext context, GlobalVar globalVar,
+      Map<String, dynamic> currentOrderData) async {
     String? sweeperCoordinate = currentOrderData['sweeper_coordinate'];
     String? userCoordinate = currentOrderData['user_coordinate'];
 
@@ -293,10 +207,6 @@ class _OrderProcessState extends State<OrderProcess> {
           userLatitude, userLongitude, sweeperLatitude, sweeperLongitude);
 
       // Update _distanceText with the calculated distance
-      setState(() {
-        _distanceText =
-            '$distanceInMeters'; // Update with your preferred format
-      });
 
       print('distance: $distanceInMeters ');
       double distanceInKm = distanceInMeters / 1000;
