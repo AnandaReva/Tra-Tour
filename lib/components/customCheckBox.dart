@@ -21,8 +21,8 @@ class CustomCheckbox extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           Container(
-            width: 100,
-            height: 100,
+            width: 150,
+            height: 150,
             decoration: BoxDecoration(
               border: Border.all(
                 color: checkboxProvider.isChecked[index]
@@ -34,8 +34,8 @@ class CustomCheckbox extends StatelessWidget {
           ),
           Image.asset(
             checkboxProvider.checkboxImages[index],
-            width: 100,
-            height: 100,
+            width: 150,
+            height: 150,
           ),
         ],
       ),
@@ -59,41 +59,47 @@ class ChecBoxImages extends StatelessWidget {
             }
           }
           return SingleChildScrollView(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  for (int i = 0;
-                      i < checkboxProvider.checkboxImages.length;
-                      i += 2)
-                    Row(
-                      children: [
-                        CustomCheckbox(title: 'pilihan ${i + 1}', index: i),
-                        if (i + 1 < checkboxProvider.checkboxImages.length)
-                          CustomCheckbox(
-                              title: 'pilihan ${i + 2}', index: i + 1),
-                      ],
-                    ),
-                  ElevatedButton(
-                    onPressed: selectedTrashIndexes.isEmpty
-                        ? null // Nonaktifkan tombol jika tidak ada pilihan yang dipilih
-                        : () {
-                            // Gunakan GlobalVar untuk mengakses selectedTrashIndexes
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  children: [
+                    for (int i = 0;
+                        i < checkboxProvider.checkboxImages.length;
+                        i += 2)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment
+                            .center, // Menengahkan item di dalam Row
+                        children: [
+                          CustomCheckbox(title: 'pilihan ${i + 1}', index: i),
+                          if (i + 1 < checkboxProvider.checkboxImages.length)
+                            CustomCheckbox(
+                                title: 'pilihan ${i + 2}', index: i + 1),
+                        ],
+                      ),
+                  ],
+                ),
+                SizedBox(
+                  height: 50,
+                ),
+                ElevatedButton(
+                  onPressed: selectedTrashIndexes.isEmpty
+                      ? null // Nonaktifkan tombol jika tidak ada pilihan yang dipilih
+                      : () {
+                          // Gunakan GlobalVar untuk mengakses selectedTrashIndexes
 
-                            globalVar.selectedTrashIndexes =
-                                selectedTrashIndexes;
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => PickLocationPage(),
-                              ),
-                            );
-                            print(
-                                'selected indexes:  ${globalVar.selectedTrashIndexes}  ');
-                          },
-                    child: const Text('Atur lokasi pengangkutan'),
-                  )
-                ],
-              ),
+                          globalVar.selectedTrashIndexes = selectedTrashIndexes;
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => PickLocationPage(),
+                            ),
+                          );
+                          print(
+                              'selected indexes:  ${globalVar.selectedTrashIndexes}  ');
+                        },
+                  child: const Text('Atur lokasi pengangkutan'),
+                )
+              ],
             ),
           );
         },

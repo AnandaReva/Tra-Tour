@@ -76,6 +76,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: GlobalVar.mainColor,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            setState(() {
+              globalVar.isLoading = false;
+            });
+            /*   Navigator.of(context).pop(); */
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => MainPage(),
+              ),
+            );
+          },
+        ),
       ),
       body: globalVar.isLoading // Show loading animation if isLoading is true
           ? Center(
