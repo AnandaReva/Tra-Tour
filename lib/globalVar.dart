@@ -7,11 +7,16 @@ class GlobalVar extends ChangeNotifier {
   static const baseColor = Color.fromRGBO(240, 240, 240, 1.0);
 
   dynamic _userLoginData;
-    dynamic _orderData;
-    dynamic _sweeperData;
+  dynamic _currentOrderData;
+  dynamic _currentPickUpData;
+  dynamic _currentSweeperData;
+
+  dynamic _orderDataList;
+  
+
   bool _isLogin = false;
   bool _isLoading = false;
-  bool _isOrdering = false;
+  bool _isInOrder = false;
   int _selectedIndex = 0;
   String _selected_role_onboarding = "";
   String _userLocation = "";
@@ -42,26 +47,39 @@ class GlobalVar extends ChangeNotifier {
   String get userLocation => _userLocation;
 
   dynamic get userLoginData => _userLoginData;
-  dynamic get orderData => _orderData;
-  dynamic get sweeperData => _sweeperData;
-  
+  dynamic get currentOrderData => _currentOrderData;
+  dynamic get orderDataList => _orderDataList;
+   dynamic get currentPickUpData => _currentPickUpData;
+  dynamic get currentSweeperData => _currentSweeperData;
+
   bool get isLogin => _isLogin;
   bool get isLoading => _isLoading;
-  bool get isOrdering => _isOrdering;
+  bool get isInOrder => _isInOrder;
 
   set userLoginData(dynamic value) {
     _userLoginData = value;
     notifyListeners();
   }
-  set orderData(dynamic value) {
-    _orderData = value;
-    notifyListeners();
-  }
-  set sweeperData(dynamic value) {
-    _sweeperData = value;
+
+  set currentOrderData(dynamic value) {
+    _currentOrderData = value;
     notifyListeners();
   }
 
+  set currentPickUpData(dynamic value) {
+    _currentPickUpData = value;
+    notifyListeners();
+  }
+
+  set orderDataList(dynamic value) {
+    _orderDataList = value;
+    notifyListeners();
+  }
+
+  set currentSweeperData(dynamic value) {
+    _currentSweeperData = value;
+    notifyListeners();
+  }
 
   set isLogin(bool value) {
     _isLogin = value;
@@ -71,8 +89,8 @@ class GlobalVar extends ChangeNotifier {
     _isLoading = value;
   }
 
-  set isOrdering(bool value) {
-    _isOrdering = value;
+  set isInOrder(bool value) {
+    _isInOrder = value;
     notifyListeners();
   }
 

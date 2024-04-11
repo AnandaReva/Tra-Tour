@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tratour/components/appBar.dart';
 import 'package:tratour/globalVar.dart';
-import 'package:tratour/pages/orderDetail.dart';
+import 'package:tratour/pages/orderDataList.dart';
 
+// ignore: must_be_immutable
 class OrderPage extends StatelessWidget {
-  const OrderPage({Key? key}) : super(key: key);
+  OrderPage({Key? key}) : super(key: key);
+  GlobalVar globalVar = GlobalVar.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +85,7 @@ class OrderPage extends StatelessWidget {
                         onPressed: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => const OrderDetail(),
+                              builder: (context) => const OrderListDetail(),
                             ),
                           );
                         },
@@ -120,7 +122,7 @@ class OrderPage extends StatelessWidget {
             height: 50,
             width: double.infinity,
             color: Color(0xffE6E6E6),
-            child: TabBar(
+            child: const TabBar(
               tabs: [
                 Tab(
                   text: 'Sedang Berlangsung',
@@ -144,7 +146,7 @@ class OrderPage extends StatelessWidget {
                       Container(
                         width: 140,
                         height: 140,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           image: DecorationImage(
                             image: AssetImage('assets/images/trash.png'),
                             fit: BoxFit.cover,
@@ -152,15 +154,9 @@ class OrderPage extends StatelessWidget {
                         ),
                       ),
                       // Tambahkan widget SingleChildScrollView di sini
+
                       SingleChildScrollView(
-                        child: Text(
-                          'Sampah dan barang bekas kamu mulai\nmenumpuk nih! Ayo ubah sampah dan\nbarang bekasmu menjadi barang\nberharga',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                        child:  null,
                       ),
                     ],
                   ),

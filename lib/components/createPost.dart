@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-
 //import 'package:tratour/dbhelper/mongodb.dart';
 
 import 'package:tratour/globalVar.dart';
@@ -85,11 +84,12 @@ class _CreatePostPageState extends State<CreatePostPage> {
                       });
                     } else {
                       showDialog(
+                        // ignore: use_build_context_synchronously
                         context:
                             context, // Gunakan BuildContext yang sudah disimpan sebelumnya
                         builder: (BuildContext dialogContext) {
                           return AlertDialog(
-                            title:  Text('Error'),
+                            title: Text('Error'),
                             content: Text(
                                 'Maximum 4 files are allowed to be selected.'),
                             actions: <Widget>[

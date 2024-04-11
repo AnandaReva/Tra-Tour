@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tratour/components/stepper.dart';
 
-class OrderDetail extends StatelessWidget {
-  const OrderDetail({super.key});
+class OrderListDetail extends StatelessWidget {
+  const OrderListDetail({super.key});
 
   @override
   Widget build(BuildContext context) {

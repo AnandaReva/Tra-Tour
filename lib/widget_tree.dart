@@ -26,9 +26,7 @@ class _WidgetTreeState extends State<WidgetTree> {
 
           return MainPage();
         } else {
-          return LoginPage(
-            globalVar: globalVar,
-          );
+          return LoginPage(globalVar: globalVar);
         }
       },
     );
