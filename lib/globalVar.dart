@@ -16,7 +16,7 @@ class GlobalVar extends ChangeNotifier {
 
   bool _isLogin = false;
   bool _isLoading = false;
-  bool _isOrdering = false;
+  bool _isInOrder = false;
   int _selectedIndex = 0;
   String _selected_role_onboarding = "";
   String _userLocation = "";
@@ -54,7 +54,7 @@ class GlobalVar extends ChangeNotifier {
 
   bool get isLogin => _isLogin;
   bool get isLoading => _isLoading;
-  bool get isOrdering => _isOrdering;
+  bool get isInOrder => _isInOrder;
 
   set userLoginData(dynamic value) {
     _userLoginData = value;
@@ -89,8 +89,8 @@ class GlobalVar extends ChangeNotifier {
     _isLoading = value;
   }
 
-  set isOrdering(bool value) {
-    _isOrdering = value;
+  set isInOrder(bool value) {
+    _isInOrder = value;
     notifyListeners();
   }
 

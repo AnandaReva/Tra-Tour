@@ -156,26 +156,7 @@ class OrderPage extends StatelessWidget {
                       // Tambahkan widget SingleChildScrollView di sini
 
                       SingleChildScrollView(
-                        child: Consumer<GlobalVar>(
-                          builder: (context, globalVar, child) {
-                            return globalVar.currentOrderData != null
-                                ? Column(
-                                    children: [
-                                      Text('${globalVar.currentPickUpData}'),
-                                      Text('${globalVar.currentOrderData}'),
-                                      Text('${globalVar.currentSweeperData}'),
-                                    ],
-                                  )
-                                : const Text(
-                                    'Sampah dan barang bekas kamu mulai\nmenumpuk nih! Ayo ubah sampah dan\nbarang bekasmu menjadi barang\nberharga',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  );
-                          },
-                        ),
+                        child:  null,
                       ),
                     ],
                   ),

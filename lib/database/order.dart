@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:tratour/globalVar.dart';
 import 'package:http/http.dart' as http;
+import 'package:tratour/pages/user/orderProcess.dart';
 
 class Order {
   GlobalVar globalVar = GlobalVar.instance;
@@ -94,48 +95,6 @@ class Order {
     }
   }
 
-  /*  Future<bool> checkPickUpOrder(String order_id) async {
-    String url = 'https://tratour.000webhostapp.com/checkPickUpOrder.php';
-
-    try {
-      // Melakukan HTTP POST request dengan body order_id
-      final response =
-          await http.post(Uri.parse(url), body: {'order_id': order_id});
-      Map<String, dynamic> responseData = json.decode(response.body);
-
-      if (response.statusCode == 200 && responseData['status'] == 'success') {
-        // Berhasil mendapatkan respon dari server
-        print('Sweeper order found');
-        String pickupId = responseData['data']['pickup_id'];
-        print('pickup_id: $pickupId');
-        globalVar.currentPickUpData = responseData['data']['pickup_data'];
-
-        //   await findSweeperFromDB(pickupId);
-
-        /* bool foundSweeper = await findSweeperFromDB(pickupId);
-
-        if (foundSweeper) {
-          print('Sweeper berhasil ditemukan!');
-        
-          // Return true jika berhasil menemukan sweeper order
-        } else {
-          print('Gagal menemukan sweeper.');
-          return false;
-        } */
-
-        return true;
-      } else {
-        // Gagal mendapatkan data sweeper atau respon dari server
-        print('Gagal mendapatkan data sweeper: ${response.statusCode}');
-        return false; // Return false jika gagal menemukan sweeper order
-      }
-    } catch (e) {
-      // Terjadi kesalahan saat melakukan permintaan HTTP
-      print('Error Find: $e');
-      return false; // Return false jika terjadi kesalahan
-    }
-  } */
-
   Future<bool> checkPickUpOrder(String order_id) async {
     String url =
         'https://tratour.000webhostapp.com/checkPickUpOrder.php?order_id=$order_id';
@@ -160,44 +119,6 @@ class Order {
     } catch (e) {
       print('Error Find: $e');
       return false;
-    }
-  }
-
-
-
-  Future<bool> findSweeperFromDB(String pickup_id) async {
-    String url = 'https://tratour.000webhostapp.com/findSweeper.php';
-
-    try {
-      // Melakukan HTTP POST request dengan body pickup_id
-      final response =
-          await http.post(Uri.parse(url), body: {'pickup_id': pickup_id});
-      Map<String, dynamic> responseData = json.decode(response.body);
-      if (response.statusCode == 200 && responseData['success'] == true) {
-        // Berhasil mendapatkan respon dari server dan sukses
-        Map<String, dynamic> responseData = json.decode(response.body);
-
-        // Simpan data pickup dan sweeper ke dalam variabel globalVar
-        globalVar.currentPickUpData = responseData['pickup_data'];
-        globalVar.currentSweeperData = responseData['sweeper_data'];
-
-        print('pickup_data: ${globalVar.currentPickUpData}');
-        print('sweeper_data: ${globalVar.currentSweeperData}');
-
-        return true; // Jika berhasil, kembalikan true
-      } else {
-        // Gagal mendapatkan respon dari server atau tidak sukses
-        if (response.statusCode != 200) {
-          print('Gagal mendapatkan data sweeper: ${response.statusCode}');
-        } else {
-          print('Gagal mendapatkan data sweeper: ${responseData['message']}');
-        }
-        return false; // Jika gagal, kembalikan false
-      }
-    } catch (e) {
-      // Terjadi kesalahan saat melakukan permintaan HTTP
-      print('Error Find: $e');
-      return false; // Jika terjadi kesalahan, kembalikan false
     }
   }
 
@@ -263,6 +184,68 @@ class Order {
       // Terjadi kesalahan saat melakukan permintaan HTTP
       print('Error Cancelling Order: $e');
       return false; // return false jika terjadi kesalahan saat melakukan permintaan HTTP
+    }
+  }
+
+  Future<void> checkWhetherUserInActiveOrder(
+      BuildContext context, String user_id) async {
+    String url =
+        'https://tratour.000webhostapp.com/checkWhetherUserInActiveOrder.php?user_id=$user_id';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        Map<String, dynamic> responseData = json.decode(response.body);
+        if (responseData['status'] == 'success') {
+          print('User sedang dalam proses Order');
+
+          // Memeriksa apakah pengguna memiliki pesanan aktif
+          if (responseData['orders'] != null &&
+              responseData['orders'].length > 0) {
+            bool isOrderFound = false;
+            String order_id = responseData['orders'][0]['id'];
+
+            while (!isOrderFound) {
+              try {
+                isOrderFound = await checkPickUpOrder(order_id);
+
+                if (isOrderFound) {
+                  Navigator.of(context).pop();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => OrderProcess(),
+                    ),
+                  );
+                  break;
+                } else {
+                  print(
+                      'Order tidak ditemukan, melakukan percobaan kembali...');
+                  await Future.delayed(Duration(seconds: 5));
+                }
+              } catch (e) {
+                print('Terjadi kesalahan saat memeriksa order: $e');
+                break;
+              }
+            }
+          }
+
+          globalVar.isInOrder = true;
+        } else {
+          print('User tidak dalam order aktif: ${responseData['message']}');
+          globalVar.isInOrder = false;
+        }
+      } else {
+        print('Failed to check user\'s active order: ${response.statusCode}');
+      /*   Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FailedToFindUserDataScreen(),
+          ),
+        ); */
+      }
+    } catch (e) {
+      print('Error occurred while checking user\'s active order: $e');
     }
   }
 }

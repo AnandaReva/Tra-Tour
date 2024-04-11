@@ -88,7 +88,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: GlobalVar.mainColor),
       ),
-      initialRoute: globalVar.isOrdering
+      initialRoute: globalVar.isInOrder
           ? 'inOrder'
           : (initScreen == 0 ? 'onboard' : 'widgetTree'),
       routes: {

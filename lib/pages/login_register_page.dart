@@ -815,7 +815,50 @@ class LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future<void> findUserDataFromDB(
+  Future<bool> findUserDataFromDB(String email) async {
+  String url = 'https://tratour.000webhostapp.com/findUser.php?email=$email';
+
+  try {
+    // Melakukan HTTP GET request
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      // Berhasil mendapatkan respon dari server
+      GlobalVar globalVar = GlobalVar.instance;
+      Map<String, dynamic> data = json.decode(response.body);
+
+      // Memperbarui userLoginData dengan data yang diperoleh
+      globalVar.userLoginData = data['data'];
+
+      // Set isLogin menjadi true
+      globalVar.isLogin = true;
+
+      // Mengembalikan true karena data berhasil ditemukan
+      return true;
+    } else {
+      if (globalVar.isLoading == true) {
+        setState(() {
+          globalVar.isLoading = false; // Menampilkan animasi loading
+        });
+      }
+
+      // Gagal mendapatkan respon dari server
+      print('Failed to load data: ${response.statusCode}');
+      
+      // Mengembalikan false karena gagal mendapatkan data
+      return false;
+    }
+  } catch (e) {
+    // Terjadi kesalahan saat melakukan permintaan HTTP
+    print('Error Find: $e');
+    
+    // Mengembalikan false karena terjadi kesalahan
+    return false;
+  }
+}
+
+
+ /*  Future<void> findUserDataFromDB(
     String email,
   ) async {
     String url = 'https://tratour.000webhostapp.com/findUser.php?email=$email';
@@ -848,5 +891,5 @@ class LoginPageState extends State<LoginPage> {
       // Terjadi kesalahan saat melakukan permintaan HTTP
       print('Error Find: $e');
     }
-  }
+  } */
 }
