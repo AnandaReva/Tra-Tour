@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
+import 'package:tratour/components/custom_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:tratour/globalVar.dart';
 import 'package:tratour/database/auth.dart';
@@ -47,87 +48,46 @@ class OrderProcessContent extends StatelessWidget {
               ),
             ],
           ),
-          body: SingleChildScrollView(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Order Data:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  Text('ID: ${currentOrderData['id'] ?? ''}'),
-                  Text('User ID: ${currentOrderData['user_id'] ?? ''}'),
-                  Text('Pickup ID: ${currentOrderData['pickup_id'] ?? ''}'),
-                  Text('Waste Types: ${currentOrderData['waste_types'] ?? ''}'),
-                  Text(
-                      'User Coordinate: ${currentOrderData['user_coordinate'] ?? ''}'),
-                  Text(
-                      'Sweeper Coordinate: ${currentOrderData['sweeper_coordinate'] ?? ''}'),
-                  Text('Address: ${currentOrderData['address'] ?? ''}'),
-                  Text('Cost: ${currentOrderData['cost'] ?? ''}'),
-                  Text(
-                      'Payment Method: ${currentOrderData['payment_method'] ?? ''}'),
-                  Text('Created At: ${currentOrderData['created_at'] ?? ''}'),
-                  Text('Updated At: ${currentOrderData['updated_at'] ?? ''}'),
-                  Text('Status: ${currentOrderData['status'] ?? ''}'),
-                  // Tampilkan data dari pickup_data
-                  Text(
-                    'Pickup Data:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  Text('ID: ${currentPickUpData['id'] ?? ''}'),
-                  Text('Order ID: ${currentPickUpData['order_id'] ?? ''}'),
-                  Text(
-                      'Pickuper ID: ${currentPickUpData['pickuper_id'] ?? ''}'),
-                  Text('Reward: ${currentPickUpData['reward'] ?? ''}'),
-                  // Tampilkan data dari sweeper_data
-                  Text(
-                    'Sweeper Data:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  Text('ID: ${currentSweeperData['id'] ?? ''}'),
-                  Text('Username: ${currentSweeperData['username'] ?? ''}'),
-                  Text('Email: ${currentSweeperData['email'] ?? ''}'),
-                  Text('Phone: ${currentSweeperData['phone'] ?? ''}'),
-                  Text('User Type: ${currentSweeperData['user_type'] ?? ''}'),
-                  Text(
-                    'Jarak:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  // Text('Distance: $_distanceText meters'), // Memperbaiki ini
+          // Text(
+          //   'Jarak:',
+          //   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          // ),
+          // Text('Distance: $_distanceText meters'), // Memperbaiki ini
 
-                  CircleAvatar(
-                    radius: 42,
-                    backgroundImage: NetworkImage(
-                      currentSweeperData != null
-                          ? currentSweeperData['profile_image'] ??
-                              'https://firebasestorage.googleapis.com/v0/b/tra-tour.appspot.com/o/default_profile_image.png?alt=media&token=83bb623d-473f-4c5e-93c3-ecc3fc5f915b'
-                          : 'https://firebasestorage.googleapis.com/v0/b/tra-tour.appspot.com/o/default_profile_image.png?alt=media&token=83bb623d-473f-4c5e-93c3-ecc3fc5f915b',
-                    ),
-                  ),
+          // CircleAvatar(
+          //   radius: 42,
+          //   backgroundImage: NetworkImage(
+          //     currentSweeperData != null
+          //         ? currentSweeperData['profile_image'] ??
+          //             'https://firebasestorage.googleapis.com/v0/b/tra-tour.appspot.com/o/default_profile_image.png?alt=media&token=83bb623d-473f-4c5e-93c3-ecc3fc5f915b'
+          //         : 'https://firebasestorage.googleapis.com/v0/b/tra-tour.appspot.com/o/default_profile_image.png?alt=media&token=83bb623d-473f-4c5e-93c3-ecc3fc5f915b',
+          //   ),
+          // ),
 
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      _openRouteGoogleMaps(context,
-                          currentOrderData); // Menambah parameter currentOrderData
-                    },
-                    child: const Text('Lihat Posisi Sweeper'),
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () async {
-                      // Memperbaiki pemanggilan showDialog
-                      _showCancelOrderDialog(
-                          context, globalVar, currentOrderData);
-                    },
-                    child: Text('Batal'),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          //         SizedBox(height: 20),
+          // ElevatedButton(
+          //   onPressed: () {
+          //     _openRouteGoogleMaps(context,
+          //         currentOrderData); // Menambah parameter currentOrderData
+          //   },
+          //   child: const Text('Lihat Posisi Sweeper'),
+          // ),
+          // SizedBox(height: 20),
+          // ElevatedButton(
+          //   onPressed: () async {
+          //     // Memperbaiki pemanggilan showDialog
+          //     _showCancelOrderDialog(
+          //         context, globalVar, currentOrderData);
+          //   },
+          //   child: Text('Batal'),
+          //         // ),
+          //       ],
+          //     ),
+          //   ),
+          // ),
+
+          body: DapatSweeper(
+              currentOrderData, currentPickUpData, currentSweeperData),
         );
       },
     );
@@ -230,5 +190,145 @@ class OrderProcessContent extends StatelessWidget {
         },
       );
     }
+  }
+}
+
+class DapatSweeper extends StatelessWidget {
+  final Map<String, dynamic> currentOrderData;
+  final Map<String, dynamic> currentPickUpData;
+  final Map<String, dynamic> currentSweeperData;
+
+  const DapatSweeper(this.currentOrderData,  this.currentPickUpData,this.currentSweeperData,{super.key});
+  
+  @override
+  Widget build(BuildContext context) {
+    Widget hero() {
+      return Container(
+        margin: EdgeInsets.only(bottom: 133),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset('assets/images/icon_sweeper.png'),
+            SizedBox(
+              height: 16,
+            ),
+            Text(
+              'Sweeper Telah Ditemukan',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    Widget profileTile() {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Image.asset(
+            'assets/images/sutejo.png',
+            width: 56,
+            height: 56,
+            fit: BoxFit.cover,
+          ),
+          SizedBox(
+            width: 8,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Text(
+                //   'Sutejo',
+                //   style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                // ),
+                Text(
+                  '${currentSweeperData['username'] ?? ''}',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                Text(
+                  '${currentSweeperData['phone'] ?? ''}',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                ),
+                // Text(
+                //   '08230698586',
+                //   style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                // ),
+              ],
+            ),
+          ),
+          Image.asset(
+            'assets/images/logo.png',
+            width: 80,
+            height: 39,
+            fit: BoxFit.cover,
+          )
+        ],
+      );
+    }
+
+    Widget infoSweeper() {
+      return Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          height: 246,
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 26),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(26), topRight: Radius.circular(26)),
+            border: Border(top: BorderSide(width: 2)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              profileTile(),
+              SizedBox(
+                height: 20,
+              ),
+              // Text(
+              //   'Tipe Sampah: Organik dan Plastik',
+              //   style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+              // ),
+              Text(
+                'Waste Types: ${currentOrderData['waste_types'] ?? ''}',
+                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                height: 4,
+              ),
+              Text(
+                'Reward: ${currentPickUpData['reward'] ?? ''}',
+                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+              ),
+              // Text(
+              //   'Reward: 2000',
+              //   style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+              // ),
+              SizedBox(
+                height: 14,
+              ),
+              CustomButton(onPressed: () {}, text: 'Lihat Posisi Sweeper'),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Scaffold(
+      body: Center(
+        child: Stack(
+          children: [
+            hero(),
+            infoSweeper(),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -150,7 +150,7 @@ class _PickLocationPageState extends State<PickLocationPage> {
               },
               child: Text('Gunakan Lokasimu'),
             ),
-            SizedBox(height: 20),
+            // SizedBox(height: 20),
             ElevatedButton(
               onPressed: globalVar.userLocation.isEmpty
                   ? null
@@ -160,10 +160,10 @@ class _PickLocationPageState extends State<PickLocationPage> {
               child: const Text('Periksa Lokasi'),
             ),
             SizedBox(height: 20),
-            Text(
-              "Alamat Anda",
-              style: TextStyle(fontSize: 18),
-            ),
+            // Text(
+            //   "Alamat Anda",
+            //   style: TextStyle(fontSize: 18),
+            // ),
             _entyAddress(_addressOrderController),
             SizedBox(height: 20),
             _entryPaymenMethod(_controllerPaymentMethod),
